@@ -31,7 +31,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY',get_random_secret_key())
 DEBUG = True
 
 # ALLOWED_HOSTS = os.getenv('127.0.0.1','DJANGO_ALLOWED_HOSTS').split(',')
-ALLOWED_HOSTS = os.getenv('127.0.0.1,estates.solutions,167.71.237.142','DJANGO_ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'estates.solutions',
+    '167.71.237.142',
+    # Add other hosts as needed
+]
 
 # Application definition
 
@@ -66,12 +71,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'django_project.urls'
 
-CSRF_TRUSTED_ORIGINS = ['https://*.estates.solutions','https://estates.solutions','167.71.237.142']
+CSRF_TRUSTED_ORIGINS = ['https://*.estates.solutions',
+                        'https://estates.solutions',
+                        'http://167.71.237.142',
+                        'https://167.71.237.142',]
 
 CORS_ALLOWED_ORIGINS = [
     "https://estates.solutions",
-    '167.71.237.142',
-    # Add any additional allowed origins
+    'http://167.71.237.142',
+    'https://167.71.237.142',
 ]
 
 CSRF_COOKIE_SECURE = True
@@ -107,25 +115,6 @@ DATABASES = {
     }
 }
 
-# DEVELOPMENT_MODE = os.getenv('DEVELOPMENT_MODE','False') == 'True'
-
-# if DEVELOPMENT_MODE is True:
-#     DATABASES = {
-#         'default' : {
-#             'ENGINE' : 'django.db.backends.sqlite3',
-#             'NAME' : os.path.join(BASE_DIR,'db.sqlite3')
-#         }
-#     }
-# elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
-#     if os.getenv('DATABASE_URL',None) is None:
-#         raise Exception('DATABASE_URL environment variable not defined')
-#     DATABASES = {
-#         'default' : dj_database_url.parse(os.environ.get('DATABASE_URL'))
-#     }
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -156,7 +145,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_ROOT = BASE_DIR / "Realtor/static"
+STATIC_ROOT = BASE_DIR / "Realtor/assets"
 STATIC_URL = 'static/'
 
 # Default primary key field type
@@ -165,7 +154,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [BASE_DIR / "Realtor/assets/static"]
 
 MEDIA_ROOT = BASE_DIR / "media"
 
