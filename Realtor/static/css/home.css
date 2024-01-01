@@ -1,0 +1,37 @@
+/* Add this CSS code to your existing styles.css file or create a new one */
+
+/* Optional: Global reset for margin and padding */
+body, h1, h2, h3, p, div, iframe {
+    margin: 0;
+    padding: 0;
+}
+
+/* Container for Facebook Reels */
+.reels-container {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    white-space: nowrap;
+    padding: 20px; /* Optional: Add padding to the container */
+}
+
+/* Individual Reel Item */
+.reel-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    margin-right: 10px; /* Adjust the spacing between videos */
+}
+
+/* Styling for the Facebook Embedded Video Player */
+iframe {
+    width: 267px;
+    height: 476px;
+    border: none;
+    overflow: hidden;
+    scroll-snap-align: start; /* Ensure alignment with scroll-snap-type */
+}
+
+/* Optional: Add hover effect for better user experience */
+.reel-item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}

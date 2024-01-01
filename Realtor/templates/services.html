@@ -1,0 +1,57 @@
+{% extends "base.html" %} 
+{% block title %} Realtor Gunbadrakh {% endblock %}
+{% block body_class %}
+{% load static %}
+<p>Services</p>
+
+<style>
+     /* Container for Facebook Reels */
+     .reels-container {
+        display: flex;
+        overflow-x: auto; /* Use auto to display a scrollbar if needed */
+        white-space: nowrap;
+        padding: 20px; /* Optional: Add padding to the container */
+        justify-content: center; /* Center align the videos */
+    }
+
+    /* Individual Reel Item */
+    .reel-item {
+        flex: 0 0 auto;
+        margin-right: 10px; /* Adjust the spacing between videos */
+        cursor: pointer;
+    }
+
+    /* Styling for the Facebook Embedded Video Player */
+    iframe {
+        width: 267px;
+        height: 476px;
+        border: none;
+        overflow: hidden;
+        display: flex; /* Initially hide all videos */
+        transition: transform 0.3s ease; /* Add a smooth transition effect */
+    }
+
+    /* Optional: Add hover effect for better user experience */
+    .reel-item:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Center align and make the selected video bigger */
+    .reel-item.selected iframe {
+        transform: scale(1.5); /* Adjust the scale factor as needed */
+        z-index: 1; /* Ensure the selected video is on top */
+    }
+</style>
+
+<div class="reels-container">
+    {% for link in links %}
+    <div class="reel-item">
+        <iframe src="{{ link.url }}" width="267" height="476" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
+    </div>
+    {% endfor %}
+</div>
+<script>
+    
+</script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0" nonce="your_nonce"></script>
+{% endblock %}

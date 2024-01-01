@@ -1,0 +1,144 @@
+{% extends "base.html" %} 
+{% block title %} Realtor Gunbadrakh {% endblock %}
+{% block body_class %}
+{% load static %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden; /* Hide the vertical scrollbar */
+        }
+    @media screen and (max-width: 768px) {
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            width: 100vw;
+            overflow: hidden; /* Hide the vertical scrollbar */
+            }
+        }
+    .sections-container {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        }
+    @media screen and (max-width: 768px) {
+        .sections-container {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            }
+        }
+
+    .section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        padding: 20px;
+        border: 1px solid #ccc;
+        transition: all 0.3s ease;
+        height: 100%;
+        text-decoration: none;
+        }
+    .section:nth-child(1) {
+        background: url("{% static 'assets/image/buy_1.jpg' %}") center/cover;
+    }
+
+    .section:nth-child(2) {
+        background: url("{% static 'assets/image/room.png' %}") center/cover;
+    }
+
+    .section:nth-child(3) {
+        background: url("{% static 'assets/image/buy_3.jpg' %}") center/cover;
+    }
+
+    .section:nth-child(4) {
+        background: url("{% static 'assets/image/buy_4.jpg' %}") center/cover;
+    }
+
+    @media screen and (max-width: 768px) {
+        .section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            padding: 20px;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+                }
+        }
+
+    .section:hover {
+        flex: 2;
+        width: 150%;
+        }
+  
+    @media screen and (max-width: 768px) {
+        .section:hover {
+            flex: 2;
+            height: 150%;
+            width: 100%;
+            }
+        }
+
+    .section .section-div {
+        font-size: large;
+        font-weight: 800;
+        text-decoration: none; /* Remove underline from the link */
+        color: #000; /* Inherit the color from the parent */
+        
+    }
+    .section .section-div h1 {
+        text-decoration: none; /* Remove underline from the link */
+        color: #000;
+
+    }
+
+    
+    
+</style>
+
+<div class="sections-container">
+    <a class="section" href="{% url 'buy_properties' %}">
+        <div class="section-div">
+            <h1>Худалдаж авах</h1>
+        </div>
+    </a>
+    <a class="section" href="{% url 'rent_properties' %}">
+        <div class="section-div">
+            <h1>Түрээслэх</h1>
+        </div>
+    </a>
+    <a class="section" href="{% url 'to_rent_properties' %}">
+        <div class="section-div">
+            <h1>Түрээслүүлэх</h1>
+        </div>
+    </a>
+    <a class="section" href="{% url 'sell_properties' %}">
+        <div class="section-div">
+            <h1>Худалдах</h1>
+        </div>
+    </a>
+    
+</div>
+
+
+{% endblock %}

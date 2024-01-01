@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Suggested Properties for {{ client.client_name }}</title>
+
+    <div class="col-md-12">
+        <h1>Suggested Properties for {{ client.client_name }}</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Property Address</th>
+                    <th>Deal type</th>
+                    <th>Square meter</th>
+                    <th>Action</th>
+                    <!-- Add more fields as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for suggest in suggestions %}
+                    <tr class="expandable-row" data-description="{{ suggest.property.description }}">
+                        <td>{{ suggest.property.address }}</td>
+                        <td>{{ suggest.property.deal_type }}</td>
+                        <td>{{ suggest.property.sqr_meter }}</td>
+                        <td>
+                            <form method="post" action="{% url 'client_suggested_properties' client_link=client.link %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
+                                <div class="btn-group">
+                                    <button type="submit" name="is_interested" value="interested" class="btn btn-outline-primary {% if suggest.is_interested == 'interested' %}active{% endif %}">Interested</button>
+                                    <button type="submit" name="is_interested" value="not_interested" class="btn btn-outline-primary {% if suggest.is_interested == 'not_interested' %}active{% endif %}">Not Interested</button>
+                                </div>
+                            </form>
+                        </td>
+                        <td><a href="{% url 'show_property' id=suggest.property.id %}" class="btn btn-primary">Show Property</a></td>
+                    </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Add button to navigate to 'show_property' view -->
+        
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+</body>
+
+</html>

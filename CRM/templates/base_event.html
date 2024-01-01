@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+                /* Default styles for all screen sizes */
+        body {
+            font-size: 16px;
+        }
+
+        h2 {
+            font-size: 2rem; /* Adjust as needed */
+        }
+
+        h5 {
+            font-size: 1.25rem; /* Adjust as needed */
+        }
+
+        /* Media query for smaller screens */
+        @media only screen and (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }       
+
+            h1{
+                font-size: 4rem;
+            }
+
+            h2 {
+                font-size: 1.75rem; /* Adjust as needed */
+            }
+
+            h5 {
+                font-size: 1.1rem; /* Adjust as needed */
+            }
+        }
+
+        /* Media query for even smaller screens */
+        @media only screen and (max-width: 576px) {
+            body {
+                font-size: 8px;
+            }
+
+            h1{
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 0.5rem; /* Adjust as needed */
+            }
+
+            h5 {
+                font-size: 0.2rem; /* Adjust as needed */
+            }
+        }
+
+
+        .navbar {
+            background-color: transparent;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar a {
+            color: #333;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            text-decoration: none;
+            width: 100%;
+            display: block;
+        }
+
+        .navbar a:hover {
+            background-color: #0056b3;
+            color: #fff !important;
+        }
+
+        .navbar-nav .nav-link-head {
+            font-weight: bold;
+            color: #0056b3;
+            padding: 8px 20px;
+            align-self: flex-start;
+        }
+        
+        .navbar-nav .nav-link {
+            padding: 8px 20px;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .navbar-nav .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .navbar-nav .nav-item.dropdown .dropdown-menu {
+            display: none;
+            /* background-color: #4285f6; Set a different background color */
+        }
+
+        .navbar-nav .nav-item.dropdown .dropdown-item {
+            opacity: 0;
+            transition: opacity 0.3s;
+            color: #000000; /* Set a different text color */
+        }
+
+        .navbar-nav .nav-item.dropdown:hover .dropdown-item {
+            opacity: 1;
+        }
+
+        .navbar-nav .nav-item.dropdown .nav-link {
+            color: #000000; /* Set a different text color for the dropdown link */
+        }
+
+        .navbar-nav .nav-item.dropdown:hover .nav-link {
+            color: #000000; /* Set a different text color for the dropdown link on hover */
+        }
+        
+        .nav-link.website-name {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333; /* Choose your desired text color */
+        }
+
+        /* Add some margin to the website name for better spacing */
+        .nav-link.website-name {
+            margin-bottom: 15px;
+        }
+        
+
+        .content-container {
+            display: flex;
+            justify-content: space-between;
+            flex: 1;
+        }
+
+        .navbar-container {
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            flex: 0 0 250px; /* Set a fixed width for the navbar container */
+
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+
+        .form_container h2 {
+            color: #4285f4;
+        }
+
+        .form_container form {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form_container button {
+            background-color: #4285f4;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form_container hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .form_container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+        }
+
+        .form_container .popupContainerEvent,
+        .form_container .popupContainerClient {
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            position: fixed;
+        }
+
+        .form_container .popupFormEvent,
+        .form_container .popupFormClient {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: all 300ms ease-in-out;
+            transform-origin: center center;
+        }
+
+        .form_container .popupContainerEvent.active,
+        .form_container .popupContainerClient.active {
+            display: flex;
+        }
+
+        .form_container .popupFormEvent.active,
+        .form_container .popupFormClient.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .form_container .exitButtonEvent,
+        .form_container .exitButtonClient {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .form_container .exitButtonEvent .material-icons,
+        .form_container .exitButtonClient .material-icons {
+            font-size: 24px;
+        }
+
+        .menu {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            bottom: 0px;
+            right: 0px;
+            z-index: 10000000;
+        }
+
+        .main-button {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background-color: #007bff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .main-button .material-icons {
+            font-size: 40px;
+            color: #fff;
+            border: none;
+        }
+
+        .menu.active .main-button {
+            transform: rotate(315deg);
+        }
+
+        .menu li {
+            position: absolute;
+            list-style: none;
+            background-color: rgba(0, 0, 0, 0);
+            left: 0px;
+            transform-origin: 100px;
+            transition: 0.5s;
+            transition-delay: calc(1ms * var(--i));
+            transform: rotate(0deg) translateX(100px);
+            border: none;
+        }
+
+        .menu li button {
+            background-color: rgba(0, 0, 0, 0);
+            border: none;
+            transform: rotate(calc(-360deg / 8 * var(--i) + 45deg));
+            transition: inherit;
+            cursor: pointer;
+        }
+
+        .menu.active li {
+            transform: rotate(calc(360deg / 8 * var(--i) - 45deg));
+        }
+
+        .menu li .button-wrapper {
+            transform: rotate(calc(-360deg / 8 * var(--i) + 45deg));
+        }
+
+        .menu li .material-icons {
+            color: #007bff;
+            border-radius: 50%;
+            font-size: 40px;
+        }
+
+        
+        
+    </style>
+</head>
+
+<body class="d-flex flex-column h-100">
+
+    <div class="menu">
+        <button class="main-button" id="main-button">
+            <span class="material-icons">add</span>
+        </button>
+        <li style="--i:1">
+            <a href="{% url 'add_event' %}">
+                <button id="openEventFormBtn" class="sub-button">
+                    <span class="material-icons">event</span>
+                </button>
+            </a>
+        </li>
+        <li style="--i:2">
+            <a href="{% url 'create_client' %}">
+                <button id="openClientFormBtn" class="sub-button">
+                    <span class="material-icons">account_circle</span>
+                </button>
+            </a>
+        </li>
+        <li style="--i:3">
+            <a href="{% url 'add_property' %}">
+                <button id="openPropertyFormBtn" class="sub-button">
+                    <span class="material-icons">home</span>
+                </button>
+            </a>
+        </li>
+        <li style="--i:4">
+            <a href="{% url 'add_rental_property' %}">
+                <button id="openPropertyFormBtn" class="sub-button">
+                    <span class="material-icons">key</span>
+                </button>
+            </a>
+        </li>
+    </div>
+
+    <div class="container-fluid mb-8" style="height: 100%; min-height: 100vh;">
+        <div class="row">
+            <div class="col-md-2">
+                <!-- Sidebar/Navbar -->
+                <div class="navbar-container">
+                    <nav class="navbar navbar-light mb-3 flex-column">
+                        <!-- Your website name here -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a class="nav-link website-name d-none d-lg-block" href="{% url 'home' %}" style="width: 100%;">Your Website Name</a>
+                            </div>
+                            <div class="col-md-12">
+                                <!-- Navbar toggle button for mobile -->
+                                <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#navbarNav"
+                                        aria-controls="navbarNav" aria-expanded="true" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Navbar links -->
+                        <div class="navbar-nav collapse navbar-collapse show" id="navbarNav">
+                            <!-- Other navbar links -->
+                            <h4 class="nav-link-head d-none d-lg-block"> Add </h4>
+                            <a class="nav-link d-none d-lg-block" href="{% url 'add_event' %}">Add Event</a>
+                            <a class="nav-link d-none d-lg-block" href="{% url 'create_client' %}">Add Client</a>
+                            <a class="nav-link d-none d-lg-block" href="{% url 'add_property' %}">Add Property</a>
+                            <a class="nav-link d-none d-lg-block" href="{% url 'add_rental_property' %}">Add Rental Property</a>
+
+                            <h4 class="nav-link-head"> Events </h4>
+                            <a class="nav-link" href="{% url 'events_by_property' %}">Events by Property</a>
+                            <a class="nav-link" href="{% url 'events_by_client' %}">Events by Clients</a>
+                            <a class="nav-link" href="{% url 'events_list' %}">Events list</a>
+                            
+                            <h4 class="nav-link-head"> Lists </h4>
+                            <a class="nav-link" href="{% url 'client_list' %}">Client List</a>
+                            <a class="nav-link" href="{% url 'properties_list' %}">Property List</a>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <!-- Main content -->
+                <div class="content-container flex-grow-1">
+                    <div class="form-container">
+                        <!-- Your content goes here -->
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer bottom py-3 bg-dark text-white mt-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p>Your company's description goes here.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Compliance</h5>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Careers</h5>
+                    <p>Join our team! Check out our <a href="#">careers page</a> for opportunities.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var mainButton = document.querySelector('.main-button');
+            mainButton.addEventListener('click', function () {
+                document.querySelector('.menu').classList.toggle('active');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

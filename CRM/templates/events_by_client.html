@@ -1,0 +1,99 @@
+<!-- events_by_client.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Events by Client{% endblock %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Events by Client</h1>
+        
+    </div>
+</div>
+
+<div class="row">
+    <!-- Section for Clients List -->
+    <div class="col-md-12">
+        <table id="clientsTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Phone Number</th>
+                    <th>Total Events</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client_data in events_by_client %}
+                    <tr>
+                        <td>{{ client_data.client.client_name }}</td>
+                        <td>{{ client_data.client.phone_number }}</td>
+                        <td>{{ client_data.events|length }}</td>
+                        <td>
+                            <button class="btn btn-link" type="button" onclick="toggleEventsList('{{ forloop.counter }}')">
+                                View Events
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Section for Events List -->
+    <div class="col-md-12">
+        {% for client_data in events_by_client %}
+            <div id="clientEvents{{ forloop.counter }}" class="list-group overflow-auto" style="max-height: 150px; display: none;">
+                <table class="table table-bordered client-events-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Property</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in client_data.events %}
+                            <tr>
+                                <td>{{ event.event_date }}</td>
+                                <td>{{ event.event_type }}</td>
+                                <td>{{ event.property }} </td>
+                                <td>
+                                    <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-primary">
+                                        <span class="material-icons">edit</span>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ event.id }}')">
+                                        <span class="material-icons">delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code here
+        $('#clientsTable').DataTable();
+    });
+
+    function toggleEventsList(clientCounter) {
+        // Hide all client events tables
+        $('.client-events-table').hide();
+
+        // Show the selected client events table
+        $('#clientEvents' + clientCounter).css('display', 'block');
+    }
+</script>
+{% endblock %}
