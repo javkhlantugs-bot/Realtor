@@ -1,8 +1,44 @@
 {% extends "base.html" %} 
-{% block title %} Realtor Gunbadrakh {% endblock %}
+{% block title %} Estates Solutions {% endblock %}
 {% block body_class %}
 {% load static %}
 <style>
+    /* Optional: Global reset for margin and padding */
+    body, h1, h2, h3, p, div, iframe {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Container for Facebook Reels */
+    .reels-container {
+        display: flex;
+        overflow-x: scroll;
+        scroll-snap-type: x mandatory;
+        white-space: nowrap;
+        padding: 20px; /* Optional: Add padding to the container */
+    }
+
+    /* Individual Reel Item */
+    .reel-item {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        margin-right: 10px; /* Adjust the spacing between videos */
+    }
+
+    /* Styling for the Facebook Embedded Video Player */
+    iframe {
+        width: 267px;
+        height: 476px;
+        border: none;
+        overflow: hidden;
+        scroll-snap-align: start; /* Ensure alignment with scroll-snap-type */
+    }
+
+    /* Optional: Add hover effect for better user experience */
+    .reel-item:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
     body {
         margin: 0;
         padding: 0;
@@ -55,19 +91,19 @@
         text-decoration: none;
         }
     .section:nth-child(1) {
-        background: url("{% static 'assets/image/buy_1.jpg' %}") center/cover;
+        background: url("{% static 'image/buy_1.jpg' %}") center/cover;
     }
 
     .section:nth-child(2) {
-        background: url("{% static 'assets/image/room.png' %}") center/cover;
+        background: url("{% static 'image/room.png' %}") center/cover;
     }
 
     .section:nth-child(3) {
-        background: url("{% static 'assets/image/buy_3.jpg' %}") center/cover;
+        background: url("{% static 'image/buy_3.jpg' %}") center/cover;
     }
 
     .section:nth-child(4) {
-        background: url("{% static 'assets/image/buy_4.jpg' %}") center/cover;
+        background: url("{% static 'image/buy_4.jpg' %}") center/cover;
     }
 
     @media screen and (max-width: 768px) {

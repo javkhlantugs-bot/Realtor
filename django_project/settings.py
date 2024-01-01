@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'estates.solutions',
     '167.71.237.142',
+    'www.estates.solutions'
     # Add other hosts as needed
 ]
 
