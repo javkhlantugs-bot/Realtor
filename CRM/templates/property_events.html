@@ -1,0 +1,205 @@
+<!-- property_events.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Details and Properties{% endblock %}
+
+{% block content %}
+{% load widget_tweaks %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<div class="col-md-12">
+    <h1>Details for {{ property.address }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.property_type.label_tag }}
+                    {{ editform.property_type|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.address.label_tag }}
+                    {{ editform.address|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.condition.label_tag }}
+                    {{ editform.condition|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.total_rooms.label_tag }}
+                    {{ editform.total_rooms|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.bedrooms.label_tag }}
+                    {{ editform.bedrooms|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.toilets.label_tag }}
+                    {{ editform.toilets|add_class:"form-control" }}
+                </div>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.sqr_meter.label_tag }}
+                    {{ editform.sqr_meter|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.price_sqrm.label_tag }}
+                    {{ editform.price_sqrm|add_class:"form-control" }}
+                </div>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.total_floor.label_tag }}
+                    {{ editform.total_floor|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ editform.which_floor.label_tag }}
+                    {{ editform.which_floor|add_class:"form-control" }}
+                </div>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    {{ editform.description.label_tag }}
+                    {{ editform.description|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="latitude" id="latitude" value="{{ editform.latitude.value }}">
+        <input type="hidden" name="longitude" id="longitude" value="{{ editform.longitude.value }}">
+        <div id="map" style="height: 600px; width: 100%;"></div>
+
+        <button type="submit" name="edit_property"  class="btn btn-primary">Save Changes</button>
+    </form>
+    
+    <div class="col-md-12">
+        <h2 class="mb-4">Event List</h2>
+        <table id="eventsTable" class="display">
+            <thead>
+                <tr>
+                    <th>Event Type</th>
+                    <th>Event Date</th>
+                    <th>Event Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>{{ event.event_type }}</td>
+                        <td>{{ event.event_date }}</td>
+                        <td>{{ event.event_description }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <button class="btn btn-secondary mt-3" onclick="goBack()">Back</button>
+</div>
+
+<!-- client_events.html -->
+<div class="col-md-12">
+    <h1>Client List</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Phone Number</th>
+                <th>Suggestion</th>
+                <th>Is Interested</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for suggest in suggestions %}
+                <tr>
+                    <td>{{ suggest.client.client_name }}</td>
+                    <td>{{ suggest.client.phone_number }}</td>
+                    <td>
+                        <form method="post" action="{% url 'property_events' property_id=property.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
+                            <div class="btn-group">
+                                <button type="submit" name="is_suggested" value="suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %}">Suggested</button>
+                                <button type="submit" name="is_suggested" value="not_suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %}">Not Suggested</button>
+                            </div>
+                        </form>
+                    </td>
+                    <td style="{% if suggest.is_interested == 'interested' %}font-weight: bold; color: green;{% endif %}">
+                        {{ suggest.get_is_interested_display }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code here
+        $('#eventsTable').DataTable();
+    });
+</script>
+<script>
+    var initialLatitude = parseFloat("{{ editform.latitude.value }}");
+    var initialLongitude = parseFloat("{{ editform.longitude.value }}");
+
+    if (!isNaN(initialLatitude) && !isNaN(initialLongitude)) {
+        var map = L.map('map').setView([initialLatitude, initialLongitude], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var marker = L.marker([initialLatitude, initialLongitude], {
+            draggable: true
+        }).addTo(map);
+
+        marker.on('dragend', function (event) {
+            var marker = event.target;
+            var position = marker.getLatLng();
+            // Update hidden fields with new coordinates
+            document.getElementById('latitude').value = position.lat;
+            document.getElementById('longitude').value = position.lng;
+        });
+    } else {
+        console.error("Invalid initialLatitude or initialLongitude values:", initialLatitude, initialLongitude);
+    }
+</script>
+
+{% endblock %}

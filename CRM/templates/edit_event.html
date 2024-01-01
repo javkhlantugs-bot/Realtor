@@ -1,0 +1,67 @@
+<!-- add_event.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Add Event{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="col-md-12">
+    <h2 class="mb-4">Add Event</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.event_type.label_tag }}
+                    {{ form.event_type|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.event_date.label_tag }}
+                    {{ form.event_date|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.event_time.label_tag }}
+                    {{ form.event_time|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.participant_buyer.label_tag }}
+                    {{ form.participant_buyer|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.participant_owner.label_tag }}
+                    {{ form.participant_owner|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.participant_property.label_tag }}
+                    {{ form.participant_property|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    {{ form.event_description.label_tag }}
+                    {{ form.event_description|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()">Back</a>
+    </form>
+</div>
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+{% endblock %}

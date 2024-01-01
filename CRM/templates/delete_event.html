@@ -1,0 +1,16 @@
+<!-- delete_event.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Delete Event{% endblock %}
+
+{% block content %}
+<div class="col-md-6">
+    <h2 class="mb-4">Delete Event</h2>
+    <p>Are you sure you want to delete the event "{{ event }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete Event</button>
+    </form>
+    <a href="{% url 'events_list' %}" class="btn btn-secondary mt-3">Cancel</a>
+</div>
+{% endblock %}

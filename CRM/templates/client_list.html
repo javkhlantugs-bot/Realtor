@@ -1,0 +1,54 @@
+<!-- client_list.html -->
+
+{% extends 'base_event.html' %}
+
+{% block title %}Client List{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+
+<div class="col-md-12">
+    <h1>Clients List</h1>
+    <table id="clientsTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone number</th>
+                <th>Email</th>
+                <th>Details</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.client_name }}</td>
+                    <td>{{ client.phone_number }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>
+                        <a href="{% url 'client_events' client.id %}">Show more</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code here
+        $('#clientsTable').DataTable();
+    });
+</script>
+{% endblock %}
