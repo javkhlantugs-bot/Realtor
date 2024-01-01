@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY',get_random_secret_key())
 DEBUG = True
 
 # ALLOWED_HOSTS = os.getenv('127.0.0.1','DJANGO_ALLOWED_HOSTS').split(',')
-ALLOWED_HOSTS = os.getenv('127.0.0.1,estates.solutions','DJANGO_ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = os.getenv('127.0.0.1,estates.solutions,167.71.237.142','DJANGO_ALLOWED_HOSTS').split(',')
 
 # Application definition
 
@@ -66,10 +66,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'django_project.urls'
 
-CSRF_TRUSTED_ORIGINS = ['https://*.estates.solutions','https://estates.solutions']
+CSRF_TRUSTED_ORIGINS = ['https://*.estates.solutions','https://estates.solutions','167.71.237.142']
 
 CORS_ALLOWED_ORIGINS = [
     "https://estates.solutions",
+    '167.71.237.142',
     # Add any additional allowed origins
 ]
 
