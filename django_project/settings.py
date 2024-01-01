@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'suggest_properties',
     'widget_tweaks',
     'bootstrap4',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -60,11 +61,20 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'django_project.urls'
 
 CSRF_TRUSTED_ORIGINS = ['https://*.estates.solutions','https://estates.solutions']
+
+CORS_ALLOWED_ORIGINS = [
+    "https://estates.solutions",
+    # Add any additional allowed origins
+]
+
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
 
 TEMPLATES = [
     {
