@@ -32,7 +32,11 @@
             <div class="col-md-4">
                 <div class="form-group">
                     {{ form.participant_buyer.label_tag }}
-                    {{ form.participant_buyer|add_class:"form-control" }}
+                    {% if request.GET.participant_buyer %}
+                        {{ form.participant_buyer|add_class:"form-control" }}
+                    {% else %}
+                        {{ form.participant_buyer|add_class:"form-control" }}
+                    {% endif %}
                 </div>
             </div>
             <div class="col-md-4">

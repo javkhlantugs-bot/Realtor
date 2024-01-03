@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import CustomUser
 
 class LinkModel(models.Model):
     url = models.URLField()
@@ -30,7 +31,7 @@ class Property(models.Model):
         ('12 plus 1','12 + 1'),
         ('1 plus 1','1 + 1'),
     )
-
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
     deal_type = models.CharField(max_length=10, choices=DEAL_TYPE)
     address = models.CharField(max_length=255)

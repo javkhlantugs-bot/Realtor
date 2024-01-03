@@ -1,0 +1,69 @@
+<!-- accounts/templates/accounts/register.html -->
+{% extends 'base_account.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <h2>Register</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+        </div>
+
+        <div class="form-group">
+            {{ form.firstname.label_tag }}
+            {{ form.firstname }}
+        </div>
+        <div class="form-group">
+            {{ form.lastname.label_tag }}
+            {{ form.lastname }}
+        </div>
+        <div class="form-group">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+        </div>
+
+        <div class="form-group">
+            {{ form.phone_number.label_tag }}
+            {{ form.phone_number }}
+        </div>
+
+        <div class="form-group">
+            {{ form.password1.label_tag }}
+            <div class="input-group">
+                {{ form.password1 }}
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('{{ form.password1.id_for_label }}')">
+                        <i class="fa fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.password2.label_tag }}
+            <div class="input-group">
+                {{ form.password2 }}
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('{{ form.password2.id_for_label }}')">
+                        <i class="fa fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    <a href="{% url 'accounts:login' %}">Login</a>
+
+    <!-- JavaScript to toggle password visibility -->
+    <script>
+        function togglePassword(inputId) {
+            var passwordInput = document.getElementById(inputId);
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+{% endblock %}

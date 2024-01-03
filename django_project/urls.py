@@ -22,4 +22,5 @@ urlpatterns = [
     path('',include('Realtor.urls')),
     path('crm/',include('CRM.urls')),
     path('suggested_properties/', include('suggest_properties.urls')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
 ]

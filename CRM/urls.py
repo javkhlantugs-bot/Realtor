@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.crm, name='base_event'),
+    path('', views.dashboard, name='dashboard'),
     path('create_client/', views.create_client, name='create_client'),
     path('events_list/', views.events_list, name='events_list'),
     path('add_property/', views.add_property, name='add_property'),
