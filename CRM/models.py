@@ -5,8 +5,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import uuid
+from accounts.models import CustomUser
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
 class Clent(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     client_name = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=16)
     email = models.EmailField()
@@ -27,6 +32,7 @@ class Clent(models.Model):
         return unique_id
 
 class Client_suggestion(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     client = models.ForeignKey(Clent, on_delete=models.CASCADE, related_name='client_suggestions')    
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property_suggestions')  
     SUGGESTION_CHOICES = (
@@ -47,6 +53,7 @@ class Client_suggestion(models.Model):
         return f"{self.client} - {self.property} - {self.is_suggested} - {self.is_interested} - {self.client_link()}"
 
 class Event(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     EVENT_TYPES = (
         ('meeting', 'Meeting'),
         ('show_property', 'Show Property'),
@@ -65,6 +72,7 @@ class Event(models.Model):
         return f"{self.event_type} - {self.event_date} - {self.participant_buyer} - {self.participant_owner}"
 
 class Files(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     file = models.FileField(upload_to='property_images/')
 
     def __str__(self):
@@ -74,13 +82,60 @@ class Files(models.Model):
 @receiver(post_save, sender=Clent)
 def create_client_suggestions(sender, instance, created, **kwargs):
     if created:
-        properties = Property.objects.all()
+        properties = Property.objects.filter(user=instance.user)
         for property in properties:
-            Client_suggestion.objects.create(client=instance, property=property)
+            Client_suggestion.objects.create(client=instance, property=property, user=instance.user)
 
 @receiver(post_save, sender=Property)
 def create_property_suggestions(sender, instance, created, **kwargs):
     if created:
-        clients = Clent.objects.all()
+        clients = Clent.objects.filter(user=instance.user)
         for client in clients:
-            Client_suggestion.objects.create(client=client, property=instance)
+            Client_suggestion.objects.create(client=client, property=instance, user = instance.user)
+
+
+class ClientInterest(models.Model):
+    PROPERTY_CHOICES = [
+        ('house', 'House'),
+        ('apartment', 'Apartment'),
+        ('office', 'Office'),
+    ]
+
+    PAYMENT_CHOICES = [
+        ('cash', 'Cash'),
+        ('loan', 'Loan'),
+        ('leasing', 'Leasing'),
+        ('all', 'All'),
+    ]
+
+    VIEW_SIGHT_CHOICES = [
+        ('north', 'North'),
+        ('south', 'South'),
+        ('east', 'East'),
+        ('west', 'West'),
+    ]
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    property_type = models.CharField(max_length=20, choices=PROPERTY_CHOICES, null=True, blank=True)
+    totalrooms = models.IntegerField(null=True, blank=True)
+    bedrooms = models.IntegerField(null=True, blank=True)
+    toilets = models.IntegerField(null=True, blank=True)
+    min_floor_preference = models.IntegerField(null=True, blank=True)
+    max_floor_preference = models.IntegerField(null=True, blank=True)
+    min_square_meter = models.FloatField(null=True, blank=True)
+    max_square_meter = models.FloatField(null=True, blank=True)
+    payment_term = models.CharField(max_length=10, choices=PAYMENT_CHOICES, null=True, blank=True)
+    min_price_range = models.CharField(max_length=20, null=True, blank=True)
+    max_price_range = models.CharField(max_length=20, null=True, blank=True)
+    view_sight = models.CharField(max_length=10, choices=VIEW_SIGHT_CHOICES, null=True, blank=True)
+    date_added = models.DateField(null=True)
+
+    # Add more fields based on additional details you want to include
+    # Example: 
+    additional_feature = models.CharField(max_length=50, null=True, blank=True)
+    # ...
+
+    # Add other necessary fields such as ForeignKey to link to a Client model
+    client = models.ForeignKey(Clent, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"Interest: {self.property_type}, Rooms: {self.rooms}, Floor: {self.floor_preference}, Square Meter: {self.square_meter}, Payment: {self.payment_term}, Price Range: {self.price_range}, View Sight: {self.view_sight}"

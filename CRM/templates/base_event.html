@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>{% block title %}Estates Solutions CRM{% endblock %}</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -67,7 +68,17 @@
                 font-size: 0.2rem; /* Adjust as needed */
             }
         }
+        .logout-button {
+            color: #bd2130;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
 
+        .logout-button:hover {
+            color: #bd2130; /* Darker shade on hover */
+        }
 
         .navbar {
             background-color: transparent;
@@ -368,7 +379,7 @@
                         <!-- Your website name here -->
                         <div class="row">
                             <div class="col-md-12">
-                                <a class="nav-link website-name d-none d-lg-block" href="{% url 'home' %}" style="width: 100%;">Your Website Name</a>
+                                <a class="nav-link website-name d-none d-lg-block" href="{% url 'dashboard' %}" style="width: 100%;">Estates Solutions</a>
                             </div>
                             <div class="col-md-12">
                                 <!-- Navbar toggle button for mobile -->
@@ -395,7 +406,10 @@
                             <h4 class="nav-link-head"> Lists </h4>
                             <a class="nav-link" href="{% url 'client_list' %}">Client List</a>
                             <a class="nav-link" href="{% url 'properties_list' %}">Property List</a>
-                            <a class="nav-link" href="{% url 'properties_list' %}">Another Property List</a>
+
+                            <!-- Logout Button -->
+                            <a class="nav-link logout-button" href="{% url 'accounts:logout' %}">Logout</a>
+
                         </div>
                     </nav>
                 </div>

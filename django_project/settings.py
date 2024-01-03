@@ -39,9 +39,12 @@ ALLOWED_HOSTS = [
     # Add other hosts as needed
 ]
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 # Application definition
 
 INSTALLED_APPS = [
+    'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -105,6 +108,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_project.wsgi.application'
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

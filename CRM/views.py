@@ -12,7 +12,10 @@ from django.template.loader import render_to_string
 import os
 from django.http import HttpResponse
 from django.views import View
+from django.contrib.auth.decorators import login_required
 
+def dashboard(request):
+    return render(request, 'crm_dashboard.html')
 
 def crm(request):
     # Create instances of the forms
@@ -22,11 +25,15 @@ def crm(request):
     # Pass the forms to the template
     return render(request, 'base_event.html', {'event_form': event_form, 'client_form': client_form})
 
+@login_required
 def create_client(request):
     if request.method == 'POST':
+        # Set the user field before saving the form
         form = ClientForm(request.POST)
         if form.is_valid():
-            form.save()
+            client = form.save(commit=False)
+            client.user = request.user  # Set the user field
+            client.save()
             # Add any additional logic or redirect as needed
             return redirect('create_client')
     else:
@@ -34,6 +41,7 @@ def create_client(request):
 
     return render(request, 'create_client.html', {'form': form})
 
+@login_required
 def add_property(request):
     if request.method == 'POST':
         property_form = PropertyForm(request.POST, request.FILES)
@@ -45,6 +53,7 @@ def add_property(request):
             property_instance.price_month = 0
             property_instance.latitude = request.POST.get('latitude', '')
             property_instance.longitude = request.POST.get('longitude', '')
+            property_instance.user = request.user
             property_instance.save()
 
             property_images_instances = [
@@ -66,6 +75,7 @@ def add_property(request):
 
     return render(request, 'add_property.html', {'property_form': property_form})
 
+@login_required
 def add_rental_property(request):
     if request.method == 'POST':
         property_form = RentalPropertyForm(request.POST, request.FILES)
@@ -74,6 +84,7 @@ def add_rental_property(request):
             property_instance = property_form.save(commit=False)
             property_instance.deal_type = 'rental'
             property_instance.price_sqrm = 0
+            property_instance.user = request.user
             property_instance.save()
 
             property_images_instances = [
@@ -96,15 +107,17 @@ def add_rental_property(request):
     return render(request, 'add_rental_property.html', {'property_form': property_form})
 
 def events_list(request):
-    events = Event.objects.all()
+    events = Event.objects.filter(user=request.user.id)
 
     return render(request, 'events_list.html', {'events': events})
 
+@login_required
 def add_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
             event = form.save(commit=False)
+            event.user = request.user
             event.save()
             return redirect('add_event')
     else:
@@ -139,7 +152,7 @@ def delete_event(request, event_id):
 
 def events_by_property(request):
     # Assuming Event model has a ForeignKey named 'participant_property' that refers to Property model
-    events = Event.objects.select_related('participant_property', 'participant_buyer', 'participant_owner').all()
+    events = Event.objects.select_related('participant_property', 'participant_buyer', 'participant_owner').filter(user=request.user.id)
     events_by_property = {}
 
     for event in events:
@@ -157,7 +170,7 @@ def events_by_property(request):
 from django.utils import timezone
 
 def events_by_client(request):
-    events = Event.objects.select_related('participant_buyer', 'participant_owner').all()
+    events = Event.objects.select_related('participant_buyer', 'participant_owner').filter(user=request.user.id)
 
     today = timezone.now().date()
 
@@ -195,17 +208,22 @@ def events_by_client(request):
     return render(request, 'events_by_client.html', {'events_by_client': events_by_client})
 
 def client_list(request):
-    clients = Clent.objects.all()
+    clients = Clent.objects.filter(user=request.user.id)
     return render(request, 'client_list.html', {'clients': clients})
 
 
 
 def client_events(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
-    events = Event.objects.filter(participant_buyer=client)
+    events = Event.objects.filter(participant_buyer=client,user = request.user.id)
+
 
     # Retrieve all suggestions for the client
-    suggestions = Client_suggestion.objects.filter(client=client_id)
+    suggestions = Client_suggestion.objects.filter(client=client_id, user = request.user.id)
+    interested_list = Client_suggestion.objects.filter(client=client_id, is_interested = 'interested', user = request.user.id)
+    interested_map = list(
+        interested_list.values('property__latitude', 'property__longitude', 'property__deal_type','property__property_type',
+                               'property__total_rooms', 'property__address', 'property__id'))
 
     if request.method == 'POST':
         # Check if the form is for suggestion and process it
@@ -221,16 +239,16 @@ def client_events(request, client_id):
     else:
         form = ClientSuggestionForm()
 
-    return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions})
+    return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions,'interested_map':interested_map})
 
 def properties_list(request):
-    properties = Property.objects.all()
-    locations = list(Property.objects.values('latitude','longitude','address','deal_type','property_type','total_rooms','id')[:100])
+    properties = Property.objects.filter(user = request.user.id)
+    locations = list(Property.objects.values('latitude','longitude','address','deal_type','property_type','total_rooms','id').filter(user = request.user.id))
     return render(request, 'properties_list.html', {'properties': properties, 'locations':locations})
 
 def property_events(request, property_id):
     property = get_object_or_404(Property, id=property_id)
-    events = Event.objects.filter(participant_property=property)
+    events = Event.objects.filter(participant_property=property, user = request.user)
     suggestions = Client_suggestion.objects.filter(property=property_id)
 
     form = ClientSuggestionForm()
