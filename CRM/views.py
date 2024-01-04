@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, ClientInterestForm
 from Realtor.models import Property
 from django.contrib import messages
-from .models import Files, Event, Clent, Client_suggestion
+from .models import Files, Event, Clent, Client_suggestion, ClientInterest
 from Realtor.models import PropertyImage
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -64,7 +64,6 @@ def create_client_interest(request, client_id):
     }
 
     return render(request, 'create_client_interest.html', context)
-
 
 @login_required
 def add_property(request):
@@ -136,9 +135,6 @@ def events_list(request):
 
     return render(request, 'events_list.html', {'events': events})
 
-
-
-
 @login_required
 def add_event(request):
     if request.method == 'POST':
@@ -151,6 +147,7 @@ def add_event(request):
     else:
         form = EventForm()
     return render(request, 'add_event.html', {'form': form})
+
 @login_required
 def edit_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -170,6 +167,7 @@ def edit_event(request, event_id):
 
     # Pass the referrer URL to the template
     return render(request, 'edit_event.html', {'form': form, 'event': event, 'referrer': referrer})
+
 @login_required
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -239,12 +237,10 @@ def client_list(request):
     clients = Clent.objects.filter(user=request.user.id)
     return render(request, 'client_list.html', {'clients': clients})
 
-
-
 def client_events(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
     events = Event.objects.filter(participant_buyer=client,user = request.user.id)
-
+    wishes = ClientInterest.objects.filter(client = client, user = request.user.id)
     # Retrieve all suggestions for the client
     suggestions = Client_suggestion.objects.filter(client=client_id, user = request.user.id)
     interested_list = Client_suggestion.objects.filter(client=client_id, is_interested = 'interested', user = request.user.id)
@@ -266,7 +262,7 @@ def client_events(request, client_id):
     else:
         form = ClientSuggestionForm()
 
-    return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions,'interested_map':interested_map})
+    return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions,'interested_map':interested_map, 'wishes':wishes})
 
 def properties_list(request):
     properties = Property.objects.filter(user = request.user.id)
@@ -275,7 +271,7 @@ def properties_list(request):
 
 def property_events(request, property_id):
     property = get_object_or_404(Property, id=property_id)
-    events = Event.objects.filter(participant_property=property, user = request.user)
+    events = Event.objects.filter(participant_property=property, user = request.user.id)
     suggestions = Client_suggestion.objects.filter(property=property_id)
 
     form = ClientSuggestionForm()
