@@ -6,9 +6,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import uuid
 from accounts.models import CustomUser
+from django.utils import timezone
+from django.db.models.signals import pre_save
 
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+
 
 class Clent(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -22,9 +25,10 @@ class Clent(models.Model):
         ('looking_for_rental_property', 'Looking For Rental'),
         ('selling_property', 'Selling property'),
         ('renting_Property', 'Renting Property'),
+        ('tenant', 'Tenant'),
         ('inactive', 'Inactive'),
     )
-    status = models.CharField(choices=status_choices, max_length=50, null = True)
+    status = models.CharField(choices=status_choices, max_length=50, null=True)
 
     def __str__(self):
         return f"{self.client_name} - {self.phone_number} - {self.email}"
@@ -34,11 +38,32 @@ class Clent(models.Model):
             self.link = self.generate_unique_id()
         super().save(*args, **kwargs)
 
+        # Check if the status has changed
+        if self.pk is not None:
+            old_instance = Clent.objects.get(pk=self.pk)
+            if old_instance.status != self.status:
+                self.last_status_change = timezone.now()
+                self.previous_status = old_instance.status
+
+                # Create a StatusChangeLog entry
+                StatusChangeLog.objects.create(
+                    clent=self,
+                    changed_date=self.last_status_change,
+                    previous_status=self.previous_status,
+                    new_status=self.status
+                )
+
     def generate_unique_id(self):
         unique_id = str(uuid.uuid4().hex)[:8]
         while Clent.objects.filter(link=unique_id).exists():
             unique_id = str(uuid.uuid4().hex)[:8]
         return unique_id
+
+class StatusChangeLog(models.Model):
+    client = models.ForeignKey(Clent, on_delete=models.CASCADE)
+    changed_date = models.DateTimeField()
+    previous_status = models.CharField(max_length=50)
+    new_status = models.CharField(max_length=50)
 
 class Client_suggestion(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -101,6 +126,8 @@ def create_property_suggestions(sender, instance, created, **kwargs):
         clients = Clent.objects.filter(user=instance.user)
         for client in clients:
             Client_suggestion.objects.create(client=client, property=instance, user = instance.user)
+
+
 
 
 class ClientInterest(models.Model):

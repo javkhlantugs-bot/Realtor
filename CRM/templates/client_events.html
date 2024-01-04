@@ -72,6 +72,8 @@
     </div>
 </div>
 <h4>Wishes</h4>
+
+
 <div style="background-color: rgb(238, 238, 238);border-radius: 10px;padding: 10px;">
     <h3>Events</h3>
     <table id="eventsTable" class="display">
@@ -162,7 +164,7 @@
     </div>
 </div>
 <button id="showMapBtn" class="btn btn-primary">Show Interested Properties on Map</button>
-<div id="map-container" style="display: none; height: 300px; width: 100%; margin-top: 20px;">
+<div id="map-container" style=" height: 300px; width: 100%; margin-top: 20px;">
     <div id="map" style="height: 100%;"></div>
 </div>
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -270,7 +272,10 @@
 
     function editClient() {
         // Add your logic for handling the "Edit" button click
-        alert('Edit button clicked');
+        window.location.href = "{% url 'edit_client' client.id %}";
+
+        // Also, fill the participant_buyer field with the client's name
+        document.getElementById('id_participant_buyer').value = '{{ client.id }}';
     }
 </script>
 <script>

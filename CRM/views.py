@@ -1,6 +1,6 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, ClientInterestForm
+from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, ClientWishForm
 from Realtor.models import Property
 from django.contrib import messages
 from .models import Files, Event, Clent, Client_suggestion, ClientInterest
@@ -47,7 +47,7 @@ def create_client_interest(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
 
     if request.method == 'POST':
-        form = ClientInterestForm(user=request.user, data=request.POST)
+        form = ClientWishForm(user=request.user, data=request.POST)
         if form.is_valid():
             interest = form.save(commit=False)
             interest.client = client
@@ -56,7 +56,7 @@ def create_client_interest(request, client_id):
         else:
             print(form.errors)
     else:
-        form = ClientInterestForm(user=request.user)
+        form = ClientWishForm(user=request.user)
 
     context = {
         'form': form,
@@ -178,7 +178,7 @@ def delete_event(request, event_id):
 
 def events_by_property(request):
     # Assuming Event model has a ForeignKey named 'participant_property' that refers to Property model
-    events = Event.objects.select_related('participant_property', 'participant_buyer', 'participant_owner').filter(user=request.user.id)
+    events = Event.objects.select_related('participant_property', 'participant_buyer', 'participant_owner').filter(user=request.user.id, event_date__gte=timezone.now())
     events_by_property = {}
 
     for event in events:
@@ -263,6 +263,31 @@ def client_events(request, client_id):
         form = ClientSuggestionForm()
 
     return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions,'interested_map':interested_map, 'wishes':wishes})
+
+
+@login_required
+def edit_client(request, client_id):
+    client = get_object_or_404(Clent, id=client_id)
+
+    # Get the referrer URL from the POST data
+    referrer = request.POST.get('referrer', '')
+
+    if request.method == 'POST':
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+
+            # Check if referrer is a valid URL before redirecting
+            if referrer and referrer != 'None' and referrer != request.path:
+                return redirect(referrer)
+            else:
+                # Redirect to a default URL if referrer is not valid
+                pass
+    else:
+        form = ClientForm(instance=client)
+
+    # Pass the referrer URL to the template
+    return render(request, 'edit_client.html', {'form': form, 'client': client, 'referrer': referrer})
 
 def properties_list(request):
     properties = Property.objects.filter(user = request.user.id)

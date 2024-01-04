@@ -1,0 +1,49 @@
+<!-- add_event.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Edit Client{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="col-md-12">
+    <h2 class="mb-4">Edit Client</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.client_name.label_tag }}
+                    {{ form.client_name|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.status.label_tag }}
+                    {{ form.status|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.phone_number.label_tag }}
+                    {{ form.phone_number|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()">Back</a>
+    </form>
+</div>
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+{% endblock %}

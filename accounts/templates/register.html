@@ -4,13 +4,17 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-    <h2>Register</h2>
+<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+<h2>Register</h2>
     <form method="post">
         {% csrf_token %}
 
         <div class="form-group">
             {{ form.username.label_tag }}
             {{ form.username }}
+            {% for error in form.username.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
 
         <div class="form-group">
@@ -24,13 +28,28 @@
         <div class="form-group">
             {{ form.email.label_tag }}
             {{ form.email }}
+            {% for error in form.email.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
-
+        
+        <div class="form-group">
+            {{ form.country.label_tag }}
+            {{ form.country }}
+        </div>
+        <div class="form-group">
+            {{ form.city.label_tag }}
+            {{ form.city }}
+        </div>
+        
         <div class="form-group">
             {{ form.phone_number.label_tag }}
             {{ form.phone_number }}
+            {% for error in form.phone_number.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
-
+        
         <div class="form-group">
             {{ form.password1.label_tag }}
             <div class="input-group">
@@ -66,4 +85,5 @@
             passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
         }
     </script>
+    
 {% endblock %}

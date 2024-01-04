@@ -83,15 +83,24 @@ class ClientSuggestionForm(forms.ModelForm):
 
 class ClientInterestForm(forms.ModelForm):
     class Meta:
+        model = Client_suggestion
+        fields = ['is_interested']
+
+    def __init__(self, *args, **kwargs):
+        super(ClientInterestForm, self).__init__(*args, **kwargs)
+        # Add any additional customization if needed
+
+class ClientWishForm(forms.ModelForm):
+    class Meta:
         model = ClientInterest
         exclude = ['user', 'date_added']
 
     def __init__(self, user, *args, **kwargs):
-        super(ClientInterestForm, self).__init__(*args, **kwargs)
+        super(ClientWishForm, self).__init__(*args, **kwargs)
         self.user = user
 
     def save(self, commit=True):
-        instance = super(ClientInterestForm, self).save(commit=False)
+        instance = super(ClientWishForm, self).save(commit=False)
         instance.user = self.user
         instance.date_added = timezone.now()
 

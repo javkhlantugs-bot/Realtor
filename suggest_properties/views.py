@@ -25,6 +25,8 @@ class ClientSuggestedPropertiesView(View):
         if 'is_interested' in request.POST:
             suggestion_id = request.POST.get('suggestion_id')
             suggestion = get_object_or_404(Client_suggestion, id=suggestion_id)
+
+            # Use the ClientSuggestionForm for the is_interested field
             form = ClientInterestForm(request.POST, instance=suggestion)
 
             if form.is_valid():
