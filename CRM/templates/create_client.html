@@ -8,27 +8,25 @@
     <h2 class="mb-4">Add Client</h2>
     <form method="post">
         {% csrf_token %}
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.client_name.label_tag }}
-                    {{ form.client_name|add_class:"form-control" }}
-                </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form.status.label_tag }}
+                {{ form.status|add_class:"form-control" }}
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.phone_number.label_tag }}
-                    {{ form.phone_number|add_class:"form-control" }}
-                </div>
+            <div class="form-group">
+                {{ form.client_name.label_tag }}
+                {{ form.client_name|add_class:"form-control" }}
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.email.label_tag }}
-                    {{ form.email|add_class:"form-control" }}
-                </div>
+            <div class="form-group">
+                {{ form.phone_number.label_tag }}
+                {{ form.phone_number|add_class:"form-control" }}
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                {{ form.email.label_tag }}
+                {{ form.email|add_class:"form-control" }}
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Add Client</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
         <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()">Back</a>
     </form>
 </div>

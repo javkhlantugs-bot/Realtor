@@ -16,4 +16,5 @@ urlpatterns = [
     path('clients/<int:client_id>/', views.client_events, name='client_events'),
     path('properties/', views.properties_list, name='properties_list'),
     path('properties/<int:property_id>/', views.property_events, name='property_events'),
+    path('create_client_interest/<int:client_id>/', views.create_client_interest, name='create_client_interest'),
 ]
