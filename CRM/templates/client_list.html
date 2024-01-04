@@ -10,13 +10,14 @@
 
 
 <div class="col-md-12">
-    <h1>Clients List</h1>
+    <h2>Clients List</h2>
     <table id="clientsTable" class="display">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Phone number</th>
                 <th>Email</th>
+                <th>Status</th>
                 <th>Details</th>
 
             </tr>
@@ -27,6 +28,7 @@
                     <td>{{ client.client_name }}</td>
                     <td>{{ client.phone_number }}</td>
                     <td>{{ client.email }}</td>
+                    <td>{{ client.get_status_display }}</td>
                     <td>
                         <a href="{% url 'client_events' client.id %}">Show more</a>
                     </td>

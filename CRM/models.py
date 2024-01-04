@@ -17,6 +17,15 @@ class Clent(models.Model):
     email = models.EmailField()
     link = models.CharField(max_length=8, unique=True, blank=True)
 
+    status_choices = (
+        ('looking_for_property', 'Looking For Property'),
+        ('looking_for_rental_property', 'Looking For Rental'),
+        ('selling_property', 'Selling property'),
+        ('renting_Property', 'Renting Property'),
+        ('inactive', 'Inactive'),
+    )
+    status = models.CharField(choices=status_choices, max_length=50, null = True)
+
     def __str__(self):
         return f"{self.client_name} - {self.phone_number} - {self.email}"
 
@@ -138,4 +147,4 @@ class ClientInterest(models.Model):
     client = models.ForeignKey(Clent, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f"Interest: {self.property_type}, Rooms: {self.rooms}, Floor: {self.floor_preference}, Square Meter: {self.square_meter}, Payment: {self.payment_term}, Price Range: {self.price_range}, View Sight: {self.view_sight}"
+        return f"Interest: {self.property_type}, Payment: {self.payment_term}, View Sight: {self.view_sight}"

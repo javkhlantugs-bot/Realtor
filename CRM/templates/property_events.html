@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <div class="col-md-12">
-    <h1>Details for {{ property.address }}</h1>
+    <h2>Details for {{ property.address }}</h2>
     <form method="post">
         {% csrf_token %}
         <div class="row">
@@ -85,7 +85,7 @@
             </div>
             
         </div>
-        <div class="row">
+        <div class="row" style="margin-bottom: 10px;">
             <div class="col-md-12">
                 <div class="form-group">
                     {{ editform.description.label_tag }}
@@ -95,10 +95,12 @@
         </div>
         <input type="hidden" name="latitude" id="latitude" value="{{ editform.latitude.value }}">
         <input type="hidden" name="longitude" id="longitude" value="{{ editform.longitude.value }}">
-        <div id="map" style="height: 600px; width: 100%;"></div>
+        <div id="map" style="height: 600px; width: 100%; margin-bottom: 10px;"></div>
 
         <button type="submit" name="edit_property"  class="btn btn-primary">Save Changes</button>
     </form>
+
+    <hr style="margin-top: 10px; margin-bottom: 10px;">
     
     <div class="col-md-12">
         <h2 class="mb-4">Event List</h2>
@@ -121,9 +123,8 @@
             </tbody>
         </table>
     </div>
-    <button class="btn btn-secondary mt-3" onclick="goBack()">Back</button>
 </div>
-
+<hr style="margin-top: 10px; margin-bottom: 10px;">
 <!-- client_events.html -->
 <div class="col-md-12">
     <h1>Client List</h1>
@@ -160,11 +161,7 @@
     </table>
 </div>
 
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 

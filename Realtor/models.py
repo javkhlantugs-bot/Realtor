@@ -42,7 +42,7 @@ class Property(models.Model):
     sqr_meter = models.IntegerField()
     price_sqrm = models.FloatField(null=True)
     price_month = models.FloatField(null=True)
-    condition = models.CharField(max_length = 20, choices = CONDITION_CHOICES)
+    condition = models.CharField(max_length=20)
     description = models.TextField()
     # New field to store the lowercase version of the address
     address_lower = models.CharField(max_length=255, editable=False)

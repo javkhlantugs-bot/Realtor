@@ -41,6 +41,31 @@ def create_client(request):
 
     return render(request, 'create_client.html', {'form': form})
 
+
+@login_required
+def create_client_interest(request, client_id):
+    client = get_object_or_404(Clent, id=client_id)
+
+    if request.method == 'POST':
+        form = ClientInterestForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            interest = form.save(commit=False)
+            interest.client = client
+            interest.save()
+            return redirect('create_client_interest', client_id=client_id)
+        else:
+            print(form.errors)
+    else:
+        form = ClientInterestForm(user=request.user)
+
+    context = {
+        'form': form,
+        'client': client,
+    }
+
+    return render(request, 'create_client_interest.html', context)
+
+
 @login_required
 def add_property(request):
     if request.method == 'POST':
@@ -111,6 +136,9 @@ def events_list(request):
 
     return render(request, 'events_list.html', {'events': events})
 
+
+
+
 @login_required
 def add_event(request):
     if request.method == 'POST':
@@ -123,7 +151,7 @@ def add_event(request):
     else:
         form = EventForm()
     return render(request, 'add_event.html', {'form': form})
-
+@login_required
 def edit_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
 
@@ -142,7 +170,7 @@ def edit_event(request, event_id):
 
     # Pass the referrer URL to the template
     return render(request, 'edit_event.html', {'form': form, 'event': event, 'referrer': referrer})
-
+@login_required
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
@@ -216,7 +244,6 @@ def client_list(request):
 def client_events(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
     events = Event.objects.filter(participant_buyer=client,user = request.user.id)
-
 
     # Retrieve all suggestions for the client
     suggestions = Client_suggestion.objects.filter(client=client_id, user = request.user.id)

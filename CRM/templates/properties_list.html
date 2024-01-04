@@ -69,10 +69,10 @@ function goBack() {
         if (location.id) {
             var marker = L.marker([location.latitude, location.longitude]).addTo(map);
             // Create a popup with property information and "Show More" button
-            var popupContent = "<b>Address:</b> " + location.property__address + "<br>" +
-                            "<b>Deal:</b> " + location.property__deal_type + "<br>" +
-                            "<b>Type:</b> " + location.property__property_type + "<br>" +
-                            "<b>Total rooms:</b> " + location.property__total_rooms + "<br>" +
+            var popupContent = "<b>Address:</b> " + location.address + "<br>" +
+                            "<b>Deal:</b> " + location.deal_type + "<br>" +
+                            "<b>Type:</b> " + location.property_type + "<br>" +
+                            "<b>Total rooms:</b> " + location.total_rooms + "<br>" +
                             "<a href='property.id'>Show more</a>";
 
             marker.bindPopup(popupContent);}
