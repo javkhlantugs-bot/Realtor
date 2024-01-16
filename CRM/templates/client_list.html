@@ -2,7 +2,7 @@
 
 {% extends 'base_event.html' %}
 
-{% block title %}Client List{% endblock %}
+{% block title %}Contacts{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
@@ -10,7 +10,14 @@
 
 
 <div class="col-md-12">
-    <h2>Clients List</h2>
+    <div class="row" style="margin-bottom: 10px;">
+        <h2 class="col-md-4">Clients List</h2>
+        <div class="col-md-8 d-flex justify-content-end" >
+            <a class="col-md-2 btn btn-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#contactModal">
+                <i class="material-icons mr-2">add</i> Add Contact
+            </a>
+        </div>
+    </div>
     <table id="clientsTable" class="display">
         <thead>
             <tr>
@@ -36,6 +43,73 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="modal" id="contactModal" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+    
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add contact</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" >
+                    <!-- Your property form goes here -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <style>
+                            .form-group input{
+                                width: 100%;
+                                height: 30px;
+                            }
+                            .form-group select{
+                                width: 100%;
+                                height: 30px;
+                            }
+                            .form-group {
+                                padding: 10px;
+                            }
+                        </style>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.client_name.label_tag }}
+                                    {{ form.client_name }}
+                                    {% for error in form.client_name.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.phone_number.label_tag }}
+                                    {{ form.phone_number }}
+                                    {% for error in form.phone_number.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.email.label_tag }}
+                                    {{ form.email }}
+                                    {% for error in form.email.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.status.label_tag }}
+                                    {{ form.status }}
+                                    {% for error in form.status.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-left: 10px; margin-top: 10px;">Add contact</button>
+                    </form>
+                </div>  
+            </div>
+        </div>  
+    </div>
 </div>
 
 <script>

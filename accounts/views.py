@@ -3,23 +3,22 @@ from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.urls import reverse_lazy
-from cities_light.models import City
 
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
+            user_instance = form.save(commit=False)
+            print(request.POST.get('region'))
+            user_instance.region = request.POST.get('region')
+            user_instance.save()
+            login(request, user_instance)
             return redirect('accounts:login')  # Redirect to the home page
+        else: 
+            print(form.errors)
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
-
-def load_cities(request):
-    country_id = request.GET.get('country')
-    cities = City.objects.filter(country_id = country_id)
-    return render(request,'city_options.html',{'cities':cities})
 
 def user_login(request):
     if request.method == 'POST':

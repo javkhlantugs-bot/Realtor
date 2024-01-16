@@ -121,6 +121,29 @@ function goBack() {
 </script>
 
 <script>
+    var geonameId = 108179;
+
+// Construct the Nominatim reverse geocoding API URL
+    var apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&geonameid=${geonameId}`;
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            // Extract the coordinates from the response
+            var coordinates = [parseFloat(data.lat), parseFloat(data.lon)];
+
+            // Log the coordinates to the console
+            console.log("Coordinates:", coordinates);
+            
+            // Use the coordinates as needed (e.g., set the view on the map)
+            map.setView(coordinates, 13);
+        })
+        .catch(error => {
+            console.error("Error fetching geocoding data:", error);
+    });
+</script>
+
+<script>
+    
     var map = L.map('map').setView([47.921230, 106.918556], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,

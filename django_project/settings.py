@@ -41,6 +41,9 @@ ALLOWED_HOSTS = [
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+LOGIN_URL = 'user_login'  # Make sure this URL is the same as your login view name
+LOGIN_TEMPLATE = 'accounts/login.html'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -62,8 +65,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'crispy_forms',
     'crispy_bootstrap5',
-    'cities_light',
     "phonenumber_field",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +81,29 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    # ...
+    'allauth.account.auth_backends.AuthenticationBackend',
+    # ...
+)
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': 'your-google-client-id',
+            'secret': 'your-google-client-secret',
+            'key': '',
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+}
 
 ROOT_URLCONF = 'django_project.urls'
 
@@ -162,7 +190,7 @@ STATICFILES_DIRS = [
 ]
 
 # Media files
-MEDIA_ROOT = BASE_DIR / "assets/static/media"
+MEDIA_ROOT = BASE_DIR / "assets"/"static"/"media"
 MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

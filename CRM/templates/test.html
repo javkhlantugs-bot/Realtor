@@ -1,0 +1,43 @@
+{% extends 'base_event.html' %}
+
+{% block title %}Add Selling Property{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<body>
+    <div id="map" style="height: 500px;"></div>
+
+    <script>
+        var map = L.map('map').setView([0, 0], 2);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var geonameId = 108179;
+
+        // Construct the Nominatim reverse geocoding API URL
+        var apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&geonameid=${geonameId}&json_callback=processData`;
+
+        // Define a callback function to process the JSONP response
+        function processData(data) {
+            // Extract the coordinates from the response
+            var coordinates = [parseFloat(data.lat), parseFloat(data.lon)];
+
+            // Log the coordinates to the console
+            console.log("Coordinates:", coordinates);
+            
+            // Use the coordinates as needed (e.g., set the view on the map)
+            map.setView(coordinates, 13);
+        }
+
+        // Create a script element to make the JSONP request
+        var script = document.createElement('script');
+        script.src = apiUrl;
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
+{% endblock %}

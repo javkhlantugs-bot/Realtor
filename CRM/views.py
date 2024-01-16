@@ -1,6 +1,6 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, ClientWishForm
+from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, ClientWishForm, PropertyForm1, ClientForm1, ClientPhoneNumbers, ClientRelationships, PropertyImageForm
 from Realtor.models import Property
 from django.contrib import messages
 from .models import Files, Event, Clent, Client_suggestion, ClientInterest
@@ -13,6 +13,9 @@ import os
 from django.http import HttpResponse
 from django.views import View
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+import requests
+
 
 def dashboard(request):
     return render(request, 'crm_dashboard.html')
@@ -40,7 +43,6 @@ def create_client(request):
         form = ClientForm()
 
     return render(request, 'create_client.html', {'form': form})
-
 
 @login_required
 def create_client_interest(request, client_id):
@@ -90,7 +92,9 @@ def add_property(request):
 
             # Add success message or redirection logic
             messages.success(request, 'Property added successfully')
-            return redirect('add_property')  # Adjust the URL to where you want to redirect after success
+            property_id = property_instance.id
+            property_edit_url = reverse('edit_property', args=[property_id])
+            return redirect(property_edit_url)  # Adjust the URL to where you want to redirect after success
         else:
             messages.error(request, 'Form validation failed')
 
@@ -99,6 +103,47 @@ def add_property(request):
 
     return render(request, 'add_property.html', {'property_form': property_form})
 
+@login_required
+def edit_property(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
+    photos = PropertyImage.objects.filter(property=property_id)
+    # Get the referrer URL from the POST data
+    referrer = request.POST.get('referrer', '')
+    locations = list(Property.objects.values('latitude', 'longitude','id').filter(user=request.user.id, id = property_id))
+    if request.method == 'POST':
+        form = PropertyForm(request.POST, request.FILES, instance=property)
+        property_images = request.FILES.getlist('property_image')
+        if form.is_valid():
+            property_instance = form.save(commit=False)
+            property_instance.user = request.user
+            property_instance.save()
+            property_images_instances = [
+                PropertyImage(property=property_instance, image=image)
+                for image in property_images
+            ]
+
+            # Bulk create all PropertyImage instances
+            PropertyImage.objects.bulk_create(property_images_instances)
+            property_events_url = reverse('property_events', args=[property_id])
+            # Redirect to the referrer URL or a default URL
+            return redirect(property_events_url)
+    else:
+        form = PropertyForm(instance=property)
+
+    # Pass the referrer URL to the template
+    return render(request, 'edit_property.html', {'form': form, 'property': property, 'referrer': referrer,'locations': locations, 'photos':photos})
+
+def delete_image(request, photo_id):
+    try:
+        photo = PropertyImage.objects.get(id=photo_id)
+        photo.delete()
+        return JsonResponse({'success': True})
+    except PropertyImage.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Image does not exist'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+    
 @login_required
 def add_rental_property(request):
     if request.method == 'POST':
@@ -130,10 +175,103 @@ def add_rental_property(request):
 
     return render(request, 'add_rental_property.html', {'property_form': property_form})
 
-def events_list(request):
-    events = Event.objects.filter(user=request.user.id)
+from django.core.serializers import serialize
 
-    return render(request, 'events_list.html', {'events': events})
+class EventsListView(View):
+    template_name = 'events_list.html'
+
+    def get(self, request, *args, **kwargs):
+        events = Event.objects.filter(user=request.user.id)
+        serialized_events = serialize('json', events)
+        form = EventForm()
+
+        context = {
+            'events': serialized_events,
+            'form': form,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        event_id = request.POST.get('event_id')  # Get event_id from the form if available
+        form = EventForm(request.POST)
+        
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.user = request.user
+
+            if event_id:  # Editing existing event
+                existing_event = get_object_or_404(Event, pk=event_id, user=request.user)
+                form = EventForm(request.POST, instance=existing_event)  # Use instance for editing
+                if form.is_valid():
+                    form.save()
+                else :
+                    print(form.errors)
+            else:  # Creating new event
+                event.save()
+
+            return redirect('events_list')
+        else:
+            events = Event.objects.filter(user=request.user.id)
+            serialized_events = serialize('json', events)
+            return render(request, self.template_name, {'events': serialized_events, 'form': form})
+
+@require_POST
+def toggle_complete(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    event.is_completed = not event.is_completed
+    event.save()
+    return JsonResponse({'is_complete': event.is_completed})
+
+class GetLocationsView(View):
+    def get(self, request):
+        selected_date = request.GET.get('selected_date')
+        locations = list(
+            Event.objects
+            .values('participant_property__latitude', 'participant_property__longitude', 'id', 'event_hour','participant_property__address',
+                    'event_minute', 'event_ampm','event_description')
+            .filter(user=request.user.id, event_date=selected_date, is_completed = False)
+        )
+        return JsonResponse({'locations': locations})
+
+class GetProperties(View):
+    def get(self, request):
+        property_id = request.GET.get('property_id')
+        properties = list(
+            Property.objects
+            .values('id', 'address')
+            .filter(user=request.user.id, id=property_id)
+        )
+        return JsonResponse({'properties': properties})
+
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+
+def get_events(request):
+    events = (
+        Event.objects
+        .filter(user=request.user.id)
+        .annotate(date=TruncDate('event_date'))
+        .values('date')
+        .annotate(event_count=Count('id'))
+    )
+
+    event_list = []
+    for event in events:
+        events_for_date = Event.objects.filter(user=request.user.id, event_date__date=event['date'])
+        event_list.append({
+            'date': event['date'].isoformat(),
+            'count': event['event_count'],
+            'events': [
+                {
+                    'title': e.event_type,
+                    'start': e.event_date.isoformat(),
+                    'end': e.event_date.isoformat(),
+                } for e in events_for_date
+            ]
+        })
+
+    print(event_list)  # Add this line to print the data
+    return JsonResponse(event_list, safe=False)
 
 @login_required
 def add_event(request):
@@ -152,90 +290,43 @@ def add_event(request):
 def edit_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
 
-    # Get the referrer URL from the POST data
-    referrer = request.POST.get('referrer', '')
-
     if request.method == 'POST':
-        form = EventForm(request.POST, instance=event)
-        if form.is_valid():
-            form.save()
+        event_form = EventForm(request.POST, instance=event)
+
+        if event_form.is_valid():
+            event_form.save()
 
             # Redirect to the referrer URL or a default URL
-            return redirect(referrer)
+            return redirect('events_list')
+        else:
+            print(event_form.errors)
     else:
-        form = EventForm(instance=event)
+        event_form = EventForm(instance=event)
 
-    # Pass the referrer URL to the template
-    return render(request, 'edit_event.html', {'form': form, 'event': event, 'referrer': referrer})
-
+    return render(request, 'edit_event.html', {'form': event_form, 'event': event})
 @login_required
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
         event.delete()
-        return JsonResponse({'message': 'Event deleted successfully'})
+        return redirect('events_list')
+    
     return render(request, 'delete_event.html', {'event': event})
-
-def events_by_property(request):
-    # Assuming Event model has a ForeignKey named 'participant_property' that refers to Property model
-    events = Event.objects.select_related('participant_property', 'participant_buyer', 'participant_owner').filter(user=request.user.id, event_date__gte=timezone.now())
-    events_by_property = {}
-
-    for event in events:
-        property_id = event.participant_property.id
-        if property_id not in events_by_property:
-            events_by_property[property_id] = {
-                'property': event.participant_property,
-                'events': []
-            }
-
-        events_by_property[property_id]['events'].append(event)
-
-    return render(request, 'events_by_property.html', {'events_by_property': events_by_property.values()})
-
-from django.utils import timezone
-
-def events_by_client(request):
-    events = Event.objects.select_related('participant_buyer', 'participant_owner').filter(user=request.user.id)
-
-    today = timezone.now().date()
-
-    events_by_client = []
-
-    for event in events:
-        client = event.participant_buyer
-
-        # Check if the client is already in the list
-        client_data = next((client_data for client_data in events_by_client if client_data['client'] == client), None)
-
-        if client_data:
-            # Append the event data to the existing client data
-            client_data['events'].append({
-                'event_type': event.event_type,
-                'event_date': event.event_date,
-                'client': client,
-                'id': event.id,
-                'property': event.participant_property.address,
-            })
-        else:
-            # Create a new client data entry
-            events_by_client.append({
-                'client': client,
-                'phone_number': client.phone_number,  # Add phone_number to the client data
-                'events': [{
-                    'event_type': event.event_type,
-                    'event_date': event.event_date,
-                    'client': client,
-                    'id': event.id,
-                    'property': event.participant_property.address,
-                }],
-            })
-
-    return render(request, 'events_by_client.html', {'events_by_client': events_by_client})
 
 def client_list(request):
     clients = Clent.objects.filter(user=request.user.id)
-    return render(request, 'client_list.html', {'clients': clients})
+    if request.method == 'POST':
+        form = ClientForm1(request.POST)
+        if form.is_valid():
+            client = form.save(commit=False)
+            client.user = request.user
+            client.save()
+            return redirect('client_list')
+        else:
+            print(form.errors)
+    else:
+        form = ClientForm1()
+    return render(request, 'client_list.html', {'clients': clients,'form':form})
 
 def client_events(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
@@ -269,30 +360,56 @@ def client_events(request, client_id):
 def edit_client(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
 
-    # Get the referrer URL from the POST data
-    referrer = request.POST.get('referrer', '')
-
     if request.method == 'POST':
+        phone_numbers = ClientPhoneNumbers(request.POST)
+        relationships = ClientRelationships(request.POST)
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
             form.save()
+            client_events_url = reverse('client_events', args=[client_id])
+            # Redirect to the referrer URL or a default URL
+            return redirect(client_events_url)
+        else:
+            print(form.errors)
+        if phone_numbers.is_valid():
+            phone_numbers.instance.user = request.user
+            phone_numbers.save()
+            client_events_url = reverse('client_events', args=[client_id])
+            # Redirect to the referrer URL or a default URL
+            return redirect(client_events_url)
+        if relationships.is_valid():
+            relationships.instance.user = request.user
+            relationships.save()
+            client_events_url = reverse('client_events', args=[client_id])
+            # Redirect to the referrer URL or a default URL
+            return redirect(client_events_url)
 
-            # Check if referrer is a valid URL before redirecting
-            if referrer and referrer != 'None' and referrer != request.path:
-                return redirect(referrer)
-            else:
-                # Redirect to a default URL if referrer is not valid
-                pass
     else:
         form = ClientForm(instance=client)
+        phone_numbers = ClientPhoneNumbers(instance=client)
+        relationships = ClientRelationships(instance=client)
 
     # Pass the referrer URL to the template
-    return render(request, 'edit_client.html', {'form': form, 'client': client, 'referrer': referrer})
+    return render(request, 'edit_client.html', {'form': form, 'client': client,'phone_form':phone_numbers})
 
+@login_required
 def properties_list(request):
-    properties = Property.objects.filter(user = request.user.id)
-    locations = list(Property.objects.values('latitude','longitude','address','deal_type','property_type','total_rooms','id').filter(user = request.user.id))
-    return render(request, 'properties_list.html', {'properties': properties, 'locations':locations})
+    properties = Property.objects.filter(user=request.user.id)
+    locations = list(Property.objects.values('latitude', 'longitude', 'address', 'deal_type', 'property_type', 'total_rooms', 'id').filter(user=request.user.id))
+
+    if request.method == 'POST':
+        form = PropertyForm1(request.POST)
+        if form.is_valid():
+            property = form.save(commit=False)
+            property.user = request.user
+            property.save()
+            return redirect('properties_list')
+        else:
+            print(form.errors)
+    else:
+        form = PropertyForm1()
+
+    return render(request, 'properties_list.html', {'properties': properties, 'locations': locations, 'properties_form': form})
 
 def property_events(request, property_id):
     property = get_object_or_404(Property, id=property_id)
@@ -300,7 +417,6 @@ def property_events(request, property_id):
     suggestions = Client_suggestion.objects.filter(property=property_id)
 
     form = ClientSuggestionForm()
-    editform = PropertyForm(instance=property)
 
     if request.method == 'POST':
         if 'is_suggested' in request.POST:
@@ -312,11 +428,30 @@ def property_events(request, property_id):
                 form.save()
             else:
                 pass
-        elif 'edit_property' in request.POST:
-            # Process property edit form submission
-            editform = PropertyForm(request.POST, instance=property)
-            if editform.is_valid():
-                editform.save()
 
-    return render(request, 'property_events.html', {'property': property, 'events': events, 'form': form, 'suggestions': suggestions, 'editform': editform})
+    return render(request, 'property_events.html', {'property': property, 'events': events, 'form': form, 'suggestions': suggestions})
 
+from geopy.geocoders import Nominatim
+def address_search(request):
+    if request.method == 'GET' and 'query' in request.GET:
+        query = request.GET['query']
+        geolocator = Nominatim(user_agent="Estates.Solutions")
+
+        try:
+            locations = geolocator.geocode(query, exactly_one=False)
+            results = [{'address': location.address, 'latitude': location.latitude, 'longitude': location.longitude} for location in locations]
+            return JsonResponse({'results': results})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def search_page(request):
+    return render(request, 'search.html')
+
+def google_maps_proxy(request):
+    api_key = 'AIzaSyAhi9zWHq375WASuDJ-sXrMWvDs9NK9lB4'
+    url = f'https://maps.googleapis.com/maps/api/js?key={api_key}&callback=initAutocomplete&libraries=places&v=weekly'
+    response = requests.get(url)
+    
+    return JsonResponse({'script': response.text})

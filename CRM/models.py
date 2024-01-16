@@ -8,6 +8,7 @@ import uuid
 from accounts.models import CustomUser
 from django.utils import timezone
 from django.db.models.signals import pre_save
+import datetime
 
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -16,9 +17,15 @@ class UserProfile(models.Model):
 class Clent(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     client_name = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=16)
-    email = models.EmailField()
+    phone_number = models.CharField(max_length=30,null=True,blank=True)
+    email = models.EmailField(null=True,blank=True)
     link = models.CharField(max_length=8, unique=True, blank=True)
+    birthday = models.DateField(null=True, blank=True)
+    wedding_anniversary = models.DateField(null=True, blank=True)
+    home_anniversary = models.DateField(null=True, blank=True)
+    facebook_url = models.URLField(null=True, blank=True)
+    instagram_url = models.URLField(null=True, blank=True)
+    twitter_url = models.URLField(null=True, blank=True)
 
     status_choices = (
         ('looking_for_property', 'Looking For Property'),
@@ -28,7 +35,8 @@ class Clent(models.Model):
         ('tenant', 'Tenant'),
         ('inactive', 'Inactive'),
     )
-    status = models.CharField(choices=status_choices, max_length=50, null=True)
+
+    status = models.CharField(choices=status_choices, max_length=50, null=True, blank=True)
 
     def __str__(self):
         return f"{self.client_name} - {self.phone_number} - {self.email}"
@@ -58,6 +66,38 @@ class Clent(models.Model):
         while Clent.objects.filter(link=unique_id).exists():
             unique_id = str(uuid.uuid4().hex)[:8]
         return unique_id
+
+class client_relationships(models.Model):
+    user = models.ForeignKey(Clent,on_delete=models.CASCADE)
+    relationship_choices = (
+        ('husband', 'Husband'),
+        ('wife', 'Wife'),
+        ('son', 'Son'),
+        ('daughter', 'Daughter'),
+        ('friend', 'Friend'),
+        ('colleague', 'Colleague'),
+        ('other', 'Other'),
+    )
+    name = models.CharField(max_length=255, null=True,blank=True)
+    phone_number = models.CharField(max_length=30,null=True,blank=True)
+    relationship_type = models.CharField(choices=relationship_choices, max_length = 255)
+
+    def __str__(self):
+        return f"{self.user} - {self.phone_number} - {self.name}- {self.relationship_type}"
+
+class client_phone_numbers(models.Model):
+    user = models.ForeignKey(Clent, on_delete = models.CASCADE)
+    phone_types_choices = (
+        ('work', 'Work'),
+        ('home', 'Home'),
+        ('mobile', 'Mobile'),
+        ('fax', 'Fax'),
+        ('other', 'Other'),
+    )
+    phone_type = models.CharField(choices = phone_types_choices, max_length = 255)
+    phone_number = models.CharField(max_length=16) 
+    def __str__(self):
+        return f"{self.user} - {self.phone_type} - {self.phone_number}"
 
 class StatusChangeLog(models.Model):
     client = models.ForeignKey(Clent, on_delete=models.CASCADE)
@@ -93,14 +133,70 @@ class Event(models.Model):
         ('show_property', 'Show Property'),
         ('sign_contract', 'Sign Contract'),
     )
+    event_hour_choice = (
+        ('01','01'),
+        ('02','02'),
+        ('03','03'),
+        ('04','04'),
+        ('05','05'),
+        ('06','06'),
+        ('07','07'),
+        ('08','08'),
+        ('09','09'),
+        ('10','10'),
+        ('11','11'),
+        ('12','12'),
+    )
+    event_minute_choice = (
+        ('00','00'),
+        ('15','15'),
+        ('30','30'),
+        ('45','45'),
+    )
+    event_ampm_choice = (
+        ('am','AM'),
+        ('am','PM'),
+    )
+
+    
     event_type = models.CharField(max_length=255, choices=EVENT_TYPES)
     event_date = models.DateField()
-    event_time = models.TimeField(null=True)
-    participant_buyer = models.ForeignKey(Clent, on_delete=models.CASCADE, related_name='events_bought')
-    participant_owner = models.ForeignKey(Clent, on_delete=models.CASCADE, related_name='events_owned')
-    event_description = models.TextField()
-    participant_property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property')
-    
+    event_hour = models.CharField(null=True, blank=True, max_length = 5, choices = event_hour_choice)
+    event_minute = models.CharField(null=True, blank=True, max_length = 5, choices = event_minute_choice)
+    event_ampm = models.CharField(null=True, blank=True, max_length = 5, choices = event_ampm_choice)
+    participant_buyer = models.ForeignKey(Clent, on_delete=models.CASCADE, related_name='events_bought', null=True,blank=True)
+    participant_owner = models.ForeignKey(Clent, on_delete=models.CASCADE, related_name='events_owned', null=True,blank=True)
+    event_description = models.TextField(null=True,blank=True)
+    participant_property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property', null=True,blank=True)
+    is_completed = models.BooleanField(default = False) 
+
+    index_field = models.DateTimeField(blank=True, null=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        # Convert date, hour, minute, am/pm to a datetime object
+        if self.event_date:
+            hour = int(self.event_hour) if self.event_hour else 0
+            minute = int(self.event_minute) if self.event_minute else 0
+            am_pm = self.event_ampm if self.event_ampm else 'AM'
+
+            if am_pm.upper() == 'PM' and hour != 12:
+                hour += 12
+
+            index_field_value = datetime.datetime.combine(self.event_date, datetime.time(hour, minute))
+            self.index_field = index_field_value
+
+        super().save(*args, **kwargs)
+
+    @property
+    def locations(self):
+        if self.participant_property:
+            return {
+                'latitude': self.participant_property.latitude,
+                'longitude': self.participant_property.longitude,
+                'id': self.participant_property.id,
+            }
+        else:
+            return None
 
     def __str__(self):
         return f"{self.event_type} - {self.event_date} - {self.participant_buyer} - {self.participant_owner}"

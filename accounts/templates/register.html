@@ -5,7 +5,7 @@
 
 {% block content %}
 <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-<h2>Register</h2>
+<h2 style="text-align: center;">Register</h2>
     <form method="post">
         {% csrf_token %}
 
@@ -38,8 +38,8 @@
             {{ form.country }}
         </div>
         <div class="form-group">
-            {{ form.city.label_tag }}
-            {{ form.city }}
+            {{ form.region.label_tag }}
+            {{ form.region }}
         </div>
         
         <div class="form-group">
@@ -50,9 +50,9 @@
             {% endfor %}
         </div>
         
-        <div class="form-group">
+        <div class="form-group" style="width: 100%;">
             {{ form.password1.label_tag }}
-            <div class="input-group">
+            <div class="input-group" style="width: 100%;">
                 {{ form.password1 }}
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('{{ form.password1.id_for_label }}')">
@@ -61,6 +61,7 @@
                 </div>
             </div>
         </div>
+        
 
         <div class="form-group">
             {{ form.password2.label_tag }}
@@ -73,10 +74,10 @@
                 </div>
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary" style="width: 30%; margin-right: 20px;">Register</button>
     </form>
     <a href="{% url 'accounts:login' %}">Login</a>
+    
 
     <!-- JavaScript to toggle password visibility -->
     <script>

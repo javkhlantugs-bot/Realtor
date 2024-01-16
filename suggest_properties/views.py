@@ -6,9 +6,6 @@ from Realtor.models import Property, PropertyImage
 from django.views import View
 
 
-# Create your views here.
-
-
 class ClientSuggestedPropertiesView(View):
     template_name = 'client_suggested_properties.html'
 
@@ -39,10 +36,11 @@ class ClientSuggestedPropertiesView(View):
         # You may want to redirect or render a response after processing the POST request
         return render(request, self.template_name, {'client': client, 'suggestions': suggestions})
     
-def show_property(request, id):
+def show_property(request, id, address):
     property = get_object_or_404(Property, id=id)
     photos = PropertyImage.objects.filter(property=property)
     return render(request, 'show_property.html', {
         'properties':property,
-        'photos':photos
+        'photos':photos,
+        'address':address,
     })

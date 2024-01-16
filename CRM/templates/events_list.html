@@ -5,75 +5,919 @@
 
 {% block content %}
 
-
-    <!-- ... other head elements ... -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-
-<div class="col-md-12">
-    <h2 class="mb-4">Event List</h2>
-    <table id="eventsTable" class="display">
-        <thead>
-            <tr>
-                <th>Property Address</th>
-                <th>Date</th>
-                <th>Buyer</th>
-                <th>Owner</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for event in events %}
-                <tr>
-                    <td>{{ event.participant_property.address }}</td>
-                    <td>{{ event.event_date }}</td>
-                    <td>{{ event.participant_buyer.client_name }}</td>
-                    <td>{{ event.participant_owner.client_name }}</td>
-                    <td>
-                        
-                        <a href="{% url 'edit_event' event.id %}" class="btn btn-primary">Edit</a>
-                        <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ event.id }}')">
-                            <span class="material-icons">delete</span>
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-<script>
-    jQuery.noConflict();
-    jQuery(document).ready(function($) {
-        // Your DataTables initialization code here
-        $('#eventsTable').DataTable();
-    });
-</script>
+<div class="col-md-12">
+    <div class="row" style="margin-bottom: 10px;">
+        <h2 class="col-md-4">Schedule</h2>
+        <div class="col-md-4" id="selected-date" style="font-weight: 900; font-size: 2rem;"></div>
+        <div class="col-md-4 d-flex justify-content-end" >
+            <a class="col-md-2 btn btn-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#taskModal">
+                <i class="material-icons mr-2">add</i> Add task
+            </a>
+        </div>
+    </div>
+    <div class="modal" id="taskModal" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+    
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add task</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" >
+                    <!-- Your property form goes here -->
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.event_id }}
+                        <!-- Your other form fields here -->
+                        <button type="submit">Save</button>
+                        <style>
+                            .form-group input{
+                                width: 100%;
+                                height: 30px;
+                            }
+                            .form-group select{
+                                width: 100%;
+                                height: 30px;
+                            }
+                            .form-group {
+                                padding: 10px;
+                            }
+                            .form-group textarea {
+                                width: 100%;
+                                height: 100px;
+                            }
+                        </style>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.event_type.label_tag }}
+                                    {{ form.event_type }}
+                                    {% for error in form.event_type.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.event_date.label_tag }}
+                                    {{ form.event_date }}
+                                    {% for error in form.event_date.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <style>
+                                    #hour .options {
+                                        margin: 0 auto;
+                                    }
+                                    #hour .select {
+                                        margin: 0 auto;
+                                        text-align: center;
+                                    }
+                                </style>
+                                <div class="row" id="hour" style="padding-left: 10px; padding-right: 10px;">
+                                    <div class="form-group" style="width: 30%;">
+                                        <label for="id_event_hour">Hour</label>
+                                        {{ form.event_hour }}
+                                        {% for error in form.event_hour.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group" style="width: 33%; align-items: center;">
+                                        <label for="id_event_minute">Minute</label>
+                                        {{ form.event_minute }}
+                                        {% for error in form.event_minute.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group" style="width: 33%;">
+                                        <label for="id_event_ampm">AM/PM</label>
+                                        {{ form.event_ampm }}
+                                        {% for error in form.event_ampm.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.participant_buyer.label_tag }}
+                                    {{ form.participant_buyer }}
+                                    {% for error in form.participant_buyer.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.participant_owner.label_tag }}
+                                    {{ form.participant_owner }}
+                                    {% for error in form.participant_owner.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.participant_property.label_tag }}
+                                    {{ form.participant_property }}
+                                    {% for error in form.participant_property.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                {{ form.event_description.label_tag }}
+                                {{ form.event_description }}
+                                {% for error in form.event_description.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-left: 10px; margin-top: 10px;">Add task</button>
+                    </form>
+                </div>  
+            </div>
+        </div>  
+    </div>
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div id="calendar" class="active">
+            </div>
+            <div id="main-map-container">
+                <div id="main-map" style="height: 100%;"></div>
+            </div>
+            
+        </div>
+        <div class="col-md-6" id="events-list"></div>
+        <form method="post" id="csrf-form">
+            {% csrf_token %}
+        </form>
+        <div id="scroll-buttons">
+            <button id="go-to-down" onclick="scrollToBottom()">Go to Down</button>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+    <script>
+        // Function to scroll to the bottom of the content container
+        function scrollToBottom() {
+            const contentContainer = document.querySelector('.content-container');
+            if (contentContainer) {
+                contentContainer.scrollTop = contentContainer.scrollHeight;
+            }
+        }
 
-<script>
-    // Use jQuery.noConflict() to avoid conflicts with other libraries
-    function confirmDelete(eventId) {
-    const isConfirmed = window.confirm('Are you sure you want to delete this event?');
+        // Function to scroll to the top of the content container
+        function scrollToTop() {
+            const contentContainer = document.querySelector('.content-container');
+            if (contentContainer) {
+                contentContainer.scrollTop = 0;
+            }
+        }
+        // Function to scroll to the bottom of the content container
+        // Function to toggle scroll direction based on scroll position
+        function toggleScrollDirection() {
+            const contentContainer = document.querySelector('.content-container');
+            const goToDownButton = document.getElementById('go-to-down');
 
-    if (isConfirmed) {
-        fetch(`/crm/events/delete/${eventId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            // Additional options like body for POST requests can be added here
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            location.reload();
-        })
-        .catch(error => {
-            alert('Error deleting event.');
+            if (contentContainer && goToDownButton) {
+                // Calculate 50% of the container's height
+                const halfHeight = contentContainer.clientHeight / 2;
+
+                // Toggle button functionality based on scroll position
+                if (contentContainer.scrollTop < halfHeight) {
+                    // Scroll position is above 50%, set button to scroll down
+                    goToDownButton.textContent = 'Go to Down';
+                    goToDownButton.onclick = scrollToBottom;
+                } else {
+                    // Scroll position is below 50%, set button to scroll up
+                    goToDownButton.textContent = 'Go to Up';
+                    goToDownButton.onclick = scrollToTop;
+                }
+            }
+        }
+
+        // Event listener for scroll events
+        document.querySelector('.content-container').addEventListener('scroll', toggleScrollDirection);
+
+        // Initial call to set button functionality based on the initial scroll position
+        toggleScrollDirection();
+    </script>
+    <style>
+        #events-list {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            height: 80vh;
+            overflow-y: auto;
+        }
+        .spacer {
+            height: 80px; /* Adjust the height as needed */
+        }
+        .event-actions {
+            display: flex;
+            justify-content: center;
+        }
+
+        .action-button {
+            margin: 0 5px;  /* Adjust the margin as needed for spacing between buttons */
+        }
+
+        #main-map-container {
+            height: 43vh;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #scroll-buttons {
+            position: fixed;
+            bottom: 70px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        #go-to-down {
+            display: none; /* Initially hide both buttons */
+            background-color: #007bff;
+            width: 200px;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            outline: none;
+            position: fixed;
+            bottom: 70px;
+            right: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        #go-to-down:hover{
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 767px) {
+
+            #go-to-down{
+                display: block;
+            }
+            
+        }
+
+        .event {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    
+        .event-content {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+
+    
+        .event-type {
+            font-weight: bold;
+        }
+    
+        .event-time {
+            color: #666;
+        }
+        
+        .event-property {
+            font-weight: 600;
+        }
+
+        .event-actions {
+            display: flex;
+            align-items: center;
+        }
+    
+        .action-button {
+            margin-right: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+        }
+        .calendar-container {
+            height: 200px;
+            width: 500px;
+            margin: 20px auto; /* Center the calendar on the page */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+        }
+
+        /* Add any other styles you'd like for a better appearance */
+
+        .fc-header-toolbar {
+            background-color: #007bff; /* Bootstrap primary color for background */
+            color: #fff; /* Set text color to white */
+            border-top-left-radius: 5px; /* Set top-left corner radius */
+            border-top-right-radius: 5px; /* Set top-right corner radius */
+        }
+
+        /* Adjust the title padding */
+        .fc-header-toolbar .fc-toolbar-title {
+            padding-left: 10px;
+        }
+
+        /* Customize the day grid */
+        .fc-day-grid {
+            border: 1px solid #ddd; /* Add a border to the day grid */
+        }
+
+        /* Hide day grid events */
+        .fc-daygrid-day-events {
+            display: none;
+        }
+
+        /* Customize the column header cell */
+        .fc-col-header-cell {
+            background-color: rgb(68, 118, 168); /* Bootstrap dark background color */
+        }
+        .fc-daygrid-day-frame {
+            height: 50px;
+        }
+
+        /* Style links inside column header cells */
+        .fc-col-header-cell .fc-scrollgrid-sync-inner a {
+            color: #fff; /* Set link color to white */
+            text-decoration: none; /* Remove default link underline */
+            font-size: 1rem;
+        }
+        .fc-daygrid-day-top{
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .fc-daygrid-day-top a{
+            font-size: 2rem;
+            text-decoration: none;
+            color: #343a40;
+        }
+    </style>
+   
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // const calendarEl = document.getElementById('calendar');
+            
+            const map = L.map('main-map');
+            const tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            const markers = L.markerClusterGroup();
+
+            const updateMapWithLocations = function (locations) {
+                // Clear existing markers on the map
+                markers.clearLayers();
+                if (locations.length === 0) {
+                        // Optionally, you can handle the case where there are no locations
+                        // For example, you might want to display a message or perform some other action.
+                        console.log('No locations to display on the map.');
+                        markers.clearLayers();
+                        
+                        return; // Stop further execution
+                    }
+                // Create new markers for filtered locations and add them to the map
+                locations.forEach(location => {
+                    if (location.participant_property__latitude) {
+                        const marker = L.marker([location.participant_property__latitude, location.participant_property__longitude]);
+
+                        // Create a popup with property information and "Show More" button
+                        const popupContent = "<b>Description:</b> " + location.event_description + "<br>" +
+                            "<b>At:</b> " + location.event_hour + ":" + location.event_minute + " " + location.event_ampm + "<br>" ;
+
+                        marker.bindPopup(popupContent);
+                        markers.addLayer(marker);
+                    }
+                });
+
+                // Add the MarkerClusterGroup to the map
+                map.addLayer(markers);
+
+                // Fit the map view to the bounds of the MarkerClusterGroup
+                map.fitBounds(markers.getBounds());
+            };
+            const calendarEl = document.getElementById('calendar');
+
+    
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                // initialView: 'dayGridMonth',
+                selectable: true,
+                // height: 500,
+                height: 330,
+                dayCellContent: function (arg) {
+                    const eventCount = calculateEventCount(arg.date);
+                    const dte = arg.date.getDate();
+                    // Display both event count and the day of the month with styling
+                    return dte;
+                    },
+                dateClick: function (info) {
+                    // Fetch locations based on the selected date using AJAX
+                    fetch(`/crm/get_locations/?selected_date=${info.dateStr}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Handle the received data, which contains the locations
+
+                            // Update the map with the new locations
+                            updateMapWithLocations(data.locations);
+                        })
+                        .catch(error => console.error('Error fetching locations:', error));
+
+                    // Filter events within the selected date
+                    const selectedDate = new Date(info.dateStr);
+                    
+                    const filteredEvents = JSON.parse('{{ events | safe  | escapejs }}').filter(function (event) {
+                        const eventDate = new Date(event.fields.event_date);
+                        return eventDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0];
+                    }).sort(function (eventA, eventB) {
+                            // Compare is_completed first
+                            const isCompletedA = eventA.fields.is_completed;
+                            const isCompletedB = eventB.fields.is_completed;
+
+                            // If is_completed values are different, return the comparison result
+                            if (isCompletedA !== isCompletedB) {
+                                return isCompletedA - isCompletedB;
+                            }
+
+                            // If is_completed values are the same, compare the time strings
+                            const timeA = getTimeString(eventA.fields.event_hour, eventA.fields.event_minute, eventA.fields.event_ampm);
+                            const timeB = getTimeString(eventB.fields.event_hour, eventB.fields.event_minute, eventB.fields.event_ampm);
+
+                            // Return the comparison result based on time strings
+                            return timeA.localeCompare(timeB);
+                        });
+                    
+                    ;
+
+                    // Function to create a formatted time string
+                    function getTimeString(hour, minute, ampm) {
+                        // Assuming hour and minute are strings
+                        let timeString = `${hour}:${minute}`;
+
+                        // Append am/pm if available
+                        if (ampm) {
+                            timeString += ` ${ampm}`;
+                        }
+
+                        return timeString;
+                    }
+                    // Display the number of events for the selected date
+                    const eventsDiv = document.getElementById('events-list');
+                    eventsDiv.innerHTML = ''; // Clear previous events
+                    const selectedDateElement = document.getElementById('selected-date');
+                    selectedDateElement.textContent = selectedDate.toDateString();
+    
+                    // Display filtered events
+                    filteredEvents.forEach(function(event) {
+                        const formattedTime = event.fields.event_hour && event.fields.event_minute && event.fields.event_ampm
+                            ? `${event.fields.event_hour}:${event.fields.event_minute} ${event.fields.event_ampm}`
+                            : '';
+    
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event');
+    
+                        const eventContentDiv = document.createElement('div');
+                        eventContentDiv.classList.add('event-content');
+    
+                        const eventTypeDiv = document.createElement('div');
+                        eventTypeDiv.classList.add('event-type');
+                        eventTypeDiv.textContent = event.fields.event_type;
+    
+                        const eventTimeDiv = document.createElement('div');
+                        eventTimeDiv.classList.add('event-time');
+                        eventTimeDiv.textContent = formattedTime;
+    
+                        const eventDescriptionDiv = document.createElement('div');
+                        eventDescriptionDiv.classList.add('event-desc');
+                        const fullEventDescription = event.fields.event_description;
+                        const truncatedEventDescription = fullEventDescription.length > 200
+                        ? `${fullEventDescription.substring(0, 200)}...`
+                        : fullEventDescription;
+
+                        eventDescriptionDiv.textContent = truncatedEventDescription;
+                        const eventPropertyDiv = document.createElement('div');
+                                    eventPropertyDiv.classList.add('event-property');
+                        const propertyId = event.fields.participant_property;  // Assuming participant_property is a related property object ID
+                        // Fetch property data using the property ID
+                        if (propertyId !== null) {
+                            fetch(`/crm/get_properties/?property_id=${propertyId}`)  // Adjust the URL to your Django endpoint for fetching property details
+                                .then(response => response.json())
+                                .then(propertyData => {
+                                    // Extract the address from the propertyData
+                                    const propertyAddress = propertyData.properties[0].address;
+                                    eventPropertyDiv.textContent = propertyAddress;
+                                    // Append eventPropertyDiv to your desired element
+                                    // For example, assuming eventsDiv is the container for your event
+                                    eventDiv.appendChild(eventPropertyDiv);
+                                    eventContentDiv.appendChild(eventPropertyDiv);
+                                })
+                                .catch(error => console.error('Error fetching property data:', error));
+                            }
+
+                        eventContentDiv.appendChild(eventTypeDiv);
+                        eventContentDiv.appendChild(eventTimeDiv);
+                        eventContentDiv.appendChild(eventDescriptionDiv);
+                        
+    
+                        const eventActionsDiv = document.createElement('div');
+                        eventActionsDiv.classList.add('event-actions');
+    
+                        const editButton = document.createElement('button');
+                        editButton.classList.add('action-button');
+                        editButton.innerHTML = '<i class="material-icons">edit</i>'; // Material Icons delete icon
+                        editButton.onclick = function() {
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
+
+                            // Construct the edit event URL
+                            const editEventUrl = `/crm/events/edit/${eventId}/`;
+
+                            // Redirect to the edit event page
+                            window.location.href = editEventUrl;
+                        };
+                        
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add('action-button');
+                        deleteButton.innerHTML = '<i class="material-icons">delete</i>'; // Material Icons delete icon
+                        deleteButton.onclick = function () {
+                            // Get the event ID from your data source (e.g., data attribute, etc.)
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
+
+                            // Construct the edit event URL
+                            const deleteEventUrl = `/crm/events/delete/${eventId}/`;
+
+                            // Redirect to the edit event page
+                            window.location.href = deleteEventUrl;
+                        };
+                        const csrfTokenInput = document.getElementById('csrf-form').querySelector('[name=csrfmiddlewaretoken]');
+                        const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+                        
+                        const completeButton = document.createElement('button');
+                        completeButton.classList.add('btn', 'action-button');
+                        completeButton.innerHTML = event.fields.is_completed
+                            ? '<i class="material-icons">check_circle</i>'
+                            : '<i class="material-icons">check</i>';
+                        // Set initial background color based on is_completed
+                        eventDiv.style.background = event.fields.is_completed ? '#f8f9fa' : '';
+                        eventTypeDiv.style.color = event.fields.is_completed ? '#666' : '';
+                        eventDescriptionDiv.style.color = event.fields.is_completed ? '#666' : '';
+                        editButton.style.background = event.fields.is_completed ? '#666' : '';
+                        deleteButton.style.background = event.fields.is_completed ? '#666' : '';
+                        completeButton.style.background = event.fields.is_completed ? '#666' : '';
+                        eventPropertyDiv.style.color = event.fields.is_completed ? '#666' : '';
+                        
+                        completeButton.onclick = function () {
+                            const eventId = event.pk;
+
+                            // Check if the CSRF token is available
+                            if (csrfToken) {
+                                // Toggle is_complete using AJAX
+                                fetch(`/crm/events/toggle_complete/${eventId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': csrfToken,
+                                },
+                                })
+                                .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                                })
+                                .then(data => {
+                                // Update the UI based on the completion status
+                                if (data.is_complete) {
+                                    completeButton.innerHTML = '<i class="material-icons">check_circle</i>'; // Change icon
+                                    eventDiv.style.background = '#f8f9fa'; // Change background color
+                                    eventTypeDiv.style.color = '#666';
+                                    eventDescriptionDiv.style.color = '#666';
+                                    editButton.style.background = '#666';
+                                    deleteButton.style.background = '#666';
+                                    completeButton.style.background = '#666';
+                                    eventPropertyDiv.style.color = '#666';
+                                } else {
+                                    completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
+                                    eventDiv.style.background = ''; // Reset background color to default
+                                    eventTypeDiv.style.color = '#000';
+                                    eventPropertyDiv.style.color = '#000';
+                                    eventDescriptionDiv.style.color = '#212529';
+                                    editButton.style.background = '#007bff';
+                                    deleteButton.style.background = '#007bff';
+                                    completeButton.style.background = '#007bff';
+                                }
+
+                                // Perform any additional UI updates if needed
+                                })
+                                .catch(error => {
+                                console.error('Error toggling completion:', error);
+                                });
+                            } else {
+                                console.error('CSRF token is not available.');
+                            }
+                            };
+
+                        
+
+
+                        eventActionsDiv.appendChild(editButton);
+                        eventActionsDiv.appendChild(deleteButton);
+                        // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
+                        eventActionsDiv.appendChild(completeButton);
+    
+                        eventDiv.appendChild(eventContentDiv);
+                        eventDiv.appendChild(eventActionsDiv);
+    
+                        eventsDiv.appendChild(eventDiv);
+                    });
+                    const spacerDiv = document.createElement('div');
+                    spacerDiv.classList.add('spacer'); 
+                    eventsDiv.appendChild(spacerDiv);
+                    // Log latitude and longitude of each event
+                    
+                    // Update the map with the filtered locations
+                },
+                select: function (info) {
+                    // Fetch locations based on the selected date using AJAX
+                    const today = new Date();
+
+                    const year = today.getFullYear();
+                    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                    const day = String(today.getDate()).padStart(2, '0');
+
+                    const formattedDate = `${year}-${month}-${day}`;
+                    fetch(`/crm/get_locations/?selected_date=${formattedDate}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Handle the received data, which contains the locations
+
+                            // Update the map with the new locations
+                            updateMapWithLocations(data.locations);
+                        })
+                        .catch(error => console.error('Error fetching locations:', error));
+
+                    // Filter events within the selected date
+                    const selectedDate = new Date();
+                    console.log(selectedDate) 
+                    
+                    const filteredEvents = JSON.parse('{{ events | safe  | escapejs }}').filter(function (event) {
+                        const eventDate = new Date(event.fields.event_date);
+                        return eventDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0];
+                    }).sort(function (eventA, eventB) {
+                            // Compare is_completed first
+                            const isCompletedA = eventA.fields.is_completed;
+                            const isCompletedB = eventB.fields.is_completed;
+
+                            // If is_completed values are different, return the comparison result
+                            if (isCompletedA !== isCompletedB) {
+                                return isCompletedA - isCompletedB;
+                            }
+
+                            // If is_completed values are the same, compare the time strings
+                            const timeA = getTimeString(eventA.fields.event_hour, eventA.fields.event_minute, eventA.fields.event_ampm);
+                            const timeB = getTimeString(eventB.fields.event_hour, eventB.fields.event_minute, eventB.fields.event_ampm);
+
+                            // Return the comparison result based on time strings
+                            return timeA.localeCompare(timeB);
+                        });
+                    
+                    ;
+
+                    // Function to create a formatted time string
+                    function getTimeString(hour, minute, ampm) {
+                        // Assuming hour and minute are strings
+                        let timeString = `${hour}:${minute}`;
+
+                        // Append am/pm if available
+                        if (ampm) {
+                            timeString += ` ${ampm}`;
+                        }
+
+                        return timeString;
+                    }
+                    // Display the number of events for the selected date
+                    const eventsDiv = document.getElementById('events-list');
+                    eventsDiv.innerHTML = ''; // Clear previous events
+                    const selectedDateElement = document.getElementById('selected-date');
+                    selectedDateElement.textContent = selectedDate.toDateString();
+    
+                    // Display filtered events
+                    filteredEvents.forEach(function(event) {
+                        const formattedTime = event.fields.event_hour && event.fields.event_minute && event.fields.event_ampm
+                            ? `${event.fields.event_hour}:${event.fields.event_minute} ${event.fields.event_ampm}`
+                            : '';
+    
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event');
+    
+                        const eventContentDiv = document.createElement('div');
+                        eventContentDiv.classList.add('event-content');
+    
+                        const eventTypeDiv = document.createElement('div');
+                        eventTypeDiv.classList.add('event-type');
+                        eventTypeDiv.textContent = event.fields.event_type;
+    
+                        const eventTimeDiv = document.createElement('div');
+                        eventTimeDiv.classList.add('event-time');
+                        eventTimeDiv.textContent = formattedTime;
+    
+                        const eventDescriptionDiv = document.createElement('div');
+                        eventDescriptionDiv.classList.add('event-desc');
+                        const fullEventDescription = event.fields.event_description;
+                        const truncatedEventDescription = fullEventDescription.length > 200
+                        ? `${fullEventDescription.substring(0, 200)}...`
+                        : fullEventDescription;
+
+                        eventDescriptionDiv.textContent = truncatedEventDescription;
+                        const eventPropertyDiv = document.createElement('div');
+                                    eventPropertyDiv.classList.add('event-property');
+                        const propertyId = event.fields.participant_property;  // Assuming participant_property is a related property object ID
+                        // Fetch property data using the property ID
+                        if (propertyId !== null) {
+                            fetch(`/crm/get_properties/?property_id=${propertyId}`)  // Adjust the URL to your Django endpoint for fetching property details
+                                .then(response => response.json())
+                                .then(propertyData => {
+                                    // Extract the address from the propertyData
+                                    const propertyAddress = propertyData.properties[0].address;
+                                    eventPropertyDiv.textContent = propertyAddress;
+                                    // Append eventPropertyDiv to your desired element
+                                    // For example, assuming eventsDiv is the container for your event
+                                    eventDiv.appendChild(eventPropertyDiv);
+                                    eventContentDiv.appendChild(eventPropertyDiv);
+                                })
+                                .catch(error => console.error('Error fetching property data:', error));
+                            }
+
+                        eventContentDiv.appendChild(eventTypeDiv);
+                        eventContentDiv.appendChild(eventTimeDiv);
+                        eventContentDiv.appendChild(eventDescriptionDiv);
+                        
+    
+                        const eventActionsDiv = document.createElement('div');
+                        eventActionsDiv.classList.add('event-actions');
+    
+                        const editButton = document.createElement('button');
+                        editButton.classList.add('action-button');
+                        editButton.innerHTML = '<i class="material-icons">edit</i>'; // Material Icons delete icon
+                        editButton.onclick = function() {
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
+
+                            // Construct the edit event URL
+                            const editEventUrl = `/crm/events/edit/${eventId}/`;
+
+                            // Redirect to the edit event page
+                            window.location.href = editEventUrl;
+                        };
+                        
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add('action-button');
+                        deleteButton.innerHTML = '<i class="material-icons">delete</i>'; // Material Icons delete icon
+                        deleteButton.onclick = function () {
+                            // Get the event ID from your data source (e.g., data attribute, etc.)
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
+
+                            // Construct the edit event URL
+                            const deleteEventUrl = `/crm/events/delete/${eventId}/`;
+
+                            // Redirect to the edit event page
+                            window.location.href = deleteEventUrl;
+                        };
+                        const csrfTokenInput = document.getElementById('csrf-form').querySelector('[name=csrfmiddlewaretoken]');
+                        const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+                        
+                        const completeButton = document.createElement('button');
+                        completeButton.classList.add('btn', 'action-button');
+                        completeButton.innerHTML = event.fields.is_completed
+                            ? '<i class="material-icons">check_circle</i>'
+                            : '<i class="material-icons">check</i>';
+                        // Set initial background color based on is_completed
+                        eventDiv.style.background = event.fields.is_completed ? '#f8f9fa' : '';
+                        eventTypeDiv.style.color = event.fields.is_completed ? '#666' : '';
+                        eventDescriptionDiv.style.color = event.fields.is_completed ? '#666' : '';
+                        editButton.style.background = event.fields.is_completed ? '#666' : '';
+                        deleteButton.style.background = event.fields.is_completed ? '#666' : '';
+                        completeButton.style.background = event.fields.is_completed ? '#666' : '';
+                        eventPropertyDiv.style.color = event.fields.is_completed ? '#666' : '';
+                        
+                        completeButton.onclick = function () {
+                            const eventId = event.pk;
+
+                            // Check if the CSRF token is available
+                            if (csrfToken) {
+                                // Toggle is_complete using AJAX
+                                fetch(`/crm/events/toggle_complete/${eventId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': csrfToken,
+                                },
+                                })
+                                .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                                })
+                                .then(data => {
+                                // Update the UI based on the completion status
+                                if (data.is_complete) {
+                                    completeButton.innerHTML = '<i class="material-icons">check_circle</i>'; // Change icon
+                                    eventDiv.style.background = '#f8f9fa'; // Change background color
+                                    eventTypeDiv.style.color = '#666';
+                                    eventDescriptionDiv.style.color = '#666';
+                                    editButton.style.background = '#666';
+                                    deleteButton.style.background = '#666';
+                                    completeButton.style.background = '#666';
+                                    eventPropertyDiv.style.color = '#666';
+                                } else {
+                                    completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
+                                    eventDiv.style.background = ''; // Reset background color to default
+                                    eventTypeDiv.style.color = '#000';
+                                    eventPropertyDiv.style.color = '#000';
+                                    eventDescriptionDiv.style.color = '#212529';
+                                    editButton.style.background = '#007bff';
+                                    deleteButton.style.background = '#007bff';
+                                    completeButton.style.background = '#007bff';
+                                }
+
+                                // Perform any additional UI updates if needed
+                                })
+                                .catch(error => {
+                                console.error('Error toggling completion:', error);
+                                });
+                            } else {
+                                console.error('CSRF token is not available.');
+                            }
+                            };
+
+                        
+
+
+                        eventActionsDiv.appendChild(editButton);
+                        eventActionsDiv.appendChild(deleteButton);
+                        // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
+                        eventActionsDiv.appendChild(completeButton);
+    
+                        eventDiv.appendChild(eventContentDiv);
+                        eventDiv.appendChild(eventActionsDiv);
+    
+                        eventsDiv.appendChild(eventDiv);
+                    });
+                }
+            });
+            calendar.select(new Date());
+            calendar.render();
         });
-    }
-}
-</script>
+    
+        function calculateEventCount(date) {
+            const selectedDate = moment(date);
+            const dateString = selectedDate.format('YYYY-MM-DD');
+    
+            const filteredEvents = JSON.parse('{{ events | safe | escapejs }}').filter(function(event) {
+                // Convert event date to local timezone before comparing
+                const eventDate = moment(event.fields.event_date);
+                return eventDate.format('YYYY-MM-DD') === dateString;
+            });
+    
+            return filteredEvents.length;
+        }
+    </script>
+    
+    <script>
+        $(document).ready(function() {
+            $('.edit-event-btn').click(function() {
+            var eventId = $(this).data('event-id');
+            // Make an AJAX request to get event details based on the eventId
+            // Populate the form in the modal with the retrieved details
+            // For simplicity, I'm assuming you have a URL for getting event details (adjust as needed)
+            $.get('/events/edit/' + eventId, function(data) {
+                // Populate the form in the modal with the data
+                // Example: $('#editEventForm input[name="name"]').val(data.name);
+            });
+            });
+        });
+    </script>
+    
+</div>
+
 {% endblock %}

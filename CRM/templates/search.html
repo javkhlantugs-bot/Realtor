@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <style>
+        /* Styles as before */
+        #map {
+            height: 300px;
+            width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Add Property</h2>
+    <input
+        id="pac-input"
+        class="controls"
+        type="text"
+        placeholder="Search Box"
+    />
+    <p id="postal-code"></p>
+    <p id="city"></p>
+    <p id="country"></p>
+    <p id="longitude"></p>
+    <p id="latitude"></p>
+    <div id="map"></div>
+
+    <!-- Display postal code, city, and country information -->
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhi9zWHq375WASuDJ-sXrMWvDs9NK9lB4&callback=initAutocomplete&libraries=places&v=weekly" defer></script>
+    <script>
+        function initAutocomplete() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 8,
+                mapTypeId: "satellite",
+            });
+
+            const input = document.getElementById("pac-input");
+            const searchBox = new google.maps.places.SearchBox(input);
+
+            // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+            map.addListener("bounds_changed", () => {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            let markers = [];
+
+            searchBox.addListener("places_changed", () => {
+                const places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                markers.forEach((marker) => {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                const bounds = new google.maps.LatLngBounds();
+
+                places.forEach((place) => {
+
+
+                    if (!place.geometry || !place.geometry.location) {
+                        console.log("Returned place contains no geometry");
+                        
+                        return;
+                    }
+
+                    // Customize marker appearance using a Material Icon
+                    const marker = new google.maps.Marker({
+                        map,
+                        icon: {
+                            url: `https://maps.google.com/mapfiles/ms/icons/${getColor()}-dot.png`, // Replace with your desired Material Icon
+                            scaledSize: new google.maps.Size(30, 30),
+                        },
+                        title: place.name,
+                        position: place.geometry.location,
+                        draggable: true,
+                    });
+
+                    // Listen for the dragend event to get the updated position
+                    marker.addListener("dragend", () => {
+                        const newPosition = marker.getPosition();
+                        console.log("New marker position:", newPosition);
+                    });
+
+                    markers.push(marker);
+
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+
+                    // Extract postal code, city, and country information
+                    const addressComponents = place.address_components;
+                    let postalCode, city, country;
+
+                    addressComponents.forEach((component) => {
+                        if (component.types.includes("postal_code")) {
+                            postalCode = component.short_name;
+                        } else if (component.types.includes("locality")) {
+                            city = component.long_name;
+                        } else if (component.types.includes("country")) {
+                            country = component.long_name;
+                        }
+                    });
+                    // Initialize variables for longitude and latitude
+                    let longitude, latitude;
+
+                    // Extract geometry information
+                    if (place.geometry && place.geometry.location) {
+                        // Retrieve the LatLng object
+                        const location = place.geometry.location;
+
+                        // Extract latitude and longitude
+                        latitude = location.lat();
+                        longitude = location.lng();
+                    }
+                    // Update HTML elements with the retrieved information
+                    document.getElementById("postal-code").textContent = "Postal Code: " + postalCode;
+                    document.getElementById("city").textContent = "City: " + city;
+                    document.getElementById("country").textContent = "Country: " + country;
+                    document.getElementById("longitude").textContent = "longitude: " + longitude;
+                    document.getElementById("latitude").textContent = "latitude: " + latitude;
+                });
+
+                map.fitBounds(bounds);
+            });
+        }
+
+        function getColor() {
+            // Add logic to determine the color based on your requirements
+            return "red";
+        }
+
+        window.initAutocomplete = initAutocomplete;
+    </script>
+</body>
+</html>

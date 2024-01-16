@@ -13,13 +13,16 @@ class Property(models.Model):
         ('office', 'Office'),
         ('apartment', 'Apartment'),
         ('house', 'House'),
-        
-        # Add more property types as needed
     )
 
     DEAL_TYPE = (
         ('rental', 'Rental'),
         ('selling', 'Selling'),
+    )
+
+    STATUS_CHOICES = (
+        ('active',"Active"),
+        ('cancelled','Cancelled'),
     )
 
     CONDITION_CHOICES = (
@@ -32,24 +35,51 @@ class Property(models.Model):
         ('1 plus 1','1 + 1'),
     )
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
-    deal_type = models.CharField(max_length=10, choices=DEAL_TYPE)
-    address = models.CharField(max_length=255)
-    bedrooms = models.IntegerField()
-    total_rooms = models.IntegerField()
-    toilets = models.IntegerField()
-    images = models.ImageField(blank=True)
-    sqr_meter = models.IntegerField()
-    price_sqrm = models.FloatField(null=True)
-    price_month = models.FloatField(null=True)
-    condition = models.CharField(max_length=20)
-    description = models.TextField()
-    # New field to store the lowercase version of the address
-    address_lower = models.CharField(max_length=255, editable=False)
-    total_floor = models.IntegerField()
-    which_floor = models.IntegerField()
-    latitude = models.FloatField(null=True)
-    longitude = models.FloatField(null=True)
+    property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES, blank=True, null = True)
+    deal_type = models.CharField(max_length=10, choices=DEAL_TYPE, blank=True, null = True)
+    address = models.CharField(max_length=255, blank=True, null = True)
+    images = models.ImageField(blank=True, null=True)
+    sqr_meter = models.IntegerField(blank=True, null = True)
+    price_sqrm = models.FloatField(null=True, blank = True)
+    price_month = models.FloatField(null=True, blank = True)
+    condition = models.CharField(max_length=20, blank=True, null = True)
+    address_lower = models.CharField(max_length=255, blank=True, null = True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    listing_date = models.DateField(null = True,blank = True)
+    lot_size = models.IntegerField(null=True, blank=True)
+    monthly_fees = models.IntegerField(null=True, blank=True)
+    year_built = models.IntegerField(null=True, blank=True)
+    unit = models.CharField(max_length=20, blank=True, null=True)
+    status = models.CharField(max_length=30,choices=STATUS_CHOICES,blank=True, null= True)
+
+    bedrooms = models.IntegerField(blank=True, null = True)
+    total_rooms = models.IntegerField(blank=True, null = True)
+    toilets = models.IntegerField(blank=True, null = True)
+    garage = models.IntegerField(blank=True, null = True)
+    fireplace = models.IntegerField(blank=True, null = True)
+    dining_room = models.IntegerField(blank=True, null = True)
+    living_room = models.IntegerField(blank=True, null = True)
+    school_distance = models.IntegerField(blank=True, null = True)
+
+    total_floor = models.IntegerField(blank=True, null = True)
+    which_floor = models.IntegerField(blank=True, null = True)
+    year_built = models.IntegerField(null=True, blank=True)
+
+    description = models.TextField(blank=True, null = True)
+    dining_room_description = models.TextField(blank=True, null = True)
+    living_room_description = models.TextField(blank=True, null = True)
+    interior_features_description = models.TextField(blank=True, null = True)
+    exterior_features_description = models.TextField(blank=True, null = True)
+    style_description = models.TextField(blank=True, null = True)
+    design_description = models.TextField(blank=True, null = True)
+    extra_notes = models.TextField(blank=True, null = True)
+
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
+    country = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    district = models.CharField(max_length=255, blank=True, null=True)
+    sub_district = models.CharField(max_length=255, blank=True, null=True)
 
     @property
     def total_price(self):

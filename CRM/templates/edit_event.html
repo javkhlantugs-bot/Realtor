@@ -21,6 +21,24 @@
                     {{ form.event_date|add_class:"form-control" }}
                 </div>
             </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    {{ form.event_hour.label_tag }}
+                    {{ form.event_hour|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    {{ form.event_minute.label_tag }}
+                    {{ form.event_minute|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    {{ form.event_ampm.label_tag }}
+                    {{ form.event_ampm|add_class:"form-control" }}
+                </div>
+            </div>
             <div class="col-md-4">
                 <div class="form-group">
                     {{ form.event_time.label_tag }}

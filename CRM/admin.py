@@ -20,5 +20,4 @@ class EventAdmin(admin.ModelAdmin):
 admin.site.register(Clent)
 admin.site.register(Event, EventAdmin)
 admin.site.register(ClientInterest)
-
 admin.site.register(Client_suggestion)

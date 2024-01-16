@@ -2,7 +2,7 @@
 
 {% extends 'base_event.html' %}
 
-{% block title %}Properties List{% endblock %}
+{% block title %}Properties{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
@@ -10,9 +10,21 @@
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
+<style>
+    .pac-container{
+        z-index: 1000000;
+    }
+</style>
 <div class="col-md-12">
-    <h2 class="mb-4">Properties List</h2>
+    <div class="row" style="margin-bottom: 20px;">
+        <h2 class="col-md-4">Properties</h2>
+        <div class="col-md-8 d-flex justify-content-end" >
+            <a class="col-md-2 btn btn-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#propertyModal">
+                <i class="material-icons mr-2">add</i> Add Property
+            </a>
+        </div>
+
+    </div>
     <table id="propertiesTable" class="display">
         <thead>
             <tr>
@@ -38,8 +50,278 @@
             {% endfor %}
         </tbody>
     </table>
-    <div id="map-container" style="height: 600px; width: 100%; margin-top: 20px;">
-        <div id="map" style="height: 100%;"></div>
+    <div id="main-map-container" style="height: 600px; width: 100%; margin-top: 20px;">
+        <div id="main-map" style="height: 100%;"></div>
+    </div>
+    <div class="modal" id="propertyModal" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+    
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Property</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+    
+                <!-- Modal Body (Your Property Form) -->
+                <div class="modal-body" >
+                    <!-- Your property form goes here -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- {{ properties_form.as_p }} -->
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    {{ properties_form.address.label_tag }}
+                                    {{ properties_form.address }}
+                                    {% for error in properties_form.address.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ properties_form.property_type.label_tag }}
+                                    {{ properties_form.property_type }}
+                                    {% for error in properties_form.property_type.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row" style="margin-bottom: 20px;">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ properties_form.postal_code.label_tag }}
+                                    {{ properties_form.postal_code }}
+                                    {% for error in properties_form.postal_code.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ properties_form.country.label_tag }}
+                                    {{ properties_form.country }}
+                                    {% for error in properties_form.country.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ properties_form.city.label_tag }}
+                                    {{ properties_form.city }}
+                                    {% for error in properties_form.city.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ properties_form.district.label_tag }}
+                                    {{ properties_form.district }}
+                                    {% for error in properties_form.district.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ properties_form.sub_district.label_tag }}
+                                    {{ properties_form.sub_district }}
+                                    {% for error in properties_form.sub_district.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ properties_form.longitude.label_tag }}
+                                    {{ properties_form.longitude }}
+                                    {% for error in properties_form.longitude.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ properties_form.latitude.label_tag }}
+                                    {{ properties_form.latitude }}
+                                    {% for error in properties_form.latitude.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                        <div id="map" style="width: 100%; display: none;"></div>
+                        <button type="submit" class="btn btn-primary">Add Property</button>
+                    </form>
+                    
+                    <script>
+                        function initAutocomplete() {
+                            const mapContainer = document.getElementById("map");
+                            const map = new google.maps.Map(document.getElementById("map"), {
+                                zoom: 8,
+                                mapTypeId: "satellite",
+                            });
+                
+                            const input = document.getElementById("pac-input");
+                            const searchBox = new google.maps.places.SearchBox(input);
+                            map.addListener("bounds_changed", () => {
+                                searchBox.setBounds(map.getBounds());
+                            });
+                
+                            let markers = [];
+                
+                            searchBox.addListener("places_changed", () => {
+                                const places = searchBox.getPlaces();
+                                mapContainer.style.display = "block";
+                                mapContainer.style.height = "300px";
+                                // Clear existing markers on the map
+                                markers.forEach(marker => marker.setMap(null));
+                                markers = [];
+                                
+                                if (places.length == 0) {
+                                    return;
+                                }
+                
+                                const bounds = new google.maps.LatLngBounds();
+                
+                                places.forEach((place) => {
+                
+                                    // Customize marker appearance using a Material Icon
+                                    const marker = new google.maps.Marker({
+                                        map,
+                                        icon: {
+                                            url: `https://maps.google.com/mapfiles/ms/icons/${getColor()}-dot.png`, // Replace with your desired Material Icon
+                                            scaledSize: new google.maps.Size(30, 30),
+                                        },
+                                        title: place.name,
+                                        position: place.geometry.location,
+                                        draggable: true,
+                                    });
+                
+                                    // Listen for the dragend event to get the updated position
+                                    marker.addListener("dragend", () => {
+                                        const newPosition = marker.getPosition();
+                                        const newLatitude = newPosition.lat();
+                                        const newLongitude = newPosition.lng();
+                                        const geocoder = new google.maps.Geocoder();
+                                        const latlng = { lat: newLatitude, lng: newLongitude };
+
+                                        // Update HTML elements with the new position
+                                        document.getElementById("longitude").value = newLongitude;
+                                        document.getElementById("latitude").value = newLatitude;
+
+                                        // Use Geocoding API to fetch detailed address information
+                                        geocoder.geocode({ 'location': latlng }, (results, status) => {
+                                            if (status === 'OK') {
+                                                if (results[0]) {
+                                                    const addressComponents = results[0].address_components;
+
+                                                    // Extract relevant address components
+                                                    let region, city, country, district;
+
+                                                    addressComponents.forEach((component) => {
+                                                        if (component.types.includes("sublocality_level_1")) {
+                                                            sub_district = component.long_name;
+                                                        } else if (component.types.includes("locality")) {
+                                                            city = component.long_name;
+                                                        } else if (component.types.includes("country")) {
+                                                            country = component.long_name;
+                                                        } else if (component.types.includes("administrative_area_level_2")) {
+                                                            district = component.long_name;
+                                                        }
+                                                    });
+
+                                                    // Update HTML elements with the new position and address components
+                                                    document.getElementById("sub_district").value = sub_district;
+                                                    document.getElementById("city").value = city;
+                                                    document.getElementById("country").value = country;
+                                                    document.getElementById("district").value = district;
+
+                                                    // Reverse geocode to get more detailed information about nearby named locations
+                                                    geocoder.geocode({ 'location': latlng }, (reverseResults, reverseStatus) => {
+                                                        if (reverseStatus === 'OK') {
+                                                            if (reverseResults[0]) {
+                                                                const nearestNamedAddress = reverseResults[0].formatted_address;
+
+                                                                // Update your input field with the nearest named address
+                                                                document.getElementById("pac-input").value = nearestNamedAddress;
+                                                            } else {
+                                                                console.error('No reverse geocode results found');
+                                                            }
+                                                        } else {
+                                                            console.error('Reverse geocoder failed due to: ' + reverseStatus);
+                                                        }
+                                                    });
+                                                } else {
+                                                    console.error('No geocode results found');
+                                                }
+                                            } else {
+                                                console.error('Geocoder failed due to: ' + status);
+                                            }
+                                        });
+                                    });
+                
+                                    markers.push(marker);
+                
+                                    if (place.geometry.viewport) {
+                                        bounds.union(place.geometry.viewport);
+                                    } else {
+                                        bounds.extend(place.geometry.location);
+                                    }
+                
+                                    // Extract postal code, city, and country information
+                                    const addressComponents = place.address_components;
+                                    let postalCode, city, country;
+                
+                                    addressComponents.forEach((component) => {
+                                        if (component.types.includes("postal_code")) {
+                                            postalCode = component.short_name;
+                                        } else if (component.types.includes("locality")) {
+                                            city = component.long_name;
+                                        } else if (component.types.includes("country")) {
+                                            country = component.long_name;
+                                        } else if (component.types.includes("administrative_area_level_2")) {
+                                            district = component.long_name;
+                                        } else if (component.types.includes("sublocality_level_1")) {
+                                            sub_district = component.long_name;
+                                        } 
+                                    });
+                                    // Initialize variables for longitude and latitude
+                                    let longitude, latitude;
+                
+                                    // Extract geometry information
+                                    if (place.geometry && place.geometry.location) {
+                                        // Retrieve the LatLng object
+                                        const location = place.geometry.location;
+                
+                                        // Extract latitude and longitude
+                                        latitude = location.lat();
+                                        longitude = location.lng();
+                                    }
+                                    // Update HTML elements with the retrieved information
+                                    document.getElementById("postal_code").value = postalCode;
+                                    document.getElementById("city").value = city;
+                                    document.getElementById("country").value = country;
+                                    document.getElementById("district").value = district;
+                                    document.getElementById("sub_district").value = sub_district;
+                                    document.getElementById("longitude").value = longitude;
+                                    document.getElementById("latitude").value = latitude;
+                                });
+                
+                                map.fitBounds(bounds);
+                            });
+                        }
+                
+                        function getColor() {
+                            // Add logic to determine the color based on your requirements
+                            return "red";
+                        }
+                
+                        window.initAutocomplete = initAutocomplete;
+                    </script>
+                    
+                    
+                </div>
+    
+            </div>
+        </div>
     </div>
 
 </div>
@@ -55,7 +337,7 @@ function goBack() {
 
 
 <script>
-    var map = L.map('map');
+    var map = L.map('main-map');
     var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -94,6 +376,17 @@ function goBack() {
     jQuery(document).ready(function($) {
         // Your DataTables initialization code here
         $('#propertiesTable').DataTable();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/crm/google-maps-script/')  // Replace with the actual path defined in your urls.py
+            .then(response => response.json())
+            .then(data => {
+                const script = document.createElement('script');
+                script.innerHTML = data.script;
+                document.body.appendChild(script);
+            });
     });
 </script>
 {% endblock %}

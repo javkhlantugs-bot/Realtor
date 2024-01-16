@@ -1,0 +1,459 @@
+{% extends 'base_event.html' %}
+
+{% block title %}Edit {{ property.address }}{% endblock %}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+    .form-group {
+        margin: 5px;
+    }
+</style>
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Edit: {{ property.address }}</h2>
+        </div>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- {{ form.as_p}} -->
+        <h5>General</h5>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.address.label_tag }}
+                    {{ form.address|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.country.label_tag }}
+                    {{ form.country|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.city.label_tag }}
+                    {{ form.city|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.district.label_tag }}
+                    {{ form.district|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.sub_district.label_tag }}
+                    {{ form.sub_district|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.status.label_tag }}
+                    {{ form.status|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.postal_code.label_tag }}
+                    {{ form.postal_code|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.property_type.label_tag }}
+                    {{ form.property_type|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.deal_type.label_tag }}
+                    {{ form.deal_type|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="conditoin">Payment condition</label>
+                    {{ form.condition|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.unit.label_tag }}
+                    {{ form.unit|add_class:"form-control" }}
+                </div>
+            </div>
+
+
+        </div>
+        <hr>
+        <h5>Pricing</h5>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="id_price_sqrm">Price per Square meter:</label>
+                    {{ form.price_sqrm|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="id_price_month">Monthly rental price:</label>
+                    {{ form.price_month|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.monthly_fees.label_tag }}
+                    {{ form.monthly_fees|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <hr>
+        <h5 style="cursor: pointer;" data-toggle="collapse" data-target="#featureCollapse">Features</h5>
+        <div id="featureCollapse" class="row collapse">
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.total_floor.label_tag }}
+                    {{ form.total_floor|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.which_floor.label_tag }}
+                    {{ form.which_floor|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.year_built.label_tag }}
+                    {{ form.year_built|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.school_distance.label_tag }}
+                    {{ form.school_distance|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.sqr_meter.label_tag }}
+                    {{ form.sqr_meter|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.lot_size.label_tag }}
+                    {{ form.lot_size|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.total_rooms.label_tag }}
+                    {{ form.total_rooms|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.garage.label_tag }}
+                    {{ form.garage|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.bedrooms.label_tag }}
+                    {{ form.bedrooms|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    {{ form.toilets.label_tag }}
+                    {{ form.toilets|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    {{ form.fireplace.label_tag }}
+                    {{ form.fireplace|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.dining_room.label_tag }}
+                    {{ form.dining_room|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    {{ form.living_room.label_tag }}
+                    {{ form.living_room|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+       
+        <hr>
+        <style>
+            /* Custom CSS to adjust form field height */
+            .form-group textarea {
+                height: 90px; /* Set your desired height */
+                padding: 5px; /* Add padding to control vertical space */
+            }
+            </style>
+        <h5 style="cursor: pointer;" data-toggle="collapse" data-target="#descCollapse">Descriptions</h5>
+        <div id="descCollapse" class="row collapse">
+        <!-- <div class="row"> -->
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.description.label_tag }}
+                    {{ form.description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.dining_room_description.label_tag }}
+                    {{ form.dining_room_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.living_room_description.label_tag }}
+                    {{ form.living_room_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.interior_features_description.label_tag }}
+                    {{ form.interior_features_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.exterior_features_description.label_tag }}
+                    {{ form.exterior_features_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.style_description.label_tag }}
+                    {{ form.style_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.interior_features_description.label_tag }}
+                    {{ form.interior_features_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.exterior_features_description.label_tag }}
+                    {{ form.exterior_features_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.style_description.label_tag }}
+                    {{ form.style_description|add_class:"form-control" }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    {{ form.extra_notes.label_tag }}
+                    {{ form.extra_notes|add_class:"form-control" }}
+                </div>
+            </div>
+        </div>
+        <hr>
+        <h5>Images</h5>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    Portfolio image
+                    {{ form.images|add_class:"form-control" }}
+                </div>
+            </div>  
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="property_image" style="padding-bottom: 5px;">Choose Property Images</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input form-control" id="property_image" name="property_image" multiple>
+                </div>
+            </div>
+        </div>
+        <label>Existing Property Images:</label>
+
+        <style>
+            /* Style for the image container */
+            .image-container {
+                position: relative;
+                display: inline-block;
+                width: 100px;
+            }
+
+            /* Style for the image */
+            .prop_images {
+                display: block; /* Ensure the image is a block element */
+                width: 100%; /* Make the image take full width of the container */
+                height: auto; /* Maintain the aspect ratio */
+            }
+
+            /* Style for the delete button */
+            .delete-btn {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: transparent; /* Set background color to transparent */
+                border: none; /* Remove border */
+                color: #fff; /* Set text color to white or any desired color */
+                font-size: 14px; /* Adjust font size as needed */
+                cursor: pointer;
+            }
+
+            /* Optional: Add a hover effect for the delete button */
+            .delete-btn:hover {
+                color: #ff0000; /* Change text color on hover */
+            }
+            .prop_images{
+                width: 100px;
+            }
+        </style>
+        <div class="photos">
+            {% for photo in photos %}
+                <div class="image-container">
+                    <img class='prop_images' src="{{ photo.image.url }}" alt="Property Image">
+                    <button type="button" class="delete-btn" data-photo-id="{{ photo.id }}">
+                        <i class="material-icons">clear</i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="map" style="height: 400px; width: 100%; margin-bottom: 20px; margin-top: 20px;"></div>
+        <!-- Add hidden fields for latitude and longitude -->
+        <input type="hidden" name="latitude" id="latitude" value={{form.latitude.value}}>
+        <input type="hidden" name="longitude" id="longitude" value={{form.longitude.value}}>
+        <div class="row" style="margin-bottom: 20px;">
+            <button type="submit" class="btn btn-primary" style="width: 100px; margin-right: 10px; margin-bottom: 20px; height: 30px;">Submit</button>
+            <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100px; margin-bottom: 20px; height: 30px;">Back</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const photoId = this.dataset.photoId;
+
+                // Make an AJAX request to delete the image
+                fetch(`/crm/delete_image/${photoId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')  // Make sure to include the CSRF token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the image container from the DOM
+                        const imageContainer = this.closest('.image-container');
+                        imageContainer.remove();
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(error => console.error('Error deleting image:', error));
+            });
+        });
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    });
+</script>
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+
+{{ locations|json_script:"locations_json"}}
+
+<script>
+    var map = L.map('map');
+    var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    let locations = JSON.parse(document.getElementById('locations_json').textContent);
+
+    var markers = [];
+
+    locations.forEach(location => {
+        if (location.id) {
+            var marker = L.marker([location.latitude, location.longitude], { draggable: true })
+                .addTo(map)
+                .on('dragend', function (event) {
+                    var marker = event.target;
+                    var position = marker.getLatLng();
+
+                    // Access the updated latitude and longitude
+                    var newLatitude = position.lat;
+                    var newLongitude = position.lng;
+
+                    // Update the hidden input fields
+                    document.getElementById('latitude').value = newLatitude;
+                    document.getElementById('longitude').value = newLongitude;
+
+                    // Do something with the new coordinates, e.g., update your form fields
+                    console.log('New Latitude:', newLatitude);
+                    console.log('New Longitude:', newLongitude);
+                });
+
+            // Create a popup with property information and "Show More" button
+            // ...
+
+            markers.push(marker);
+        }
+    });
+
+    // Create a feature group from the markers and add it to the map
+    var markerGroup = L.featureGroup(markers).addTo(map);
+
+    // Fit the map view to the bounds of the marker group
+    map.fitBounds(markerGroup.getBounds());
+</script>
+
+<script>
+    // JavaScript function to update the label text with selected file names
+    function updateFileLabel(input) {
+        var label = document.getElementById('property_image_label');
+        var files = input.files;
+        var names = [];
+
+        for (var i = 0; i < files.length; i++) {
+            names.push(files[i].name);
+        }
+
+        label.innerHTML = names.join(', ') || 'Select files';
+    }
+</script>
+
+{% endblock %}

@@ -16,11 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
+from accounts.views import user_login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('Realtor.urls')),
     path('crm/',include('CRM.urls')),
     path('suggested_properties/', include('suggest_properties.urls')),
-    path('accounts/', include('accounts.urls', namespace='accounts')),
-]
+    path('', include('accounts.urls', namespace='accounts')),
+    path('accounts/', include('allauth.urls')),
+    path('accounts/', include('allauth.socialaccount.urls')),
+    path('login/', user_login, name='user_login'),
+    # path('',include('Realtor.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
