@@ -1,0 +1,18 @@
+{% extends 'base_event.html' %}
+
+{% block title %}Delete Event Type{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Delete Event Type</h2>
+
+    <p>Are you sure you want to delete the event type "{{ event_type.event_type }}"?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+
+    <a href="{% url 'event_types_list' %}" class="btn btn-secondary">Cancel</a>
+  </div>
+{% endblock %}

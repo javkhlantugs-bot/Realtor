@@ -1,0 +1,32 @@
+<!-- add_event.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Add Event Type {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="col-md-12">
+    <h2 class="mb-4">Add Event Type</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group">
+                {{ form.event_type.label_tag }}
+                {{ form.event_type|add_class:"form-control" }}
+            </div>
+        </div>
+        
+        <div class="mt-auto" style="justify-content: center; align-items: center;">
+            <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; ">Save</button>
+            <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function goBack() {
+        // Navigate to the 'events_list' URL
+        var eventsListUrl = "{% url 'events_list' %}";
+        window.location.href = eventsListUrl;
+    }
+</script>
+{% endblock %}

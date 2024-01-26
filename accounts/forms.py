@@ -18,15 +18,11 @@ class CustomUserCreationForm(UserCreationForm):
         }
     
 class CustomAuthenticationForm(AuthenticationForm):
+
     class Meta:
         model = CustomUser
-        fields = ['username', 'password']
+        fields = ['username', 'password','remember_me']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
         }
-    remember_me = forms.BooleanField(
-        initial=True,
-        required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-    )

@@ -13,7 +13,6 @@ import datetime
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
-
 class Clent(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     client_name = models.CharField(max_length=255)
@@ -26,6 +25,7 @@ class Clent(models.Model):
     facebook_url = models.URLField(null=True, blank=True)
     instagram_url = models.URLField(null=True, blank=True)
     twitter_url = models.URLField(null=True, blank=True)
+    google_resource_id = models.CharField(null=True,blank = True, max_length= 255)
 
     status_choices = (
         ('looking_for_property', 'Looking For Property'),
@@ -126,13 +126,23 @@ class Client_suggestion(models.Model):
     def __str__(self):
         return f"{self.client} - {self.property} - {self.is_suggested} - {self.is_interested} - {self.client_link()}"
 
+class event_type_model(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    event_type = models.CharField(max_length = 255)
+
+    def __str__(self):
+        return f"{self.event_type}"
+
+class client_status_types(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    status = models.CharField(max_length = 255)
+
+    def __str__(self):
+        return f"{self.status}"
+
 class Event(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    EVENT_TYPES = (
-        ('meeting', 'Meeting'),
-        ('show_property', 'Show Property'),
-        ('sign_contract', 'Sign Contract'),
-    )
+
     event_hour_choice = (
         ('01','01'),
         ('02','02'),
@@ -159,7 +169,7 @@ class Event(models.Model):
     )
 
     
-    event_type = models.CharField(max_length=255, choices=EVENT_TYPES)
+    event_type = models.ForeignKey(event_type_model,max_length=255, null=True, blank=True,on_delete = models.DO_NOTHING, related_name = 'events_types')
     event_date = models.DateField()
     event_hour = models.CharField(null=True, blank=True, max_length = 5, choices = event_hour_choice)
     event_minute = models.CharField(null=True, blank=True, max_length = 5, choices = event_minute_choice)
@@ -169,11 +179,29 @@ class Event(models.Model):
     event_description = models.TextField(null=True,blank=True)
     participant_property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property', null=True,blank=True)
     is_completed = models.BooleanField(default = False) 
-
+    participant_owner_name = models.CharField(max_length=255, null=True, blank=True, editable=False)
+    participant_buyer_name = models.CharField(max_length=255, null=True, blank=True, editable=False)
+    participant_property_address = models.CharField(max_length=255, null=True, blank=True, editable=False)
+    event_type_name = models.CharField(max_length=255, null=True, blank=True, editable=False)
     index_field = models.DateTimeField(blank=True, null=True, editable=False)
 
     def save(self, *args, **kwargs):
         # Convert date, hour, minute, am/pm to a datetime object
+        if self.event_type:
+            self.event_type_name = self.event_type.event_type
+
+        # Save participant_owner's client name
+        if self.participant_owner:
+            self.participant_owner_name = self.participant_owner.client_name
+
+        # Save participant_buyer's client name
+        if self.participant_buyer:
+            self.participant_buyer_name = self.participant_buyer.client_name
+
+        if self.participant_property:
+            self.participant_property_address = self.participant_property.address
+
+
         if self.event_date:
             hour = int(self.event_hour) if self.event_hour else 0
             minute = int(self.event_minute) if self.event_minute else 0

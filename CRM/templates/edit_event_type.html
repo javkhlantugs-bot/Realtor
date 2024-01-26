@@ -1,0 +1,17 @@
+{% extends 'base_event.html' %}
+
+{% block title %}Edit Event Type{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Edit Event Type</h2>
+
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+
+    <a href="{% url 'event_types_list' %}" class="btn btn-secondary">Cancel</a>
+  </div>
+{% endblock %}

@@ -1,11 +1,11 @@
 <!-- add_event.html -->
 {% extends 'base_event.html' %}
 
-{% block title %}Add Event{% endblock %}
+{% block title %}Edit Event{% endblock %}
 {% load widget_tweaks %}
 {% block content %}
 <div class="col-md-12">
-    <h2 class="mb-4">Add Event</h2>
+    <h2 class="mb-4">Edit Event</h2>
     <form method="post">
         {% csrf_token %}
         <div class="row">
@@ -72,7 +72,8 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <div style="margin-top: 10px;"></div>
+        <button type="submit" class="btn btn-outline-primary">Save Changes</button>
         <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()">Back</a>
     </form>
 </div>

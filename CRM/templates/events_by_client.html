@@ -63,7 +63,7 @@
                                 <td>{{ event.event_type }}</td>
                                 <td>{{ event.property }} </td>
                                 <td>
-                                    <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-primary">
+                                    <a href="{% url 'edit_event' event.id %}" class="btn btn-sm btn-outline-primary">
                                         <span class="material-icons">edit</span>
                                     </a>
                                     <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ event.id }}')">

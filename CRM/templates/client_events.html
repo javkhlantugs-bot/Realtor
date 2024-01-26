@@ -9,6 +9,9 @@
         color: #6c757d; /* Grey text color */
         border-color: #6c757d; /* Grey border color */
     }
+    .btn-primary{
+        background-color: #1a1a1a;
+    }
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
@@ -54,9 +57,9 @@
             <h2>Status: {{ client.get_status_display}}</h2>
         </div>
         <div class="col-md-4 d-flex justify-content-end">
-            <button style="margin: 5px;"  class= "btn btn-primary mr-2" onclick="create_wish()">Add clients wish</button>
-            <button style="margin: 5px;"  class= "btn btn-primary mr-2" onclick="addEvent()">Add Event</button>
-            <button style="margin: 5px;"  class= "btn btn-secondary" onclick="editClient()">Edit</button>
+            <button style="margin: 5px;"  class= "btn btn-outline-primary mr-2" onclick="create_wish()">Add clients wish</button>
+            <button style="margin: 5px;"  class= "btn btn-outline-primary mr-2" onclick="addEvent()">Add Event</button>
+            <button style="margin: 5px;"  class= "btn btn-outline-primary mr-2" onclick="editClient()">Edit</button>
         </div>
     </div>
     <hr>
@@ -74,7 +77,7 @@
 <h4>Wishes</h4>
 
 
-<div style="background-color: rgb(238, 238, 238);border-radius: 10px;padding: 10px;">
+<div style="border-radius: 10px;padding: 10px;">
     <h3>Events</h3>
     <table id="eventsTable" class="display">
         <thead>
@@ -93,9 +96,9 @@
                     <td>{{ event.event_description }}</td>
                     <td>
                         
-                        <a href="{% url 'edit_event' event.id %}" class="btn btn-primary">Edit</a>
-                        <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ event.id }}')">
-                            <span class="material-icons">delete</span>
+                        <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">Edit</a>
+                        <a href="#" class="btn btn-danger" onclick="confirmDelete('{{ event.id }}')">
+                            Delete
                         </a>
                     </td>
                 </tr>
@@ -158,12 +161,12 @@
         </tbody>
     </table>
     <div class="mt-3" style="padding-bottom: 10px;">
-        <button class="btn btn-primary" onclick="generateLink('{{ client.link }}')">Go to Suggestions link</button>
+        <button class="btn btn-outline-primary" onclick="generateLink('{{ client.link }}')">Go to Suggestions link</button>
         <input type="text" id="generatedLink" readonly class="form-control mt-2" style="display: none;">
-        <button class="btn btn-primary" id="suggestAllButton">Suggest All</button>
+        <button class="btn btn-outline-primary" id="suggestAllButton">Suggest All</button>
     </div>
 </div>
-<button id="showMapBtn" class="btn btn-primary">Show Interested Properties on Map</button>
+<button id="showMapBtn" class="btn btn-outline-primary">Show Interested Properties on Map</button>
 <div id="map-container" style=" height: 300px; width: 100%; margin-top: 20px;">
     <div id="map" style="height: 100%;"></div>
 </div>

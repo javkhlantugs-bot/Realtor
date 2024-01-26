@@ -3,7 +3,7 @@
 {% extends 'base_event.html' %}
 
 {% block title %}Properties{% endblock %}
-
+{% load widget_tweaks %}
 {% block content %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
@@ -19,7 +19,7 @@
     <div class="row" style="margin-bottom: 20px;">
         <h2 class="col-md-4">Properties</h2>
         <div class="col-md-8 d-flex justify-content-end" >
-            <a class="col-md-2 btn btn-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#propertyModal">
+            <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#propertyModal">
                 <i class="material-icons mr-2">add</i> Add Property
             </a>
         </div>
@@ -60,7 +60,9 @@
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <h4 class="modal-title">Add Property</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button data-dismiss="modal" style="background: none; border: none; cursor: pointer;">
+                        <span class="material-icons">clear</span>
+                    </button>
                 </div>
     
                 <!-- Modal Body (Your Property Form) -->
@@ -73,7 +75,7 @@
                             <div class="col-md-8">
                                 <div class="form-group">
                                     {{ properties_form.address.label_tag }}
-                                    {{ properties_form.address }}
+                                    {{ properties_form.address|add_class:"form-control"  }}
                                     {% for error in properties_form.address.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
@@ -82,7 +84,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     {{ properties_form.property_type.label_tag }}
-                                    {{ properties_form.property_type }}
+                                    {{ properties_form.property_type|add_class:"form-control"  }}
                                     {% for error in properties_form.property_type.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
@@ -94,28 +96,28 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {{ properties_form.postal_code.label_tag }}
-                                    {{ properties_form.postal_code }}
+                                    {{ properties_form.postal_code|add_class:"form-control"  }}
                                     {% for error in properties_form.postal_code.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ properties_form.country.label_tag }}
-                                    {{ properties_form.country }}
+                                    {{ properties_form.country|add_class:"form-control"  }}
                                     {% for error in properties_form.country.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ properties_form.city.label_tag }}
-                                    {{ properties_form.city }}
+                                    {{ properties_form.city|add_class:"form-control"  }}
                                     {% for error in properties_form.city.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ properties_form.district.label_tag }}
-                                    {{ properties_form.district }}
+                                    {{ properties_form.district|add_class:"form-control"  }}
                                     {% for error in properties_form.district.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
@@ -124,21 +126,21 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {{ properties_form.sub_district.label_tag }}
-                                    {{ properties_form.sub_district }}
+                                    {{ properties_form.sub_district|add_class:"form-control"  }}
                                     {% for error in properties_form.sub_district.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ properties_form.longitude.label_tag }}
-                                    {{ properties_form.longitude }}
+                                    {{ properties_form.longitude|add_class:"form-control"  }}
                                     {% for error in properties_form.longitude.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ properties_form.latitude.label_tag }}
-                                    {{ properties_form.latitude }}
+                                    {{ properties_form.latitude|add_class:"form-control"  }}
                                     {% for error in properties_form.latitude.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
@@ -148,7 +150,7 @@
                         
 
                         <div id="map" style="width: 100%; display: none;"></div>
-                        <button type="submit" class="btn btn-primary">Add Property</button>
+                        <button type="submit" class="btn btn-outline-primary" style="width: 100%;">Add Property</button>
                     </form>
                     
                     <script>

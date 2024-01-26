@@ -25,8 +25,7 @@ urlpatterns = [
     path('crm/',include('CRM.urls')),
     path('suggested_properties/', include('suggest_properties.urls')),
     path('', include('accounts.urls', namespace='accounts')),
-    path('accounts/', include('allauth.urls')),
-    path('accounts/', include('allauth.socialaccount.urls')),
+    path('', include('allauth.urls')),
     path('login/', user_login, name='user_login'),
     # path('',include('Realtor.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

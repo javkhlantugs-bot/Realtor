@@ -1,0 +1,33 @@
+
+{% extends 'base_event.html' %}
+
+{% block title %}Event Types List{% endblock %}
+
+{% block content %}
+    <h2>Event Types List
+      <a href="{% url 'add_event_type' %}" class="btn btn-outline-secondary" type="button">
+          <i class="material-icons">add</i> 
+      </a>
+    </h2>
+  
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Event Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event_type in event_types %}
+          <tr>
+            <td>{{ event_type.event_type }}</td>
+            <td>
+              <a href="{% url 'edit_event_type' event_type.id %}" class="btn btn-outline-primary btn-sm">Edit</a>
+              <a href="{% url 'delete_event_type' event_type.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

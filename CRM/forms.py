@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Event, Clent, Client_suggestion, ClientInterest, client_phone_numbers, client_relationships
+from .models import Event, Clent, Client_suggestion, ClientInterest, client_phone_numbers, client_relationships, event_type_model
 from Realtor.models import Property
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
@@ -8,7 +8,6 @@ from django.forms import modelformset_factory
 
 class EventForm(forms.ModelForm):
     
-    event_type = forms.ChoiceField(choices=Event.EVENT_TYPES, widget=forms.Select(attrs={'class': 'form-control'}))
     event_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
     event_hour = forms.ChoiceField(choices=Event.event_hour_choice, widget=forms.Select(attrs={'class': 'form-control','placeholder':'HH'}))
     event_minute = forms.ChoiceField(choices=Event.event_minute_choice, widget=forms.Select(attrs={'class': 'form-control','placeholder':'MM'}))
@@ -17,6 +16,37 @@ class EventForm(forms.ModelForm):
         model = Event
         fields = ['event_type', 'event_date', 'participant_buyer', 'participant_owner', 'event_description','participant_property','event_hour','event_minute','event_ampm','is_completed']
     
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the user from kwargs
+        super(EventForm, self).__init__(*args, **kwargs)
+
+        # Filter choices for participant_buyer
+        self.fields['participant_buyer'].queryset = Clent.objects.filter(user=user)
+        # Apply 'js-select2' class to participant_buyer field
+        self.fields['participant_buyer'].widget.attrs['class'] = 'form-control js-select2'
+
+        # Filter choices for participant_owner
+        self.fields['participant_owner'].queryset = Clent.objects.filter(user=user)
+        # Apply 'js-select2' class to participant_owner field
+        self.fields['participant_owner'].widget.attrs['class'] = 'form-control js-select2'
+
+        # Filter choices for participant_property
+        self.fields['participant_property'].queryset = Property.objects.filter(user=user)
+        # Apply 'js-select2' class to participant_property field
+        self.fields['participant_property'].widget.attrs['class'] = 'form-control js-select2'
+
+        # Filter choices for event_type
+        self.fields['event_type'].queryset = event_type_model.objects.filter(user=user)
+        # Apply 'js-select2' class to event_type field
+        self.fields['event_type'].widget.attrs['class'] = 'form-control js-select2'
+
+class EventTypeForm(forms.ModelForm):
+    class Meta:
+        model = event_type_model
+        fields = ['event_type']
+
+        
+
 class ClientForm1(forms.ModelForm):
     class Meta:
         model = Clent
@@ -55,7 +85,8 @@ class PropertyForm1(forms.ModelForm):
                 'type': "text",
                 'placeholder': "Search Box",
                 'name': "property_name",
-                'style': "width: 100%;"
+                'style': "width: 100%;",
+                'required': "required",
             
             }),
             'postal_code': forms.TextInput(attrs={'id': 'postal_code','style':'width:100%'}),

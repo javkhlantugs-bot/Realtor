@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from django.core.management.utils import get_random_secret_key
-
 import os
 import sys
 import dj_database_url
@@ -30,6 +28,13 @@ SECRET_KEY = '6~*~Xdyl-?;olY*T2~)oWxviJ56fybpki{V<%RgGjkTGtJ;4Bz<R-i&Ts:1Sq<)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+EMAIL_BACKEND = 'crm.email_backend.GmailOAuth2EmailBackend'
+GMAIL_CLIENT_ID = '526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com'
+GMAIL_CLIENT_SECRET = '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'
+GMAIL_REFRESH_TOKEN = 'user_refresh_token'
+GMAIL_USER = 't.javkhlantugs1@gmail.com'
+
+
 # ALLOWED_HOSTS = os.getenv('127.0.0.1','DJANGO_ALLOWED_HOSTS').split(',')
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -43,7 +48,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 LOGIN_URL = 'user_login'  # Make sure this URL is the same as your login view name
 LOGIN_TEMPLATE = 'accounts/login.html'
-
+LOGIN_REDIRECT_URL = ('/crm/')
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'Realtor',
     'django.contrib.humanize',
     'CRM',
@@ -72,6 +78,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 ]
 
+SITE_ID = 1
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -84,24 +93,21 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     # ...
+    'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
     # ...
-)
+]
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'APP': {
-            'client_id': 'your-google-client-id',
-            'secret': 'your-google-client-secret',
-            'key': '',
-        },
         'SCOPE': [
             'profile',
             'email',
         ],
         'AUTH_PARAMS': {'access_type': 'online'},
+        'redirect_uri': 'http://127.0.0.1:8000/crm/settings/google-authenticate/',
     }
 }
 

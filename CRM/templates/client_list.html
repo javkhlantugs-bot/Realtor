@@ -3,7 +3,7 @@
 {% extends 'base_event.html' %}
 
 {% block title %}Contacts{% endblock %}
-
+{% load widget_tweaks %}
 {% block content %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
@@ -13,7 +13,7 @@
     <div class="row" style="margin-bottom: 10px;">
         <h2 class="col-md-4">Clients List</h2>
         <div class="col-md-8 d-flex justify-content-end" >
-            <a class="col-md-2 btn btn-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#contactModal">
+            <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#contactModal">
                 <i class="material-icons mr-2">add</i> Add Contact
             </a>
         </div>
@@ -51,7 +51,9 @@
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <h4 class="modal-title">Add contact</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button data-dismiss="modal" style="background: none; border: none; cursor: pointer;">
+                        <span class="material-icons">clear</span>
+                    </button>
                 </div>
                 <div class="modal-body" >
                     <!-- Your property form goes here -->
@@ -74,14 +76,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {{ form.client_name.label_tag }}
-                                    {{ form.client_name }}
+                                    {{ form.client_name|add_class:"form-control"  }}
                                     {% for error in form.client_name.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ form.phone_number.label_tag }}
-                                    {{ form.phone_number }}
+                                    {{ form.phone_number|add_class:"form-control"  }}
                                     {% for error in form.phone_number.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
@@ -90,21 +92,21 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     {{ form.email.label_tag }}
-                                    {{ form.email }}
+                                    {{ form.email|add_class:"form-control"  }}
                                     {% for error in form.email.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
                                     {{ form.status.label_tag }}
-                                    {{ form.status }}
+                                    {{ form.status|add_class:"form-control"  }}
                                     {% for error in form.status.errors %}
                                         <span class="text-danger">{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="margin-left: 10px; margin-top: 10px;">Add contact</button>
+                        <button type="submit" class="btn btn-outline-primary" style="margin-left: 10px; margin-top: 10px; width: 100%;">Add contact</button>
                     </form>
                 </div>  
             </div>
