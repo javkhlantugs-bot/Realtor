@@ -504,12 +504,9 @@ def google_authenticate(request):
     client_secret_path = current_directory / 'client_secret_526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com.json'
     # OAuth flow to authenticate and get credentials
     flow = InstalledAppFlow.from_client_secrets_file(client_secret_path, SCOPES)
-    
     # Run the local server to get credentials
-    # try:
-    #     credentials = flow.run_local_server(port=8001)
-    # else:
-    credentials = flow.run_local_server(port=8001, browser='lynx')
+    
+    credentials = flow.run_local_server(port=8001, prompt='consent')
 
     # Save credentials to session as JSON string
     request.session['credentials'] = credentials.to_json()
