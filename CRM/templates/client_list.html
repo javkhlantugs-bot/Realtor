@@ -125,8 +125,21 @@ function goBack() {
 <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {
-        // Your DataTables initialization code here
-        $('#clientsTable').DataTable();
+        // Your DataTables initialization code with the responsive option and column visibility control
+        $('#clientsTable').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 'td:not(:last-child)'
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'd-none d-sm-table-cell', // Hide on small screens
+                    targets: [1, 2, 3] // Adjust column indices based on your table structure
+                }
+            ]
+        });
     });
 </script>
 {% endblock %}

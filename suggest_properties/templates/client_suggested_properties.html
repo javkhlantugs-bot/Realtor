@@ -36,7 +36,7 @@
                                 </div>
                             </form>
                         </td>
-                        <td><a href="{% url 'show_property' id=suggest.property.id address=suggest.property.address%}" class="btn btn-primary">Show Property</a></td>
+                        <td><a href="{% url 'show_property' id=suggest.property.id user=suggest.user.username address=suggest.property.address%}" class="btn btn-primary">Show Property</a></td>
                     </tr>
                     
                 {% endfor %}

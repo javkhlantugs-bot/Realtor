@@ -18,6 +18,10 @@
             Edit property<i class="material-icons mr-2">edit</i> 
         </a> -->
         <div class="col-md-2 d-flex justify-content-end" >
+            <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px; margin-right: 10px;" href="{% url 'show_property' user=user.username id=property.id address=property.address%}">
+                <i class="material-icons mr-2">web</i> Show Property Link
+            </a>
+            <br>
             <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" href="{% url 'edit_property' property.id %}">
                 <i class="material-icons mr-2">edit</i> Edit property
             </a>
@@ -50,7 +54,7 @@
 <!-- client_events.html -->
 <div class="col-md-12">
     <h1>Client List</h1>
-    <table class="table">
+    <table id = 'clientlist' class="display">
         <thead>
             <tr>
                 <th>Client Name</th>
@@ -92,6 +96,14 @@
     jQuery(document).ready(function($) {
         // Your DataTables initialization code here
         $('#eventsTable').DataTable();
+    });
+</script>
+
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code here
+        $('#clientlist').DataTable();
     });
 </script>
 

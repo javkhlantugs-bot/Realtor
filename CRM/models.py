@@ -297,5 +297,7 @@ class ClientInterest(models.Model):
     # Add other necessary fields such as ForeignKey to link to a Client model
     client = models.ForeignKey(Clent, on_delete=models.CASCADE, null=True, blank=True)
 
+    
+
     def __str__(self):
         return f"Interest: {self.property_type}, Payment: {self.payment_term}, View Sight: {self.view_sight}"

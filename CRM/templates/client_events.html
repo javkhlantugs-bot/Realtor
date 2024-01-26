@@ -47,7 +47,15 @@
         width: 100%; /* Make the input fields take 100% width */
         border: none;
     }
-</style>
+
+    @media (max-width: 767px) {
+
+    .suggestionsTable_container{
+        display: none;
+    }
+
+    }
+    </style>
 <div class="col-md-12">
     <div class="row mb-3">
         <div class="col-md-4">
@@ -96,10 +104,13 @@
                     <td>{{ event.event_description }}</td>
                     <td>
                         
-                        <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">Edit</a>
-                        <a href="#" class="btn btn-danger" onclick="confirmDelete('{{ event.id }}')">
-                            Delete
+                        <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">
+                            <i class="material-icons">edit</i> 
                         </a>
+                        <a href="#" class="btn btn-danger" onclick="confirmDelete('{{ event.id }}')">
+                            <i class="material-icons">delete</i> 
+                        </a>
+                        
                     </td>
                 </tr>
             {% endfor %}
@@ -107,7 +118,7 @@
     </table>
 </div>
 <!-- client_events.html -->
-<div class="col-md-12" style="padding: 10px; margin-top: 10px; margin-bottom: 10px;border-radius: 10px;background-color: rgb(238, 238, 238);">
+<div class="col-md-12 suggestionsTable_container" style="padding: 10px; margin-top: 10px; margin-bottom: 10px;border-radius: 10px;background-color: rgb(238, 238, 238);">
     <h3>Properties List</h3>
     <table id="suggestionsTable" class="display">
         <thead>
@@ -166,19 +177,12 @@
         <button class="btn btn-outline-primary" id="suggestAllButton">Suggest All</button>
     </div>
 </div>
-<button id="showMapBtn" class="btn btn-outline-primary">Show Interested Properties on Map</button>
+<hr>
+<h5>Interested properties</h5>
 <div id="map-container" style=" height: 300px; width: 100%; margin-top: 20px;">
     <div id="map" style="height: 100%;"></div>
 </div>
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        $("#showMapBtn").click(function() {
-            $("#map-container").toggle();
-        });
-    });
-</script>
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
@@ -246,11 +250,31 @@
     });
 </script>
 
-<script>
+<!-- <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {
         // Your DataTables initialization code here
         $('#eventsTable').DataTable();
+    });
+</script> -->
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code with the responsive option and column visibility control
+        $('#eventsTable').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 'td:not(:last-child)'
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'd-none d-sm-table-cell', // Hide on small screens
+                    targets: [0, 2] // Adjust column indices based on your table structure
+                }
+            ]
+        });
     });
 </script>
 <script>

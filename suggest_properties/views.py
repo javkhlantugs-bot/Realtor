@@ -36,11 +36,13 @@ class ClientSuggestedPropertiesView(View):
         # You may want to redirect or render a response after processing the POST request
         return render(request, self.template_name, {'client': client, 'suggestions': suggestions})
     
-def show_property(request, id, address):
-    property = get_object_or_404(Property, id=id)
+def show_property(request, user, id, address):
+    property = get_object_or_404(Property, id=id, user__username=user) 
     photos = PropertyImage.objects.filter(property=property)
+    fields = Property._meta.fields
     return render(request, 'show_property.html', {
-        'properties':property,
-        'photos':photos,
-        'address':address,
+        'properties': property,
+        'photos': photos,
+        'address': address,
+        'fields':fields,
     })
