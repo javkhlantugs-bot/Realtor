@@ -6,51 +6,295 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <title>Suggested Properties for {{ client.client_name }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@100;300;400;600;800&display=swap');
+        html{
+            overflow: hidden;
+        }
 
-    <div class="col-md-12">
-        <h1>Suggested Properties for {{ client.client_name }}</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Property Address</th>
-                    <th>Deal type</th>
-                    <th>Square meter</th>
-                    <th>Action</th>
-                    <!-- Add more fields as needed -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for suggest in suggestions %}
-                    <tr class="expandable-row" data-description="{{ suggest.property.description }}">
-                        <td>{{ suggest.property.address }}</td>
-                        <td>{{ suggest.property.deal_type }}</td>
-                        <td>{{ suggest.property.sqr_meter }}</td>
-                        <td>
-                            <form method="post" action="{% url 'client_suggested_properties' client_link=client.link %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
-                                <div class="btn-group">
-                                    <button type="submit" name="is_interested" value="interested" class="btn btn-outline-primary {% if suggest.is_interested == 'interested' %}active{% endif %}">Interested</button>
-                                    <button type="submit" name="is_interested" value="not_interested" class="btn btn-outline-primary {% if suggest.is_interested == 'not_interested' %}active{% endif %}">Not Interested</button>
-                                </div>
-                            </form>
-                        </td>
-                        <td><a href="{% url 'show_property' id=suggest.property.id user=suggest.user.username address=suggest.property.address%}" class="btn btn-primary">Show Property</a></td>
-                    </tr>
-                    
-                {% endfor %}
-            </tbody>
-        </table>
+        body {
+            font-family: "Montserrat Alternates", sans-serif;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
 
-        <!-- Add button to navigate to 'show_property' view -->
+        #map-container{
+                height: 80vh;
+                border-radius: 5px;
+            }
+        #map{
+            border-radius: 10px;
+        }
+        /* Media query for smaller screens */
+        @media (max-width: 767px) {
+            .card-body p{
+                font-size: 0.2rem;
+            }
+            .cont-list{
+                max-height: 50vh;
+                margin-bottom: 20px;
+            }
+            #map-container{
+                height: 27vh;
+            }
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease-in-out; /* Transition effect for zoom-in */
+            max-height: 500px;
+        }
+
+        .card:hover .card-img-top {
+            transform: scale(1.1); /* Zoom in on hover */
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .card-body p {
+            font-size: 0.8rem;
+            color: grey;
+        }
+
+        .card-body p {
+            margin: 0; /* Remove the default margin for <p> elements */
+            display: flex;
+            align-items: center; /* Align items vertically */
+        }
+
+        .card-body i {
+            margin-right: 5px; /* Adjust the spacing between icon and text */
+        }
         
-    </div>
+        .cont-list {
+            display: flex;
+            flex: 1;
+            height: 80vh;
+            scroll-behavior: smooth;
+            overflow-y: auto; /* Add this line to enable vertical scrollbar */
+            overflow-x: hidden;
+            width: 100%;
+        }
+        @media (max-width: 767px) {
+            
+        }
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-</body>
+        /* Targeting the scrollbar track */
+        .cont-list::-webkit-scrollbar {
+            width: 12px; /* Adjust the width of the scrollbar */
+            margin-right: -12px; /* Move the scrollbar to the left by its width */
+        }
+
+        /* Targeting the scrollbar handle or thumb */
+        .cont-list::-webkit-scrollbar-thumb {
+            background-color: grey; /* Color of the scrollbar thumb */
+            border-radius: 6px; /* Radius of the scrollbar thumb corners */
+        }
+
+        /* Optional: Hover effect on the scrollbar handle */
+        .cont-list::-webkit-scrollbar-thumb:hover {
+            background-color: grey; /* Color when hovering over the scrollbar thumb */
+        }
+
+        /* Targeting the scrollbar track when handle is being dragged */
+        .cont-list::-webkit-scrollbar-thumb:active {
+            background-color: #333; /* Color when scrollbar thumb is being dragged */
+        }
+        .header-container {
+            background-color: #f8f9fa; /* Add your desired background color */
+            margin-top: 5px; /* Add padding for better spacing */
+            border-radius: 10px; /* Add rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        }
+
+        .header-content {
+            padding: 5px; /* Add padding to content */
+            border-radius: 5px; /* Add rounded corners to content */
+            margin: 5px;
+        }
+        @media (max-width: 767px) {
+            .header-container h2 {
+                font-size: 1rem; /* Adjust the font size for small screens */
+            }
+
+            .header-container h3 {
+                font-size: 0.8rem; /* Adjust the font size for small screens */
+            }
+            .header-content{
+                padding: 1px;
+                margin: 0px;
+            }
+        }
+
+    </style>
+    <body>
+        
+        <div class="container-fluid">
+            <div class="row justify-content-center align-items-center header-container">
+                <div class="col-md-8 col-sm-12 text-center header-content">
+                    <h2 class="h2 h-md-auto h-lg-auto">{{ setups.welcome_message }}</h2>
+                </div>
+                <div class="col-md-4 col-sm-12 text-center header-content">
+                    <h3 class="h3 h-md-auto h-lg-auto">
+                        {{ setups.contacts }}
+                    </h3>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-8 cont-list">
+                    <div class="row row-cols-1 row-cols-lg-2">
+                        {% for suggest in suggestions %}
+                            <div class="col mb-4">
+                                <a href="{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}" class="card-link">
+                                    <div class="card" onclick="window.location='{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}';" style="cursor: pointer;">
+                                        <div class="view overlay">
+                                            {% if suggest.property.images %}
+                                                <img class="card-img-top" src="{{ suggest.property.images.url }}" alt="">
+                                            {% endif %}
+                                            <a href="#!">
+                                                <div class="mask rgba-white-slight"></div>
+                                            </a>
+                                        </div>
+                                        <div class="card-body" style="text-align: center;">
+                                            <h2 class="card-text">{{ suggest.property.address }}</h2>
+                                            <div class="row">
+                                                {% if suggest.property.total_rooms %}
+                                                    <div class="col-md-6 col-sm-6">
+                                                        <p><i class="material-icons">sensor_door</i> {{ suggest.property.total_rooms }} total rooms</p>
+                                                    </div>
+                                                {% endif %}
+                                                {% if suggest.property.bedrooms %}
+                                                    <div class="col-md-6 col-sm-6">
+                                                        <p><i class="material-icons">king_bed</i> {{ suggest.property.bedrooms }} bedrooms</p>
+                                                    </div>
+                                                {% endif %}
+                                                {% if suggest.property.toilets %}
+                                                    <div class="col-md-6 col-sm-6">
+                                                        <p><i class="material-icons">bathtub</i> {{ suggest.property.toilets }} toilets</p>
+                                                    </div>
+                                                {% endif %}
+                                                {% if suggest.property.sqr_meter %}
+                                                    <div class="col-md-6 col-sm-6">
+                                                        <p><i class="material-icons">home</i> {{ suggest.property.sqr_meter }} sqr meter</p>
+                                                    </div>
+                                                {% endif %}
+                                                {% if suggest.property.price_sqrm %}
+                                                    <div class="col-md-6 col-sm-6">
+                                                        <p><i class="material-icons">attach_money</i> Price: {{ suggest.property.price_sqrm }}</p>
+                                                    </div>
+                                                {% endif %}
+                                                {% if suggest.property.total_price %}
+                                                    <div class="col-md-6 col-sm-6">
+                                                        <p><i class="material-icons">sell</i> Total Price: {{ suggest.property.total_price }}</p>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <hr>
+                <div class="col-md-4">
+                    <div id="map-container" >
+                        <div id="map" style="height: 100%;"></div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+        {{ locations|json_script:"locations"}}
+
+        <script>
+            var user = '{{ user }}'; 
+            var map = L.map('map');
+            var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            let locations = JSON.parse(document.getElementById('locations').textContent);
+
+            var markers = [];
+
+            locations.forEach(location => {
+                if (location.property__id) {
+                    var marker = L.marker([location.property__latitude, location.property__longitude]);
+                    var url = `/suggested_properties/show_properties/${user}/${location.property__id}/${location.property__address}/`;
+                    var popupContent = "<b>Address:</b> " + location.property__address + "<br>";
+
+                        // Include additional property details if they exist
+                        if (location.property__total_rooms) {
+                            popupContent += "<b>Total rooms:</b> " + location.property__total_rooms + "<br>";
+                        }
+                        if (location.property__bedrooms) {
+                            popupContent += "<b>Bedrooms:</b> " + location.property__bedrooms + "<br>";
+                        }
+                        if (location.property__toilets) {
+                            popupContent += "<b>Toilets:</b> " + location.property__toilets + "<br>";
+                        }
+                        if (location.property__sqr_meter) {
+                            popupContent += "<b>Square Meter:</b> " + location.property__sqr_meter + "<br>";
+                        }
+                        if (location.property__price_sqrm) {
+                            popupContent += "<b>Price per Square Meter:</b> " + location.property__price_sqrm + "<br>";
+                        }
+                        if (location.property__total_price) {
+                            popupContent += "<b>Total Price:</b> " + location.property__total_price + "<br>";
+                        }
+                        popupContent += `<a href='${url}'>Show more</a>`;
+
+                    marker.bindPopup(popupContent);
+                    markers.push(marker);
+                }
+            });
+
+            // Create a feature group from the markers and add it to the map
+            var markerGroup = L.featureGroup(markers).addTo(map);
+
+            // Fit the map view to the bounds of the marker group
+            map.fitBounds(markerGroup.getBounds());
+        </script>
+    </body>
 
 </html>

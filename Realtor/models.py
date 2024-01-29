@@ -83,7 +83,11 @@ class Property(models.Model):
 
     @property
     def total_price(self):
-        return self.price_sqrm * self.sqr_meter
+        try:
+            total_price_calc = self.price_sqrm * self.sqr_meter
+        except :
+            total_price_calc = None
+        return total_price_calc
 
     def save(self, *args, **kwargs):
         # Save the lowercase version of the address

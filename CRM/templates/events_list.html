@@ -12,9 +12,63 @@
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two columns, first column takes 2 times the space of the second */
+        grid-template-rows: 1fr 2fr; /* Single row */
+        grid-template-areas: 
+            "calendar task-list"
+            "main-map task-list"; /* Define the grid areas */
+        height: 100vh; /* Set the container height to the full viewport height */
+        column-gap: 50px;
+    }
+
+    #calendar {
+        grid-area: calendar;
+    }
+
+    #main-map-container {
+        grid-area: main-map;
+        margin-top: 20px;
+    }
+
+    .task_list {
+        grid-area: task-list;
+        height: 100%; /* Full height of the second column */
+    }
+
+    @media (max-width: 767px) {
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            grid-template-rows: 0.2fr 0.4fr 0.4fr;
+            grid-template-areas: 
+                "calendar"
+                "task-list"
+                "main-map"; /* Define the grid areas */
+        }
+        .task_list {
+            grid-area: task-list;
+            margin-top: 20px;
+            max-height: none; /* Full height of the second column */
+            height: 400px;
+        }
+        #events-list {
+            height: 350px;
+            overflow-y: auto;
+        }
+
+        #main-map-container {
+            grid-area: main-map;
+            margin-top: 20px;
+            height: 300px;
+        }
+    }
+</style>
 
 <div class="col-md-12">
-    <div class="row" style="margin-bottom: 10px;">
+    <div class="row container-header" >
         <h2 class="col-md-4">Schedule</h2>
         <div class="col-md-4" id="selected-date" style="font-weight: 900; font-size: 2rem;"></div>
         <div class="col-md-4 d-flex justify-content-end" >
@@ -159,7 +213,7 @@
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
-                                    {{ form.participant_property.label_tag }}
+                                    <label for="id_participant_buyer">Property:</label>
                                     {{ form.participant_property|add_class:"form-control" }}
                                     {% for error in form.participant_property.errors %}
                                         <span class="text-danger">{{ error }}</span>
@@ -194,16 +248,14 @@
             </div>
         </div>  
     </div>
-    <div class="row">
-        <div class="col-md-6 order-md-1">
-            <div id="calendar" class="active"></div>
-            <div id="main-map-container">
-                <div id="main-map" style="height: 100%;"></div>
-            </div>
+    <div class="grid container-content">
+        <div id="calendar" class="active"></div>
+        <div id="main-map-container">
+            <div id="main-map" style="height: 100%;"></div>
         </div>
         
-        <div class="col-md-6 order-md-2">
-            <h2>Task list</h2>
+        <div class="task_list">
+            <h5 style="text-align: center;">Task list</h5>
             <div id="events-list">
             </div>
         </div>
@@ -269,12 +321,9 @@
             /* border: 1px solid #ddd; */
             border-radius: 5px;
             margin-top: 10px;
-            height: 80vh;
             overflow-y: auto;
         }
-        .spacer {
-            height: 80px; /* Adjust the height as needed */
-        }
+        
         .event-actions {
             display: flex;
             justify-content: center;
@@ -288,11 +337,7 @@
             padding-top: 4px;
         }
 
-        #main-map-container {
-            height: 43vh;
-            width: 100%;
-            margin-top: 20px;
-        }
+        
         #scroll-buttons {
             position: fixed;
             bottom: 70px;
@@ -539,7 +584,7 @@
 
     
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                // initialView: 'dayGridMonth',
+                initialView: 'dayGridMonth',
                 selectable: true,
                 // height: 500,
                 height: 330,
@@ -794,9 +839,7 @@
     
                         eventsDiv.appendChild(eventDiv);
                     });
-                    const spacerDiv = document.createElement('div');
-                    spacerDiv.classList.add('spacer'); 
-                    eventsDiv.appendChild(spacerDiv);
+                    
                     // Log latitude and longitude of each event
                     
                     // Update the map with the filtered locations

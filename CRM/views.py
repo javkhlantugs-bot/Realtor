@@ -1,9 +1,9 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, ClientWishForm, PropertyForm1, ClientForm1, ClientPhoneNumbers, ClientRelationships, PropertyImageForm, EventTypeForm
+from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, PropertyForm1, ClientForm1, ClientPhoneNumbers, ClientRelationships, PropertyImageForm, EventTypeForm, ClientInterestForm, suggestion_link_setup
 from Realtor.models import Property
 from django.contrib import messages
-from .models import Files, Event, Clent, Client_suggestion, ClientInterest, event_type_model
+from .models import Files, Event, Clent, Client_suggestion, ClientInterest, event_type_model, suggestion_link_settings
 from Realtor.models import PropertyImage
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -44,28 +44,6 @@ def create_client(request):
 
     return render(request, 'create_client.html', {'form': form})
 
-@login_required
-def create_client_interest(request, client_id):
-    client = get_object_or_404(Clent, id=client_id)
-
-    if request.method == 'POST':
-        form = ClientWishForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            interest = form.save(commit=False)
-            interest.client = client
-            interest.save()
-            return redirect('create_client_interest', client_id=client_id)
-        else:
-            print(form.errors)
-    else:
-        form = ClientWishForm(user=request.user)
-
-    context = {
-        'form': form,
-        'client': client,
-    }
-
-    return render(request, 'create_client_interest.html', context)
 
 @login_required
 def add_property(request):
@@ -342,6 +320,15 @@ def delete_event(request, event_id):
     
     return render(request, 'delete_event.html', {'event': event})
 
+@login_required
+def delete_property(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
+    if request.method == 'POST':
+        property.delete()
+        return redirect('properties_list')
+    
+    return render(request, 'delete_property.html', {'property': property})
+
 def client_list(request):
     clients = Clent.objects.filter(user=request.user.id)
     if request.method == 'POST':
@@ -364,6 +351,15 @@ def client_events(request, client_id):
     # Retrieve all suggestions for the client
     suggestions = Client_suggestion.objects.filter(client=client_id, user = request.user.id)
     interested_list = Client_suggestion.objects.filter(client=client_id, is_interested = 'interested', user = request.user.id)
+    suggested_list = Client_suggestion.objects.filter(client=client_id, is_suggested = 'suggested', is_interested='not_interested', user = request.user.id)
+    rest_list = Client_suggestion.objects.filter(client=client_id, is_suggested = 'not_suggested',is_interested='not_interested', user = request.user.id)
+    
+    rest_map = list(
+        rest_list.values('property__latitude', 'property__longitude', 'property__deal_type','property__property_type',
+                               'property__total_rooms', 'property__address', 'property__id'))
+    suggested_map = list(
+        suggested_list.values('property__latitude', 'property__longitude', 'property__deal_type','property__property_type',
+                               'property__total_rooms', 'property__address', 'property__id'))
     interested_map = list(
         interested_list.values('property__latitude', 'property__longitude', 'property__deal_type','property__property_type',
                                'property__total_rooms', 'property__address', 'property__id'))
@@ -382,8 +378,32 @@ def client_events(request, client_id):
     else:
         form = ClientSuggestionForm()
 
-    return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions,'interested_map':interested_map, 'wishes':wishes})
+    return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions,'interested_map':interested_map, 'wishes':wishes,'suggested_map':suggested_map,'rest_map':rest_map})
 
+def add_client_notes(request, client_id):
+    if request.method == 'POST':
+        form = ClientInterestForm(request.POST)
+        client = get_object_or_404(Clent, id=client_id)
+        if form.is_valid():
+            interest = form.save(commit=False)
+            interest.user = request.user
+            interest.client = client
+            interest.save()
+            return redirect('client_events', client_id=client_id)
+        else:
+            print(form.errors)
+    else:
+        form = ClientInterestForm()
+    return render(request, 'add_client_notes.html', {'form': form,'client_id':client_id})
+
+def delete_client_note(request, note_id, client_id):
+    note = get_object_or_404(ClientInterest, id=note_id)
+    if request.method == 'POST':
+        note.delete()
+        return JsonResponse({'message': 'Note deleted successfully'})
+
+    
+    return render(request, 'delete_client_note.html', {'note': note})
 
 @login_required
 def edit_client(request, client_id):
@@ -703,3 +723,17 @@ def delete_event_type(request, event_type_id):
         return redirect('event_types_list')
 
     return render(request, 'delete_event_type.html', {'event_type': event_types})
+
+def suggestions_link_settings(request):
+    
+    setups = get_object_or_404(suggestion_link_settings, user=request.user)
+
+    if request.method == 'POST':
+        form = suggestion_link_setup(request.POST, instance=setups)
+        if form.is_valid():
+            form.save()
+            return redirect('settings')
+    else:
+        form = suggestion_link_setup(instance=setups)
+
+    return render(request, 'edit_event_type.html', {'setups': setups, 'form': form})

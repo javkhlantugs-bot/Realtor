@@ -15,16 +15,17 @@
         z-index: 1000000;
     }
 </style>
-<div class="col-md-12">
-    <div class="row" style="margin-bottom: 20px;">
-        <h2 class="col-md-4">Properties</h2>
-        <div class="col-md-8 d-flex justify-content-end" >
-            <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#propertyModal">
-                <i class="material-icons mr-2">add</i> Add Property
-            </a>
-        </div>
+<div class="row container-header" style="margin-bottom: 20px;">
+    <h2 class="col-md-4">Properties</h2>
+    <div class="col-md-8 d-flex justify-content-end" >
+    <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#propertyModal">
+        <i class="material-icons mr-2">add</i> Add Property
+    </a>
+</div>
+    
+</div>
 
-    </div>
+<div class="col-md-12 container-content">
     <table id="propertiesTable" class="display">
         <thead>
             <tr>
@@ -377,7 +378,20 @@ function goBack() {
     jQuery.noConflict();
     jQuery(document).ready(function($) {
         // Your DataTables initialization code here
-        $('#propertiesTable').DataTable();
+        $('#propertiesTable').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 'td:not(:last-child)'
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'd-none d-sm-table-cell', // Hide on small screens
+                    targets: [1, 2, 3] // Adjust column indices based on your table structure
+                }
+            ]
+        });
     });
 </script>
 <script>

@@ -1,6 +1,6 @@
 {% extends 'base_event.html' %}
 
-{% block title %}Import Google Contacts{% endblock %}
+{% block title %}Settings{% endblock %}
 
 {% block content %}
 
@@ -31,6 +31,9 @@
                 </div>
                 <div class="card-body">
                     <a href="{% url 'event_types_list' %}" class="btn btn-outline-primary">Go to Event Type List</a>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'suggestions_link_settings' %}" class="btn btn-outline-primary">Setup Suggestions headers</a>
                 </div>
             </div>
         </div>

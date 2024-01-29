@@ -10,7 +10,7 @@
 
 
 <div class="col-md-12">
-    <div class="row" style="margin-bottom: 10px;">
+    <div class="row container-header" style="margin-bottom: 10px;">
         <h2 class="col-md-4">Clients List</h2>
         <div class="col-md-8 d-flex justify-content-end" >
             <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#contactModal">
@@ -18,31 +18,33 @@
             </a>
         </div>
     </div>
-    <table id="clientsTable" class="display">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Phone number</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Details</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            {% for client in clients %}
+    <div class="container-content">
+        <table id="clientsTable" class="display">
+            <thead>
                 <tr>
-                    <td>{{ client.client_name }}</td>
-                    <td>{{ client.phone_number }}</td>
-                    <td>{{ client.email }}</td>
-                    <td>{{ client.get_status_display }}</td>
-                    <td>
-                        <a href="{% url 'client_events' client.id %}">Show more</a>
-                    </td>
+                    <th>Name</th>
+                    <th>Phone number</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Details</th>
+
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                    <tr>
+                        <td>{{ client.client_name }}</td>
+                        <td>{{ client.phone_number }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.get_status_display }}</td>
+                        <td>
+                            <a href="{% url 'client_events' client.id %}">Show more</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <div class="modal" id="contactModal" >
         <div class="modal-dialog">

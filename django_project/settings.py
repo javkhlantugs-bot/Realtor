@@ -80,6 +80,7 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/crm/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

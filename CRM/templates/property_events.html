@@ -10,32 +10,47 @@
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<div class="col-md-12">
-    <div  class="row">
-        <h2 class="col-md-10">{{ property.address }}</h2>
-        
-        <!-- <a class="col-md-1 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" href="{% url 'edit_property' property.id %}">
-            Edit property<i class="material-icons mr-2">edit</i> 
-        </a> -->
-        <div class="col-md-2 d-flex justify-content-end" >
-            <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px; margin-right: 10px;" href="{% url 'show_property' user=user.username id=property.id address=property.address%}">
-                <i class="material-icons mr-2">web</i> Show Property Link
-            </a>
-            <br>
-            <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" href="{% url 'edit_property' property.id %}">
-                <i class="material-icons mr-2">edit</i> Edit property
-            </a>
-        </div>
-    </div>
+<style>
+    .not-selected {
+        color: #6c757d; /* Grey text color */
+        border-color: #6c757d; /* Grey border color */
+    }
+    .btn-primary{
+        background-color: #1a1a1a;
+    }
+</style>
+<div  class="row container-header">
+    <h2 class="col-md-10">{{ property.address }}</h2>
     
+    <!-- <a class="col-md-1 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" href="{% url 'edit_property' property.id %}">
+        Edit property<i class="material-icons mr-2">edit</i> 
+    </a> -->
+    <div class="col-md-2 d-flex justify-content-end" >
+        <a class="col-md-2 btn btn-danger d-flex align-items-center justify-content-center"
+            style="width: 200px; margin-right: 10px;"
+            href="{% url 'delete_property' property_id=property.id %}">
+            <i class="material-icons mr-2">clear</i> Delete
+        </a>
+        <br>
+        <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px; margin-right: 10px;" href="{% url 'show_property' user=user.username id=property.id address=property.address%}">
+            <i class="material-icons mr-2">link</i> Link
+        </a>
+        <br>
+        <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" href="{% url 'edit_property' property.id %}">
+            <i class="material-icons mr-2">edit</i> Edit
+        </a>
+    </div>
+</div>
+
+<div class="col-md-12 container-content">
     <div class="col-md-12">
-        <h2 class="mb-4">Event List</h2>
+        <h5 class="mb-4" style="text-align: center;">Event List</h5>
         <table id="eventsTable" class="display">
             <thead>
                 <tr>
-                    <th>Event Type</th>
-                    <th>Event Date</th>
-                    <th>Event Description</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,32 +64,38 @@
             </tbody>
         </table>
     </div>
-</div>
-<hr style="margin-top: 10px; margin-bottom: 10px;">
-<!-- client_events.html -->
-<div class="col-md-12">
-    <h1>Client List</h1>
+    <hr style="margin-top: 10px; margin-bottom: 10px;">
+    <!-- client_events.html -->
+    <h5 style="text-align: center;">Client List</h5>
     <table id = 'clientlist' class="display">
         <thead>
             <tr>
-                <th>Client Name</th>
-                <th>Phone Number</th>
+                <th>Client</th>
+                <th>Phone</th>
                 <th>Suggestion</th>
-                <th>Is Interested</th>
+                <th>Interested</th>
             </tr>
         </thead>
         <tbody>
             {% for suggest in suggestions %}
                 <tr>
-                    <td>{{ suggest.client.client_name }}</td>
+                    <td>
+                        <a href="{% url 'client_events' client_id=suggest.client.id %}">
+                            {{ suggest.client.client_name }}
+                        </a>
+                    </td>
                     <td>{{ suggest.client.phone_number }}</td>
                     <td>
                         <form method="post" action="{% url 'property_events' property_id=property.id %}">
                             {% csrf_token %}
                             <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
                             <div class="btn-group">
-                                <button type="submit" name="is_suggested" value="suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %}">Suggested</button>
-                                <button type="submit" name="is_suggested" value="not_suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %}">Not Suggested</button>
+                                <button type="submit" name="is_suggested" value="suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected">
+                                    <i class="material-icons">thumb_up</i>
+                                </button>
+                                <button type="submit" name="is_suggested" value="not_suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected">
+                                    <i class="material-icons">thumb_down</i>
+                                </button>
                             </div>
                         </form>
                     </td>
@@ -103,7 +124,21 @@
     jQuery.noConflict();
     jQuery(document).ready(function($) {
         // Your DataTables initialization code here
-        $('#clientlist').DataTable();
+        $('#clientlist').DataTable({
+            autoWidth:true,
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 'td:not(:last-child)'
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'd-none d-sm-table-cell', // Hide on small screens
+                    targets: [3] // Adjust column indices based on your table structure
+                }
+            ]
+        });
     });
 </script>
 

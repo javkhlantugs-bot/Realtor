@@ -6,18 +6,19 @@
 {% block content %}
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
     .form-group {
         margin: 5px;
     }
 </style>
-<div class="col-md-12">
-    <div class="row">
-        <div class="col-md-6">
-            <h2>Edit: {{ property.address }}</h2>
-        </div>
+<div class="row container-header">
+    <div class="col-md-6">
+        <h2>Edit: {{ property.address }}</h2>
     </div>
+</div>
+<div class="col-md-12 container-content">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <!-- {{ form.as_p}} -->
@@ -117,7 +118,10 @@
             </div>
         </div>
         <hr>
-        <h5 style="cursor: pointer;" data-toggle="collapse" data-target="#featureCollapse">Features</h5>
+        <h5 style="cursor: pointer;" data-toggle="collapse" data-target="#featureCollapse">
+            Features
+            <i class="fas fa-chevron-down float-right"></i>
+        </h5>
         <div id="featureCollapse" class="row collapse">
             <div class="col-md-2">
                 <div class="form-group">
@@ -207,7 +211,10 @@
                 padding: 5px; /* Add padding to control vertical space */
             }
             </style>
-        <h5 style="cursor: pointer;" data-toggle="collapse" data-target="#descCollapse">Descriptions</h5>
+        <h5 style="cursor: pointer;" data-toggle="collapse" data-target="#descCollapse" aria-expanded="false">
+            Descriptions
+            <i class="fas fa-chevron-down float-right"></i>
+        </h5>
         <div id="descCollapse" class="row collapse">
         <!-- <div class="row"> -->
             <div class="col-md-4">
@@ -226,24 +233,6 @@
                 <div class="form-group">
                     {{ form.living_room_description.label_tag }}
                     {{ form.living_room_description|add_class:"form-control" }}
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.interior_features_description.label_tag }}
-                    {{ form.interior_features_description|add_class:"form-control" }}
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.exterior_features_description.label_tag }}
-                    {{ form.exterior_features_description|add_class:"form-control" }}
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.style_description.label_tag }}
-                    {{ form.style_description|add_class:"form-control" }}
                 </div>
             </div>
             <div class="col-md-4">
@@ -342,9 +331,10 @@
         <!-- Add hidden fields for latitude and longitude -->
         <input type="hidden" name="latitude" id="latitude" value={{form.latitude.value}}>
         <input type="hidden" name="longitude" id="longitude" value={{form.longitude.value}}>
-        <div class="row" style="margin-bottom: 20px;">
-            <button type="submit" class="btn btn-outline-primary" style="width: 100px; margin-right: 10px; margin-bottom: 20px; height: 30px;">Submit</button>
-            <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100px; margin-bottom: 20px; height: 30px;">Back</a>
+        <div class="mt-auto" style="justify-content: center; align-items: center;">
+            <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; ">Save Changes</button>
+
+            <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px; ">Back</a>
         </div>
     </form>
 </div>

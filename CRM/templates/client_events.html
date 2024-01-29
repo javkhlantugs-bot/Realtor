@@ -17,6 +17,8 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 
 <style>
     #suggestionsTable td {
@@ -47,140 +49,248 @@
         width: 100%; /* Make the input fields take 100% width */
         border: none;
     }
-
-    @media (max-width: 767px) {
-
-    .suggestionsTable_container{
-        display: none;
+    @media (max-width: 767px)  {
+        #suggestionsTable tfoot {
+            display: none;
+        }
+        
     }
 
-    }
     </style>
-<div class="col-md-12">
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <h2>Client: {{ client.client_name }}</h2>
+<div class="row mb-3 container-header">
+    <div class="col-md-4">
+        <h2>Client: {{ client.client_name }}</h2>
+    </div>
+    <div class="col-md-4">
+        <h2>Status: {{ client.get_status_display}}</h2>
+    </div>
+    <div class="col-md-4 d-flex justify-content-end">
+        <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="generateLink('{{ user }}','{{ client.link }}' )">
+            Link <i class="fas fa-link"></i> 
+        </button>
+        <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="create_note()">
+            Note <i class="fas fa-sticky-note"></i>  
+        </button>
+        <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="addEvent()">
+            Task <i class="fas fa-calendar-plus"></i> 
+        </button>
+        <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="editClient()">
+            Edit <i class="fas fa-edit"></i>
+        </button>
+    </div>
+</div>
+    
+<div class="container-content">
+    <div class="row mb-12">
+        <div class="col-md-4" style="text-align: center;">
+            <h5>Client Info</h5>
+            <p>Name: {{ client.client_name }}</p>
+            <p>Status: {{ client.get_status_display }}</p>
+            <p>Phone Number: {{ client.phone_number }}</p>
+            <p>Email: {{ client.email }}</p>
         </div>
-        <div class="col-md-4">
-            <h2>Status: {{ client.get_status_display}}</h2>
+        <div class="col-md-4" style="text-align: center;">
+            <h5>Significant life events</h5>
+            <p>Born: {{ client.birthday }}</p>
+            <p>Wedding Anniversary: {{ client.wedding_anniversary }}</p>
+            <p>Home Anniversary: {{ client.home_anniversary }}</p>
         </div>
-        <div class="col-md-4 d-flex justify-content-end">
-            <button style="margin: 5px;"  class= "btn btn-outline-primary mr-2" onclick="create_wish()">Add clients wish</button>
-            <button style="margin: 5px;"  class= "btn btn-outline-primary mr-2" onclick="addEvent()">Add Event</button>
-            <button style="margin: 5px;"  class= "btn btn-outline-primary mr-2" onclick="editClient()">Edit</button>
+        <div class="col-md-4" style="text-align: center;">
+            <h5  >Social accounts</h5>
+            <div style="padding-top: 10px;"></div>
+            <a href="{{ client.facebook_url }}" target="_blank" style="{% if client.facebook_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none;">
+                <i class="fab fa-facebook" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
+            </a>
+            <a href="{{ client.instagram_url }}" target="_blank" style="{% if client.instagram_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none;">
+                <i class="fab fa-instagram" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
+            </a>
+            <a href="{{ client.twitter_url }}" target="_blank" style="{% if client.twitter_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none;">
+                <i class="fab fa-twitter" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
+            </a>
+            
         </div>
     </div>
     <hr>
-    
-</div>
-<h3>Client Info</h3>
-<div class="row mb-12">
-    <div class="col-md-4">
-        <p><strong>Phone Number: </strong>{{ client.phone_number }}</p>
-    </div>
-    <div class="col-md-4">
-        <p><strong>Email: </strong>{{ client.email }}</p>
-    </div>
-</div>
-<h4>Wishes</h4>
-
-
-<div style="border-radius: 10px;padding: 10px;">
-    <h3>Events</h3>
-    <table id="eventsTable" class="display">
-        <thead>
-            <tr>
-                <th>Event Type</th>
-                <th>Event Date</th>
-                <th>Event Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for event in events %}
-                <tr>
-                    <td>{{ event.event_type }}</td>
-                    <td>{{ event.event_date }}</td>
-                    <td>{{ event.event_description }}</td>
-                    <td>
-                        
-                        <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">
-                            <i class="material-icons">edit</i> 
+    <div style="border-radius: 10px; padding: 10px;">
+        <h5 style="text-align: center;">Notes</h5>
+        <div class="card-columns">
+            {% for note in wishes %}
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">{{ note.note }}</p>
+                        <a href="#" class="btn btn-danger" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="position: absolute; top: 5px; right: 5px;">
+                            <i class="material-icons">delete</i>
                         </a>
-                        <a href="#" class="btn btn-danger" onclick="confirmDelete('{{ event.id }}')">
-                            <i class="material-icons">delete</i> 
-                        </a>
-                        
-                    </td>
-                </tr>
+                    </div>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
-<!-- client_events.html -->
-<div class="col-md-12 suggestionsTable_container" style="padding: 10px; margin-top: 10px; margin-bottom: 10px;border-radius: 10px;background-color: rgb(238, 238, 238);">
-    <h3>Properties List</h3>
-    <table id="suggestionsTable" class="display">
-        <thead>
-            <tr>
-                <th class="text-center">Property Address</th>
-                <th class="text-center">Deal type</th>
-                <th class="text-center">Total room</th>
-                <th class="text-center">Bed room</th>
-                <th class="text-center">Toilet</th>
-                <th class="text-center">Square Meter</th>
-                <th class="text-center">Suggestion</th>
-                <th class="text-center">Is Interested</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <td>Property Address</td>
-                <td>Deal type</td>
-                <td>Total room</td>
-                <td>Bed room</td>
-                <td>Toilet</td>
-                <td>Square Meter</td>
-                <td>Suggestion</td>
-                <td>Is Interested</td>
-            </tr>
-        </tfoot>
-        <tbody>
-            {% for suggest in suggestions %}
-                <tr>
-                    <td class="text-center">{{ suggest.property.address }}</td>
-                    <td class="text-center">{{ suggest.property.deal_type }}</td>
-                    <td class="text-center">{{ suggest.property.total_rooms }}</td>
-                    <td class="text-center">{{ suggest.property.bedrooms }}</td>
-                    <td class="text-center">{{ suggest.property.toilets }}</td>
-                    <td class="text-center">{{ suggest.property.sqr_meter }}</td>
-                    <td class="text-center">
-                        <form method="post" action="{% url 'client_events' client_id=client.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
-                            <div class="btn-group">
-                                <button type="submit" name="is_suggested" value="suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected">Suggested</button>
-                                <button type="submit" name="is_suggested" value="not_suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected ">Not Suggested</button>
-                            </div>
-                        </form>
-                    </td>
-                    <td class="text-center" style="{% if suggest.is_interested == 'interested' %}font-weight: bold; color: green;{% endif %}">
-                        {{ suggest.get_is_interested_display }}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div class="mt-3" style="padding-bottom: 10px;">
-        <button class="btn btn-outline-primary" onclick="generateLink('{{ client.link }}')">Go to Suggestions link</button>
-        <input type="text" id="generatedLink" readonly class="form-control mt-2" style="display: none;">
-        <button class="btn btn-outline-primary" id="suggestAllButton">Suggest All</button>
+        </div>
     </div>
-</div>
-<hr>
-<h5>Interested properties</h5>
-<div id="map-container" style=" height: 300px; width: 100%; margin-top: 20px;">
-    <div id="map" style="height: 100%;"></div>
+    <hr>
+    <div style="border-radius: 10px;padding: 10px;">
+        <h5 style="text-align: center;">Events</h5>
+        <table id="eventsTable" class="display">
+            <thead>
+                <tr>
+                    <th>Event Type</th>
+                    <th>Event Date</th>
+                    <th>Event Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>{{ event.event_type }}</td>
+                        <td>{{ event.event_date }}</td>
+                        <td>{{ event.event_description }}</td>
+                        <td>
+                            
+                            <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">
+                                <i class="material-icons">edit</i> 
+                            </a>
+                            <a href="#" class="btn btn-danger" onclick="confirmDelete('{{ event.id }}')">
+                                <i class="material-icons">delete</i> 
+                            </a>
+                            
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr>
+    <!-- client_events.html -->
+    <div class="col-md-12 suggestionsTable_container" style="width: 100%; overflow-x: auto;">
+        <h5 style="text-align: center;">Properties List</h5>
+        <table id="suggestionsTable" class="display">
+            <thead>
+                <tr>
+                    <th class="text-center">Address</th>
+                    <th class="text-center">Type</th>
+                    <th class="text-center">Total room</th>
+                    <th class="text-center">Bed room</th>
+                    <th class="text-center">Toilet</th>
+                    <th class="text-center">Square Meter</th>
+                    <th class="text-center">Suggestion</th>
+                    <th class="text-center">Interested</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <td>Property Address</td>
+                    <td>Deal type</td>
+                    <td>Total room</td>
+                    <td>Bed room</td>
+                    <td>Toilet</td>
+                    <td>Square Meter</td>
+                    <td>Suggestion</td>
+                    <td>Is Interested</td>
+                </tr>
+            </tfoot>
+            <tbody>
+                {% for suggest in suggestions %}
+                    <tr>
+                        <td class="text-center">
+                            <a href="{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}">
+                                {{ suggest.property.address }}
+                            </a>
+                        </td>
+                        <td class="text-center">{{ suggest.property.deal_type }}</td>
+                        <td class="text-center">{{ suggest.property.total_rooms }}</td>
+                        <td class="text-center">{{ suggest.property.bedrooms }}</td>
+                        <td class="text-center">{{ suggest.property.toilets }}</td>
+                        <td class="text-center">{{ suggest.property.sqr_meter }}</td>
+                        <td class="text-center">
+                            <form method="post" action="{% url 'client_events' client_id=client.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
+                                <div class="btn-group">
+                                    <button type="submit" name="is_suggested" value="suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected">
+                                        <i class="material-icons">thumb_up</i>
+                                    </button>
+                                    <button type="submit" name="is_suggested" value="not_suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected">
+                                        <i class="material-icons">thumb_down</i>
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                        <td class="text-center" style="{% if suggest.is_interested == 'interested' %}font-weight: bold; color: green;{% endif %}">
+                            {{ suggest.get_is_interested_display }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="input-group mb-3" style="margin-top: 20px;">
+            <span class="input-group-text">Suggestion Link</span>
+            <input type="text" id="generatedLink" class="form-control" value="https://estates.solutions/suggested_properties/{{ user }}/{{ client.link }}" readonly>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard()">Copy link</button>
+            </div>
+        </div>
+        <style>
+            @media (max-width: 767px) {
+                .input-group #generatedLink{
+                    display: none;
+                }
+                .input-group{
+                    max-width: 250px;
+                }
+            }
+            
+        </style>
+    </div>
+    <hr>
+    <div id="map-legend">
+        <h5>Properties on map</h5>
+        <div class="legend-item">
+            <img class="legend-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png" alt="Interested">
+            <div class="legend-label">Interested</div>
+        </div>
+        <div class="legend-item">
+            <img class="legend-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png" alt="Suggested">
+            <div class="legend-label">Suggested</div>
+        </div>
+        <div class="legend-item">
+            <img class="legend-image" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png" alt="Not Suggested">
+            <div class="legend-label">Not Suggested</div>
+        </div>
+        <style>
+            #map-legend{
+                display: flex;
+                flex-direction: row;
+            }
+            .legend-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+                margin-left: 5px;
+                padding-left: 10px;
+            }
+
+            .legend-color {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                margin-right: 5px;
+            }
+            .legend-image{
+                max-height: 25px;
+            }
+            .legend-label{
+                padding-left: 5px;
+            }
+            @media (max-width: 767px)  {
+                #map-legend{
+                    flex-direction: column;
+                }
+            }
+        </style>
+    </div>
+    <div id="map-container" style=" height: 300px; width: 100%; margin-top: 20px;">
+        <div id="map" style="height: 100%;"></div>
+    </div>
 </div>
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -191,27 +301,30 @@
     function goBack() {
         window.history.back();
     }
-    function generateLink(clientLink) {
-        const link = `/suggested_properties/${clientLink}`;
-        const generatedLinkElement = document.getElementById('generatedLink');
-        generatedLinkElement.href = link;
-        generatedLinkElement.style.display = 'inline-block';
+</script>
+<script>
+    function copyToClipboard() {
+        // Select the text in the input field
+        var linkInput = document.getElementById('generatedLink');
+        linkInput.select();
+        document.execCommand('copy');
 
-        // If you want to open the link in a new tab, you can remove the next line
-        window.location.href = link;
+        // Optionally, you can provide feedback to the user
+        alert('URL copied to clipboard!');
     }
 </script>
+
 <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {
         $('#suggestionsTable tfoot td').each(function () {
-            var title = $(this).text();
-            $(this).html('<input type="text" placeholder="Search ' + title + '"/>');
+            $(this).html('<input type="text" style="width: 100px;" placeholder="Search ' + $(this).text() + '"/>');
         });
-
+        
+        
         // Your DataTables initialization code here
         $('#suggestionsTable').DataTable({
-            autoWidth: true,
+            autoWidth:true,
             initComplete: function () {
                 this.api().columns().every(function () {
                     var that = this;
@@ -220,7 +333,19 @@
                         if (that.search() !== this.value) { that.search(this.value).draw(); }
                     });
                 });
-            }
+            },
+            responsive: {
+                details: {
+                    type: 'none',
+                    target: 'td:not(:last-child)'
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'd-none d-sm-table-cell', // Hide on small screens
+                    targets: [1, 2, 3, 4,5,7] // Adjust column indices based on your table structure
+                }
+            ]
         });
 
         $("#suggestAllButton").click(function (e) {
@@ -250,18 +375,13 @@
     });
 </script>
 
-<!-- <script>
-    jQuery.noConflict();
-    jQuery(document).ready(function($) {
-        // Your DataTables initialization code here
-        $('#eventsTable').DataTable();
-    });
-</script> -->
+
 <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {
         // Your DataTables initialization code with the responsive option and column visibility control
         $('#eventsTable').DataTable({
+            autoWidth:true,
             responsive: {
                 details: {
                     type: 'column',
@@ -278,9 +398,6 @@
     });
 </script>
 <script>
-    $(document).ready(function() {
-        $('#suggestionsTable').DataTable();
-    });
 
     function addEvent() {
         // Replace this line with your actual logic to navigate to the add_event page
@@ -289,12 +406,9 @@
         // Also, fill the participant_buyer field with the client's name
         document.getElementById('id_participant_buyer').value = '{{ client.client_name }}';
     }
-    function create_wish() {
+    function create_note() {
         // Replace this line with your actual logic to navigate to the add_event page
-        window.location.href = "{% url 'create_client_interest' client.id %}";
-
-        // Also, fill the participant_buyer field with the client's name
-        document.getElementById('id_participant_buyer').value = '{{ client.client_name }}';
+        window.location.href = "{% url 'add_client_notes' client.id %}";
     }
 
     function editClient() {
@@ -330,10 +444,38 @@
     }
 }
 </script>
+<script>
+    function confirmDeleteNote(note_id, client_id) {
+        const isConfirmed = window.confirm('Are you sure you want to delete this note?');
 
+        if (isConfirmed) {
+            fetch(`/crm/events/delete_notes/${note_id}/${client_id}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                // Additional options like body for POST requests can be added here
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+            
+        }
+    }
+</script>
+<script>
+    function generateLink(user, clientLink) {
+        var url = `/suggested_properties/${user}/${clientLink}`;
+        window.location.href = url;
+    }
+</script>
 
 {{ interested_map|json_script:"interested_json"}}
-
+{{ suggested_map|json_script:"suggested_json"}}
+{{ rest_map|json_script:"rest_json"}}
 
 <script>
     var map = L.map('map');
@@ -341,24 +483,74 @@
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-
-    let locations = JSON.parse(document.getElementById('interested_json').textContent);
-
+    // Parse location data
+    let interestedLocations = JSON.parse(document.getElementById('interested_json').textContent);
+    let suggestedLocations = JSON.parse(document.getElementById('suggested_json').textContent);
+    let restLocations = JSON.parse(document.getElementById('rest_json').textContent);
+    
     var markers = [];
 
-    locations.forEach(location => {
-        if (location.property__id) {
-            var marker = L.marker([location.property__latitude, location.property__longitude]);
-            var popupContent = "<b>Address:</b> " + location.property__address + "<br>" +
-                "<b>Deal:</b> " + location.property__deal_type + "<br>" +
-                "<b>Type:</b> " + location.property__property_type + "<br>" +
-                "<b>Total rooms:</b> " + location.property__total_rooms + "<br>" +
-                "<a href='/path/to/property/" + location.property__id + "'>Show more</a>";
+    // Function to create markers for a specific location group
+    function createMarkers(locations, icon) {
+        locations.forEach(location => {
+            if (location.property__id) {
+                var markerIcon = new L.Icon({
+                    iconUrl: icon.options.iconUrl,
+                    shadowUrl: icon.options.shadowUrl,
+                    iconSize: icon.options.iconSize,
+                    iconAnchor: icon.options.iconAnchor,
+                    popupAnchor: icon.options.popupAnchor,
+                    shadowSize: icon.options.shadowSize
+                });
 
-            marker.bindPopup(popupContent);
-            markers.push(marker);
-        }
+                var marker = L.marker([location.property__latitude, location.property__longitude], { icon: markerIcon });
+                var popupContent = "<b>Address:</b> " + location.property__address + "<br>" +
+                    "<b>Deal:</b> " + location.property__deal_type + "<br>" +
+                    "<b>Type:</b> " + location.property__property_type + "<br>" +
+                    "<b>Total rooms:</b> " + location.property__total_rooms + "<br>" +
+                    "<a href='/path/to/property/" + location.property__id + "'>Show more</a>";
+
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+
+                // Set the correct icon for each marker
+                marker.setIcon(markerIcon);
+            }
+        });
+    }
+
+    // Create custom marker icons with different colors
+    var interestedIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
     });
+
+    var suggestedIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    var restIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    // Create markers for each location group with different colors
+    createMarkers(interestedLocations, interestedIcon);
+    createMarkers(suggestedLocations, suggestedIcon);
+    createMarkers(restLocations, restIcon);
 
     // Create a feature group from the markers and add it to the map
     var markerGroup = L.featureGroup(markers).addTo(map);
@@ -366,5 +558,8 @@
     // Fit the map view to the bounds of the marker group
     map.fitBounds(markerGroup.getBounds());
 </script>
+
+
+
 
 {% endblock %}

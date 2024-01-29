@@ -235,7 +235,6 @@ class Files(models.Model):
 
     def __str__(self):
         return f"{self.property} - {self.file}"
-    
 
 @receiver(post_save, sender=Clent)
 def create_client_suggestions(sender, instance, created, **kwargs):
@@ -251,53 +250,22 @@ def create_property_suggestions(sender, instance, created, **kwargs):
         for client in clients:
             Client_suggestion.objects.create(client=client, property=instance, user = instance.user)
 
-
-
-
 class ClientInterest(models.Model):
-    PROPERTY_CHOICES = [
-        ('house', 'House'),
-        ('apartment', 'Apartment'),
-        ('office', 'Office'),
-    ]
-
-    PAYMENT_CHOICES = [
-        ('cash', 'Cash'),
-        ('loan', 'Loan'),
-        ('leasing', 'Leasing'),
-        ('all', 'All'),
-    ]
-
-    VIEW_SIGHT_CHOICES = [
-        ('north', 'North'),
-        ('south', 'South'),
-        ('east', 'East'),
-        ('west', 'West'),
-    ]
+    
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    property_type = models.CharField(max_length=20, choices=PROPERTY_CHOICES, null=True, blank=True)
-    totalrooms = models.IntegerField(null=True, blank=True)
-    bedrooms = models.IntegerField(null=True, blank=True)
-    toilets = models.IntegerField(null=True, blank=True)
-    min_floor_preference = models.IntegerField(null=True, blank=True)
-    max_floor_preference = models.IntegerField(null=True, blank=True)
-    min_square_meter = models.FloatField(null=True, blank=True)
-    max_square_meter = models.FloatField(null=True, blank=True)
-    payment_term = models.CharField(max_length=10, choices=PAYMENT_CHOICES, null=True, blank=True)
-    min_price_range = models.CharField(max_length=20, null=True, blank=True)
-    max_price_range = models.CharField(max_length=20, null=True, blank=True)
-    view_sight = models.CharField(max_length=10, choices=VIEW_SIGHT_CHOICES, null=True, blank=True)
-    date_added = models.DateField(null=True)
-
-    # Add more fields based on additional details you want to include
-    # Example: 
-    additional_feature = models.CharField(max_length=50, null=True, blank=True)
-    # ...
-
     # Add other necessary fields such as ForeignKey to link to a Client model
     client = models.ForeignKey(Clent, on_delete=models.CASCADE, null=True, blank=True)
-
-    
+    note = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Interest: {self.property_type}, Payment: {self.payment_term}, View Sight: {self.view_sight}"
+        return f"User: {self.user}, Client: {self.client}"
+
+class suggestion_link_settings(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    contacts = models.CharField(max_length=255, blank=True, null=True)
+    welcome_message = models.CharField(max_length=255, blank=True, null=True)
+
+@receiver(post_save, sender=CustomUser)
+def create_suggestion_link_settings(sender, instance, created, **kwargs):
+    if created:
+        suggestion_link_settings.objects.create(user=instance)

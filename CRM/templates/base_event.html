@@ -128,6 +128,25 @@
             flex: 0 0 250px; /* Set a fixed width for the navbar container */
             height: 90vh;
         }
+
+        .container-header {
+            top: 5.8%;
+            left: 10%;
+            position: fixed;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            width: 88%;
+            background-color: #f5f6fa;
+            z-index: 555;
+            border-bottom: #1a1a1a;
+        }
+
+        .container-content{
+            padding-top: 60px; 
+        }
+
+
+
         /* Media query for mobile screens (max-width: 767px) */
         @media (max-width: 767px) {
             .navbar-container {
@@ -161,6 +180,17 @@
             }
             header .col-md-4{
                 display: none;
+            }
+            .container-header {
+                top: 0;
+                left: 0;
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .container-content{
+                padding-top: 110px; 
             }
 
         }

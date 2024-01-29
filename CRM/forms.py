@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Event, Clent, Client_suggestion, ClientInterest, client_phone_numbers, client_relationships, event_type_model
+from .models import Event, Clent, Client_suggestion, ClientInterest, client_phone_numbers, client_relationships, event_type_model, suggestion_link_settings
 from Realtor.models import Property
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
@@ -206,31 +206,9 @@ class ClientSuggestionForm(forms.ModelForm):
 
 class ClientInterestForm(forms.ModelForm):
     class Meta:
-        model = Client_suggestion
-        fields = ['is_interested']
-
-    def __init__(self, *args, **kwargs):
-        super(ClientInterestForm, self).__init__(*args, **kwargs)
-        # Add any additional customization if needed
-
-class ClientWishForm(forms.ModelForm):
-    class Meta:
         model = ClientInterest
-        exclude = ['user', 'date_added']
+        fields = ['note']
 
-    def __init__(self, user, *args, **kwargs):
-        super(ClientWishForm, self).__init__(*args, **kwargs)
-        self.user = user
-
-    def save(self, commit=True):
-        instance = super(ClientWishForm, self).save(commit=False)
-        instance.user = self.user
-        instance.date_added = timezone.now()
-
-        if commit:
-            instance.save()
-
-        return instance
 
 class PropertySuggestionForm(forms.ModelForm):
     class Meta:
@@ -239,3 +217,8 @@ class PropertySuggestionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClientSuggestionForm, self).__init__(*args, **kwargs)
+
+class suggestion_link_setup(forms.ModelForm):
+    class Meta:
+        model = suggestion_link_settings
+        fields = ['contacts','welcome_message']
