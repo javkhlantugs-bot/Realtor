@@ -39,7 +39,7 @@ GMAIL_USER = 't.javkhlantugs1@gmail.com'
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'estates.solutions',
-    '167.71.237.142',
+    '206.189.130.94',
     'www.estates.solutions'
     # Add other hosts as needed
 ]
