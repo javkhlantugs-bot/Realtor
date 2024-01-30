@@ -545,14 +545,21 @@ from uuid import uuid4
 from requests_oauthlib import OAuth2Session
 
 def google_authenticate(request):
+    current_directory = Path(__file__).resolve().parent
+    client_secret_path = current_directory / 'client_secret_526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com.json'
     redirect_uri = request.build_absolute_uri(reverse('google_authenticate_callback'))
     state = str(uuid4())
 
     # Step 1: User Authorization.
-    google_client = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=scope)
-    authorization_url, state = google_client.authorization_url(authorization_base_url)
-    print(authorization_url)
-    # , response_type=response_type
+    flow = InstalledAppFlow.from_client_secrets_file(
+        client_secret_path,  # Replace with your path
+        scopes=scope,
+        redirect_uri=redirect_uri,
+    )
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',  # Requesting the 'offline' access type to get refresh_token
+    )
+
     # State is used to prevent CSRF, keep this for later.
     request.session['oauth_state'] = state
     return redirect(authorization_url)
@@ -560,16 +567,31 @@ def google_authenticate(request):
 def google_authenticate_callback(request):
     # Step 2: User Authorization Callback.
     redirect_uri = request.build_absolute_uri(reverse('google_authenticate_callback'))
-    google_client = OAuth2Session(client_id, redirect_uri=redirect_uri, state=request.session.get('oauth_state'))
-    
+    current_directory = Path(__file__).resolve().parent
+    client_secret_path = current_directory / 'client_secret_526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com.json'
+    flow = InstalledAppFlow.from_client_secrets_file(
+        client_secret_path,  # Replace with your path
+        scopes=scope,
+        redirect_uri=redirect_uri,
+    )
+
     # Get the authorization response
     authorization_response = request.build_absolute_uri()
-    
-    # Fetch the access token
-    token = google_client.fetch_token(token_url, authorization_response=authorization_response, client_secret=client_secret)
+
+    # Fetch the access token, including the refresh_token
+    flow.fetch_token(authorization_response=authorization_response)
 
     # Save credentials to session or database as needed
-    request.session['credentials'] = json.dumps(token)
+    credentials = flow.credentials
+    request.session['credentials'] = json.dumps({
+        'token': credentials.token,
+        'refresh_token': credentials.refresh_token,
+        'token_uri': credentials.token_uri,
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'scopes': credentials.scopes,
+        'expires_at': credentials.expiry.isoformat(),
+    })
 
     # Redirect to the page where you fetch contacts
     return redirect('import_google_contacts')
