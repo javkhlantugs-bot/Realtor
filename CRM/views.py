@@ -517,6 +517,23 @@ from datetime import datetime, timedelta
 
 SCOPES = ['https://www.googleapis.com/auth/contacts.readonly']
 
+# def google_authenticate(request):
+#     # Get the path to the current directory
+#     current_directory = Path(__file__).resolve().parent
+#     # Path to the client secret file
+#     client_secret_path = current_directory / 'client_secret_526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com.json'
+#     # OAuth flow to authenticate and get credentials
+#     flow = InstalledAppFlow.from_client_secrets_file(client_secret_path, SCOPES)
+#     # Run the local server to get credentials
+    
+#     credentials = flow.run_local_server(port=8001)
+
+#     # Save credentials to session as JSON string
+#     request.session['credentials'] = credentials.to_json()
+
+#     # Redirect to the page where you fetch contacts
+#     return redirect('import_google_contacts')
+
 def google_authenticate(request):
     # Get the path to the current directory
     current_directory = Path(__file__).resolve().parent
@@ -524,14 +541,14 @@ def google_authenticate(request):
     client_secret_path = current_directory / 'client_secret_526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com.json'
     # OAuth flow to authenticate and get credentials
     flow = InstalledAppFlow.from_client_secrets_file(client_secret_path, SCOPES)
-    # Run the local server to get credentials
-    
-    credentials = flow.run_local_server(port=8001)
 
-    # Save credentials to session as JSON string
-    request.session['credentials'] = credentials.to_json()
+    # Get the authorization URL
+    authorization_url, _ = flow.authorization_url(prompt='select_account')
 
-    # Redirect to the page where you fetch contacts
+    # Store the authorization URL in the session
+    request.session['authorization_url'] = authorization_url
+
+    # Redirect to import_google_contacts after displaying the authentication link
     return redirect('import_google_contacts')
 
 def import_google_contacts(request):
