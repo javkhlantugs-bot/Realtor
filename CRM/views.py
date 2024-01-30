@@ -527,29 +527,52 @@ SCOPES = ['https://www.googleapis.com/auth/contacts.readonly']
 #     # Run the local server to get credentials
     
 #     credentials = flow.run_local_server(port=8001)
+#     print(credentials)
 
 #     # Save credentials to session as JSON string
 #     request.session['credentials'] = credentials.to_json()
 
 #     # Redirect to the page where you fetch contacts
 #     return redirect('import_google_contacts')
+client_id = "526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com"
+client_secret = "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"
+authorization_base_url = 'https://accounts.google.com/o/oauth2/auth'
+token_url = 'https://accounts.google.com/o/oauth2/token'
+grant_type = 'authorization_code'
+scope = ['https://www.googleapis.com/auth/contacts.readonly']
+# response_type = 'code'
+from uuid import uuid4
+from requests_oauthlib import OAuth2Session
 
 def google_authenticate(request):
-    # Get the path to the current directory
-    current_directory = Path(__file__).resolve().parent
-    # Path to the client secret file
-    client_secret_path = current_directory / 'client_secret_526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com.json'
-    # OAuth flow to authenticate and get credentials
-    flow = InstalledAppFlow.from_client_secrets_file(client_secret_path, SCOPES)
+    redirect_uri = request.build_absolute_uri(reverse('google_authenticate_callback'))
+    state = str(uuid4())
 
-    # Get the authorization URL
-    authorization_url, _ = flow.authorization_url(prompt='select_account')
+    # Step 1: User Authorization.
+    google_client = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=scope)
+    authorization_url, state = google_client.authorization_url(authorization_base_url)
+    print(authorization_url)
+    # , response_type=response_type
+    # State is used to prevent CSRF, keep this for later.
+    request.session['oauth_state'] = state
+    return redirect(authorization_url)
 
-    # Store the authorization URL in the session
-    request.session['authorization_url'] = authorization_url
+def google_authenticate_callback(request):
+    # Step 2: User Authorization Callback.
+    redirect_uri = request.build_absolute_uri(reverse('google_authenticate_callback'))
+    google_client = OAuth2Session(client_id, redirect_uri=redirect_uri, state=request.session.get('oauth_state'))
+    
+    # Get the authorization response
+    authorization_response = request.build_absolute_uri()
+    
+    # Fetch the access token
+    token = google_client.fetch_token(token_url, authorization_response=authorization_response, client_secret=client_secret)
 
-    # Redirect to import_google_contacts after displaying the authentication link
-    return render(request, 'google_authenticate.html', {'authorization_url': authorization_url})
+    # Save credentials to session or database as needed
+    request.session['credentials'] = token
+
+    # Redirect to the page where you fetch contacts
+    return redirect('import_google_contacts')
 
 def import_google_contacts(request):
     # Fetch contacts using saved credentials
@@ -645,10 +668,8 @@ def import_google_contacts(request):
             # Handle the case where 'birthdays' is not a list or is an empty list
             birthday = None
         # Create a new Client instance and save it to the database
-        print(google_resource_id)
         existing_clients = Clent.objects.filter(google_resource_id=google_resource_id, user=request.user)
         if existing_clients.exists():
-            print('this is an existing contact')
 
             # Get the first object from the queryset
             existing_client = existing_clients.first()
@@ -660,7 +681,6 @@ def import_google_contacts(request):
             # Update other fields as needed
             existing_client.save()
         else:
-            print('this is new contact')
             # Create a new Client instance
             Clent.objects.create(
                 user=request.user,

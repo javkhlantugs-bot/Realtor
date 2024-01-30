@@ -33,6 +33,7 @@ urlpatterns = [
     path('delete_image/<int:photo_id>/', views.delete_image, name='delete_image'),
     path('settings/',views.settings, name='settings'),
     path('settings/google-authenticate/', views.google_authenticate, name='google_authenticate'),
+    path('settings/google-authenticate-callback/', views.google_authenticate_callback, name='google_authenticate_callback'),
     path('settings/import-google-contacts/', views.import_google_contacts, name='import_google_contacts'),
     path('settings/event_types_list/', views.event_types_list, name='event_types_list'),
     path('settings/edit_event_type/<int:event_type_id>/', views.edit_event_type, name='edit_event_type'),
