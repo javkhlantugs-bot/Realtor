@@ -569,7 +569,7 @@ def google_authenticate_callback(request):
     token = google_client.fetch_token(token_url, authorization_response=authorization_response, client_secret=client_secret)
 
     # Save credentials to session or database as needed
-    request.session['credentials'] = token
+    request.session['credentials'] = json.dumps(token)
 
     # Redirect to the page where you fetch contacts
     return redirect('import_google_contacts')
