@@ -616,11 +616,6 @@ def import_google_contacts(request):
     except json.JSONDecodeError:
         return HttpResponse("Invalid JSON format")
 
-    # Check if 'expires_in' and 'expires_at' are present in credentials_info
-    if 'expires_at' in credentials_info:
-        # Convert the expiry string to a datetime object
-        credentials_info['expires_at'] = datetime.utcfromtimestamp(credentials_info['expires_at'])
-
     # Create Credentials object
     credentials = Credentials(
         token=credentials_info.get('token'),
