@@ -632,13 +632,13 @@ def import_google_contacts(request):
         expiry=credentials_info.get('expires_at')
     )
     # Convert the expiry string to a datetime object
-    # credentials.expiry = datetime.strptime(credentials.expiry, "%Y-%m-%dT%H:%M:%S.%fZ")
-    # If the credentials are expired, refresh them
     # If the credentials are expired, refresh them
     if credentials.expired:
         credentials.refresh(Request())
-        # Update the expiry in the credentials_info dictionary
+        # Update the expiry and refresh token in the credentials_info dictionary
         credentials_info['expires_at'] = credentials.expiry
+        credentials_info['refresh_token'] = credentials.refresh_token
+        # credentials.expiry = datetime.strptime(credentials.expiry, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     # Build the Google Contacts API service
     service = build('people', 'v1', credentials=credentials)
