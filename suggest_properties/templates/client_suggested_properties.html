@@ -8,11 +8,19 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <title>Suggested Properties for {{ client.client_name }}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@100;300;400;600;800&display=swap');
         html{
             overflow: hidden;
+        }
+        .not-selected {
+            color: #6c757d; /* Grey text color */
+            border-color: #6c757d; /* Grey border color */
+        }
+        .btn-primary{
+            background-color: #1a1a1a;
         }
 
         body {
@@ -188,6 +196,18 @@
                                             <a href="#!">
                                                 <div class="mask rgba-white-slight"></div>
                                             </a>
+                                            <form method="post" id="likeForm" data-url="{% url 'client_suggested_properties' client_link=client.link user=user %}" style="top: 0; right: 0; position: absolute; padding-top: 5px; padding-right: 5px;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-outline-primary {% if suggest.is_interested == 'interested' %}active{% endif %} not-selected" onclick="submitForm('interested',{{ suggest.id }}, event)">
+                                                        <i class="material-icons">thumb_up</i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary {% if suggest.is_interested == 'not_interested' %}active{% endif %} not-selected" onclick="submitForm('not_interested',{{ suggest.id }}, event)">
+                                                        <i class="material-icons">thumb_down</i>
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
                                         <div class="card-body" style="text-align: center;">
                                             <h2 class="card-text">{{ suggest.property.address }}</h2>
@@ -226,7 +246,9 @@
                                         </div>
                                     </div>
                                 </a>
+                                
                             </div>
+                            
                         {% endfor %}
                     </div>
                 </div>
@@ -239,7 +261,6 @@
             </div> 
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         
@@ -294,6 +315,33 @@
 
             // Fit the map view to the bounds of the marker group
             map.fitBounds(markerGroup.getBounds());
+        </script>
+        <script>
+            function submitForm(interest, suggestion_id) {
+                event.stopPropagation();
+                var form = $('#likeForm');
+                var url = form.data('url');
+                
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        csrfmiddlewaretoken: form.find('[name=csrfmiddlewaretoken]').val(),
+                        suggestion_id: suggestion_id,
+                        is_interested: interest
+                    },
+                    success: function (data) {
+                        // Toggle the active class for the clicked button
+                        var button = $('[onclick*="submitForm(\'' + interest + '\', ' + suggestion_id + ')"]');
+                        button.toggleClass('active');
+
+                        // Remove active class from the other button
+                        var otherButton = button.siblings('button');
+                        otherButton.removeClass('active');
+                    },
+                    
+                });
+            }
         </script>
     </body>
 

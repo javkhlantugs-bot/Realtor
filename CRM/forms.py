@@ -202,7 +202,16 @@ class ClientSuggestionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClientSuggestionForm, self).__init__(*args, **kwargs)
-        # Add any additional customization if needed
+
+class ClientSuggestionInterestForm(forms.ModelForm):
+    class Meta:
+        model = Client_suggestion
+        fields = ['is_interested']
+
+    def __init__(self, *args, **kwargs):
+        super(ClientSuggestionInterestForm, self).__init__(*args, **kwargs)
+
+
 
 class ClientInterestForm(forms.ModelForm):
     class Meta:

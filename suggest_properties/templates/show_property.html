@@ -6,11 +6,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1, minimum-scale=1">
-    <title>{% block title %}Property{% endblock %}</title>
+    <title>{% block title %}{{properties.address}}{% endblock %}</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -19,8 +18,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@100;300;400;600;800&display=swap');
 
 * {
-    padding: 0;
-    margin: 0;
     box-sizing: border-box;
     font-family: "Montserrat Alternates", sans-serif;
 }
@@ -216,13 +213,17 @@ body {
     .card-title{
         font-size: 1rem;
     }
+    .container{
+        padding-top: 50px;
+    }
 }
 </style>
 <body>
-    <a href="javascript:void(0)" class="floating-button" onclick="goBack()">
-        <i class="material-icons">arrow_back</i>
-    </a>
-
+    <div class="row" >
+        <a href="javascript:void(0)" class="floating-button" onclick="goBack()">
+            <i class="material-icons">arrow_back</i>
+        </a>
+    </div>
     
 
     <div id="carouselExample" class="carousel slide" data-ride="carousel" style="padding-top: 10px;">
