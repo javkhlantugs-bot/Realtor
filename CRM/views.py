@@ -618,7 +618,7 @@ def import_google_contacts(request):
 
 
     credentials_info['expires_at'] = datetime.fromisoformat(credentials_info['expires_at'])
-    
+
     # Create Credentials object
     credentials = Credentials(
         token=credentials_info.get('token'),
@@ -696,7 +696,7 @@ def import_google_contacts(request):
             # Handle the case where 'birthdays' is not a list or is an empty list
             birthday = None
         # Create a new Client instance and save it to the database
-        existing_clients = Clent.objects.filter(google_resource_id=google_resource_id, user=request.user)
+        existing_clients = Clent.objects.filter(google_resource_id=google_resource_id, user=request.user.id)
         if existing_clients.exists():
 
             # Get the first object from the queryset
