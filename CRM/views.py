@@ -549,7 +549,7 @@ def google_authenticate(request):
     request.session['authorization_url'] = authorization_url
 
     # Redirect to import_google_contacts after displaying the authentication link
-    return redirect('import_google_contacts')
+    return render(request, 'google_authenticate.html', {'authorization_url': authorization_url})
 
 def import_google_contacts(request):
     # Fetch contacts using saved credentials
