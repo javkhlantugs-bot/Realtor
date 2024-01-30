@@ -616,6 +616,9 @@ def import_google_contacts(request):
     except json.JSONDecodeError:
         return HttpResponse("Invalid JSON format")
 
+
+    credentials_info['expires_at'] = datetime.fromisoformat(credentials_info['expires_at'])
+    
     # Create Credentials object
     credentials = Credentials(
         token=credentials_info.get('token'),
