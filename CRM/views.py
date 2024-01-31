@@ -871,10 +871,10 @@ def ajax_search(request):
     return JsonResponse({'results': results})
 
 from django.utils.timesince import timesince
-from django.utils import timezone
+import django.utils.timezone
 
 def calculate_timesince(timestamp):
-    now = timezone.now()
+    now = django.utils.timezone.now()
     diff = now - timestamp
     print(now)
     print(timestamp)
@@ -891,7 +891,7 @@ def calculate_timesince(timestamp):
         return f"{int(minutes / 1440)} {'day' if int(minutes / 1440) == 1 else 'days'} ago"
 
 def notifications(request):
-    now = timezone.now()
+    now = django.utils.timezone.now()
     notifications = Notification.objects.filter(user=request.user, is_seen=False).order_by('-timestamp')
     data = [
         {
