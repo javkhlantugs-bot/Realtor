@@ -9,6 +9,55 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loadingIndicator = document.getElementById('loading-indicator');
+
+            // Show loading indicator when the DOM content is loaded
+            loadingIndicator.style.display = 'block';
+
+            // Add an event listener for the full page load
+            window.addEventListener('load', function () {
+                // Full page is loaded, hide the loading indicator
+                loadingIndicator.style.display = 'none';
+            });
+
+            // Your other scripts and logic go here...
+        });
+    </script>
+    <style>
+        /* Loading spinner styles */
+        #loading-indicator {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+            z-index: 9999;
+        }
+
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite; /* Spin animation */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
     <title>{% block title %}Estates Solutions CRM{% endblock %}</title>
     
     <style>
@@ -135,10 +184,10 @@
             position: fixed;
             padding-bottom: 10px;
             padding-top: 10px;
-            width: 88%;
+            width: 90vw;
             background-color: #f5f6fa;
             z-index: 555;
-            border-bottom: #1a1a1a;
+            border-bottom: #b9b8b8 1px solid;
         }
 
         .container-content{
@@ -157,6 +206,7 @@
                 z-index: 1000;
                 left: 0;
                 border-top: 1px solid #b9b8b8;
+                background-color: #fff;
             }
             body {
                 overflow: hidden;
@@ -191,6 +241,19 @@
 
             .container-content{
                 padding-top: 110px; 
+            }
+            .search-container{
+                z-index: 100000000;
+                margin-left: 10px;
+            }
+            .search-results-container{
+                width: 50vw;
+            }
+            .notification-container{
+                z-index: 100000000;
+            }
+            #bell-icon{
+                margin-top: 0;
             }
 
         }
@@ -294,7 +357,9 @@
         }
     </style>
 </head>
-
+<div id="loading-indicator">
+    <div class="spinner"></div>
+</div>
 
 <body class="d-flex flex-column h-100">
     <header>
@@ -306,14 +371,452 @@
                     </a>
                 </div>
                 
-                <div class="col-md-4" >
-                    <div class="input-group" style="padding-top: 10px;">
-                        <input type="text" class="form-control" placeholder="Search for...">
-                        <button class="btn btn-outline-primary" type="button">Search</button>
+                <div class="col-md-9 search-container">
+                    <div class="input-container">
+                        <input type="text" name="query" id="search-input" autocomplete="off" placeholder="Search">
+                        <button id="clear-button" class="clear-button">
+                            <span class="material-icons">clear</span>
+                        </button>
                     </div>
+                    <div id="search-results-container" class="search-results-container"></div>
                 </div>
+                <div class="notification-container">
+                    <span class="material-icons" id="bell-icon">notifications_none</span>
+                    <span class="badge" id="notification-count">0</span>
+                    <div id="notification-results-container" class="notification-results-container"></div>
+                </div>
+                
+                <style>
+                    .search-container {
+                        margin-top: 10px;
+                    }
+                
+                    .input-container {
+                        position: relative;
+                        width: 30vw;
+                        
+                    }
+                
+                    .input-container input {
+                        width: 100%;
+                        padding-left: 10px; /* Set left padding for text inside the input */
+                        border-radius: 25px;
+                        border: 1px solid #aaa;
+                        height: 35px;
+                        box-sizing: border-box;
+                    }
+                
+                    .input-container input:focus {
+                        border-color: #bad6fe solid 1px;
+                        box-shadow: #bad6fe solid 1px;
+                    }
+                
+                    #search-results-container {
+                        margin-top: 5px;
+                        position: absolute;
+                        width: 30vw;
+                        z-index: 1111111111;
+                        background-color: #1a1a1a;
+                        color: #f5f6fa;
+                        border-radius: 8px;
+                        max-height: 300px;
+                        overflow: auto;
+                    }
+                
+                    #search-results-container ul {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                
+                    #search-results-container li {
+                        position: relative;
+                        padding-left: 20px;
+                        margin-bottom: 5px;
+                        cursor: pointer;
+                    }
+                    #search-results-container li:hover {
+                        color: #3498db;
+                    }
+                
+                    #search-results-container li::before {
+                        content: '\00a0'; 
+                        font-family: 'Material Icons';
+                        font-weight: 900;
+                        color: #333;
+                    }
+                    /* Targeting the scrollbar track */
+                    #search-results-container::-webkit-scrollbar {
+                        width: 12px; /* Adjust the width of the scrollbar */
+                        margin-right: -12px; /* Move the scrollbar to the left by its width */
+                    }
+
+                    /* Targeting the scrollbar handle or thumb */
+                    #search-results-container::-webkit-scrollbar-thumb {
+                        background-color: grey; /* Color of the scrollbar thumb */
+                        border-radius: 20px; /* Radius of the scrollbar thumb corners */
+                    }
+
+                    /* Optional: Hover effect on the scrollbar handle */
+                    #search-results-container::-webkit-scrollbar-thumb:hover {
+                        background-color: grey; /* Color when hovering over the scrollbar thumb */
+                    }
+
+                    /* Targeting the scrollbar track when handle is being dragged */
+                    #search-results-container::-webkit-scrollbar-thumb:active {
+                        background-color: #333; /* Color when scrollbar thumb is being dragged */
+                    }
+                    .clear-button {
+                        position: absolute;
+                        right: 5px;
+                        padding-top: 5px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        border: none;
+                        background: none;
+                        cursor: pointer;
+                        display: none;
+                    }
+                    .noResultsMessage{
+                        padding-top: 20px;
+                        padding-left: 20px;
+
+                    }
+                </style>
+                <style>
+                    .notification-container {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        margin-right: 10px;
+                        margin-top: 5px;
+                        width: 50px;
+                        height: 45px;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: 15px;
+                    }
+                    #bell-icon{
+                        margin-top: 10px;
+                        margin-right: 50px;
+                    }
+                    
+                    .notification-container:hover{
+                        border: 1px solid #1a1a1a;
+                    }
+                    
+                    .badge {
+                        color: #1a1a1a;
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        margin-right: 2px; /* Adjust as needed */
+                        margin-top: 5px; /* Adjust as needed */
+                        font-size: 10px; /* Adjust as needed */
+                    }
+                    .notification-results-container{
+                        display: none;
+                        max-height: 280px;
+                        max-width: 300px;
+                        width: 300px;
+                        position: absolute;
+                        right: 20px;
+                        top: 25px;
+                        z-index: 11111111;
+                        background-color: #1a1a1a;
+                        color: #f5f6fa;
+                        border-radius: 8px;
+                        margin-top: 20px;
+                        overflow: auto;
+                    }
+                    .notification-results-container li {
+                        padding-bottom: 10px;
+                        padding-top: 10px;
+                        padding-right: 10px;
+                        cursor: pointer;
+                    }
+                    
+                    #notification-results-container li:hover {
+                        color: #3498db;
+                    }
+                    
+                    #read-all-button{
+                        border-radius: 5px;
+                    }
+                    
+                    /* Targeting the scrollbar track */
+                    #notification-results-container::-webkit-scrollbar {
+                        width: 12px; /* Adjust the width of the scrollbar */
+                        margin-right: -12px; /* Move the scrollbar to the left by its width */
+                    }
+
+                    /* Targeting the scrollbar handle or thumb */
+                    #notification-results-container::-webkit-scrollbar-thumb {
+                        background-color: grey; /* Color of the scrollbar thumb */
+                        border-radius: 20px; /* Radius of the scrollbar thumb corners */
+                    }
+
+                    /* Optional: Hover effect on the scrollbar handle */
+                    #notification-results-container::-webkit-scrollbar-thumb:hover {
+                        background-color: grey; /* Color when hovering over the scrollbar thumb */
+                    }
+
+                    /* Targeting the scrollbar track when handle is being dragged */
+                    #notification-results-container::-webkit-scrollbar-thumb:active {
+                        background-color: #333; /* Color when scrollbar thumb is being dragged */
+                    }
+                </style>
             </div>
     </header>
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const resultsContainer = document.getElementById('search-results-container');
+      
+        searchInput.addEventListener('input', function () {
+          const query = this.value.trim();
+      
+          if (query.length > 0) {
+            fetch(`/crm/ajax-search/?query=${query}`)
+              .then(response => response.json())
+              .then(data => {
+                displayResults(data.results);
+              })
+              .catch(error => console.error('Error fetching search results:', error));
+          } else {
+            clearResults();
+          }
+        });
+      
+        function displayResults(results) {
+          clearResults();
+      
+          if (results.length > 0) {
+            const resultList = document.createElement('ul');
+      
+            results.forEach(result => {
+              const listItem = document.createElement('li');
+              listItem.textContent = `${result.type}: ${result.name}` ;
+              listItem.setAttribute('data-links', result.links);
+              listItem.setAttribute('data-id', result.ids);
+              listItem.addEventListener('click', navigateToResult);
+              resultList.appendChild(listItem);
+            });
+      
+            resultsContainer.appendChild(resultList);
+          } else {
+            const noResultsMessage = document.createElement('p');
+            noResultsMessage.textContent = 'No results found.';
+            noResultsMessage.setAttribute('class','noResultsMessage')
+            resultsContainer.appendChild(noResultsMessage);
+          }
+        }
+        
+            // Click away event
+        $(document).on('click', function(event) {
+            if (!$(event.target).closest('#search-input').length && !$(event.target).closest('#search-results-container').length) {
+                clearResults();
+            }
+        });
+
+        // Esc key event
+        $(document).on('keydown', function(event) {
+            if (event.key === 'Escape') {
+                clearResults();
+            }
+        });
+
+        function clearResults() {
+          while (resultsContainer.firstChild) {
+            resultsContainer.removeChild(resultsContainer.firstChild);
+          }
+        }
+      
+        function navigateToResult(event) {
+            const resultLinks = event.target.getAttribute('data-links');  // assuming 'data-links' is the attribute name
+            window.location.href = `/crm${resultLinks}`; 
+        }
+        
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('search-input');
+            const clearButton = document.getElementById('clear-button');
+            const resultsContainer = document.getElementById('search-results-container');
+            console.log('triggered DOM')
+            function toggleClearButton() {
+                clearButton.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+            }
+    
+            clearButton.addEventListener('mousedown', function(event) {
+                // Prevent the button from submitting a form (if it's inside a form)
+                event.preventDefault();
+                searchInput.value = '';
+                clearButton.style.display = 'none';
+                resultsContainer.removeChild(resultsContainer.firstChild);
+            });
+    
+            searchInput.addEventListener('input', toggleClearButton);
+            searchInput.addEventListener('focus', toggleClearButton);
+            searchInput.addEventListener('blur', function() {
+                clearButton.style.display = 'none';
+            });
+        });
+    </script>
+    <script>
+        
+        $(document).ready(function() {
+            const resultsContainer = $('#notification-results-container');
+
+            function fetchNotifications() {
+                $.ajax({
+                    url: '/crm/notifications/',
+                    type: 'GET',
+                    success: function(data) {
+
+                        displayResults(data.notifications);
+                    },
+                    error: function(error) {
+                        console.log('Error fetching notifications:', error);
+                    }
+                });
+            }
+
+            function show_numbers(){
+                $.ajax({
+                    url: '/crm/notifications/',
+                    type: 'GET',
+                    success: function(data) {
+                        // Update the notification count
+                        var notificationCount = data.notifications.length;
+                        if (notificationCount > 9) {
+                            $('#notification-count').text('9+');
+                        } else {
+                            $('#notification-count').text(notificationCount);
+                        }
+
+                    },
+                    error: function(error) {
+                        console.log('Error fetching notifications:', error);
+                    }
+                });
+            }
+
+            function displayResults(results) {
+                clearResults();
+                const resultList = document.createElement('ul');
+                const header = document.createElement('div');
+                header.innerHTML = `
+                    <h5 style='margin-top: 10px'> Recent Notifications</h5>
+                    <button style='width:80%' id='read-all-button' > Read all </button>
+                    <hr>
+                `
+                const  readAllButton = header.querySelector('#read-all-button');
+                readAllButton.addEventListener("click", markAllNotificationsAsRead)
+                resultList.appendChild(header);
+
+                if (results.length > 0) {
+
+                    results.forEach(result => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <p data-id="${result.notification_id}" data-links="${result.client_ids}">${result.messages}</p>
+                            <p data-id="${result.notification_id}" class="timestamp" data-links="${result.client_ids}">${result.timestamps}</p>
+                        `;
+                        listItem.setAttribute('data-links', result.client_ids);
+                        listItem.setAttribute('data-id', result.notification_id);
+                        listItem.addEventListener('click', navigateToResult);
+                        resultList.appendChild(listItem);
+                    });
+
+                    resultsContainer.append(resultList);
+                } else {
+                    const noResultsMessage = document.createElement('p');
+                    noResultsMessage.textContent = 'No notifications found.';
+                    noResultsMessage.setAttribute('class', 'noResultsMessage');
+                    resultsContainer.append(noResultsMessage);
+                }
+            }
+
+            function markAllNotificationsAsRead() {
+                // Get CSRF token
+                const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+                // Update is_seen field for all notifications via AJAX
+                console.log('marking all of them as read')
+                $.ajax({
+                    url: '/crm/mark-all-notifications-as-read/',
+                    type: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken },
+                    success: function () {
+                        // Your logic after marking all notifications as read goes here
+                        console.log('Marked all notifications as read');
+                        
+                        // You may want to refresh or update the UI after marking all notifications
+                        fetchNotifications();
+                    },
+                    error: function (error) {
+                        console.log('Error marking all notifications as read:', error);
+                    }
+                });
+            }
+            
+            function clearResults() {
+                resultsContainer.empty();
+            }
+            function navigateToResult(event) {
+                const resultLinks = event.target.getAttribute('data-links');
+                const notificationId = event.target.getAttribute('data-id');
+                const notificationContainer = $('#notification-results-container');
+
+                // Get CSRF token
+                const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+                // Update is_seen field via AJAX
+                $.ajax({
+                    url: `/crm/mark-notification-as-read/${notificationId}/`,
+                    type: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken },  // Include CSRF token in headers
+                    success: function () {
+                        // Redirect to the result link
+                        window.location.href = `/crm/clients/${resultLinks}`;
+                    },
+                    error: function (error) {
+                        console.log('Error marking notification as read:', error);
+                    }
+                });
+            }
+
+            // Bell icon click event
+            $('.notification-container').click(function() {
+                // Toggle the visibility of notification container
+                resultsContainer.toggle();
+
+                // Fetch and display notifications only if container is visible
+                if (resultsContainer.is(':visible')) {
+                    fetchNotifications();
+                }
+            });
+            function closeResultsContainer() {
+                resultsContainer.hide();  // Hide the container
+            }
+            // Click away event
+            $(document).on('click', function(event) {
+                if (!$(event.target).closest('.notification-container').length && !$(event.target).closest('#notification-results-container').length) {
+                    closeResultsContainer();
+                }
+            });
+
+            // Esc key event
+            $(document).on('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeResultsContainer();
+                }
+            });
+
+            // Fetch notifications on page load (initially hide the container)
+            show_numbers();
+        });
+    </script>
     
     <div class="container-fluid " >
         <!-- style="height: 100%; min-height: 100vh; position: inherit;" -->
@@ -366,7 +869,7 @@
 
 
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>

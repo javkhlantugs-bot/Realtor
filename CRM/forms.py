@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Event, Clent, Client_suggestion, ClientInterest, client_phone_numbers, client_relationships, event_type_model, suggestion_link_settings
+from .models import Event, Clent, Client_suggestion, ClientInterest, client_phone_numbers, client_relationships, event_type_model, suggestion_link_settings, client_status_types
 from Realtor.models import Property
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
@@ -44,6 +44,13 @@ class EventTypeForm(forms.ModelForm):
     class Meta:
         model = event_type_model
         fields = ['event_type']
+
+        
+
+class ClientStatusForm(forms.ModelForm):
+    class Meta:
+        model = client_status_types
+        fields = ['status']
 
         
 

@@ -1,80 +1,124 @@
-<!-- add_event.html -->
+<!-- edit_event.html -->
 {% extends 'base_event.html' %}
 
 {% block title %}Edit Event{% endblock %}
-{% load widget_tweaks %}
 {% block content %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 <div class="col-md-12">
-    <h2 class="mb-4">Edit Event</h2>
     <form method="post">
         {% csrf_token %}
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6 mx-auto">
+                <h2 class="mb-4">Edit Event</h2>
                 <div class="form-group">
                     {{ form.event_type.label_tag }}
-                    {{ form.event_type|add_class:"form-control" }}
+                    {{ form.event_type|add_class:"form-control"   }}
+                    {% for error in form.event_type.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="col-md-4">
+                
+                <script>
+                    // Assuming you have included jQuery
+                    $(document).ready(function() {
+                        // Create the "Add Event Type" option
+                        var addEventTypeOption = $('<option>', {
+                            value: 'add_event_type',
+                            text: 'Add Event Type'
+                        });
+                        addEventTypeOption.css('color', 'grey');
+                        // Append the option to the select element
+                        $('#id_event_type').append(addEventTypeOption);
+                
+                        // Handle change event
+                        $('#id_event_type').change(function() {
+                            var selectedValue = $(this).val();
+                            if (selectedValue === 'add_event_type') {
+                                // Get the URL for 'add_event_type' using Django's URL template tag
+                                var addEventTypeUrl = "{% url 'add_event_type' %}";
+                                window.location.href = addEventTypeUrl;
+                            }
+                        });
+                    });
+                </script>
                 <div class="form-group">
                     {{ form.event_date.label_tag }}
-                    {{ form.event_date|add_class:"form-control" }}
+                    {{ form.event_date|add_class:"form-control"   }}
+                    {% for error in form.event_date.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="col-md-1">
+                <style>
+                    #hour .options {
+                        margin: 0 auto;
+                    }
+                    #hour .select {
+                        margin: 0 auto;
+                        text-align: center;
+                    }
+                </style>
+                <div class="row" id="hour" >
+                    <div class="form-group" style="width: 33%;">
+                        <label for="id_event_hour">Hour</label>
+                        {{ form.event_hour|add_class:"form-control"   }}
+                        {% for error in form.event_hour.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group" style="width: 33%; align-items: center;">
+                        <label for="id_event_minute">Minute</label>
+                        {{ form.event_minute|add_class:"form-control"   }}
+                        {% for error in form.event_minute.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group" style="width: 34%;">
+                        <label for="id_event_ampm">AM/PM</label>
+                        {{ form.event_ampm|add_class:"form-control"   }}
+                        {% for error in form.event_ampm.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div class="form-group">
-                    {{ form.event_hour.label_tag }}
-                    {{ form.event_hour|add_class:"form-control" }}
+                    <label for="id_participant_buyer">Buyer:</label>
+                    {{ form.participant_buyer|add_class:"form-control"   }}
+                    {% for error in form.participant_buyer.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="col-md-1">
                 <div class="form-group">
-                    {{ form.event_minute.label_tag }}
-                    {{ form.event_minute|add_class:"form-control" }}
+                    <label for="id_participant_buyer">Owner:</label>
+                    {{ form.participant_owner|add_class:"form-control"   }}
+                    {% for error in form.participant_owner.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="col-md-1">
-                <div class="form-group">
-                    {{ form.event_ampm.label_tag }}
-                    {{ form.event_ampm|add_class:"form-control" }}
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.event_time.label_tag }}
-                    {{ form.event_time|add_class:"form-control" }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.participant_buyer.label_tag }}
-                    {{ form.participant_buyer|add_class:"form-control" }}
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    {{ form.participant_owner.label_tag }}
-                    {{ form.participant_owner|add_class:"form-control" }}
-                </div>
-            </div>
-            <div class="col-md-4">
                 <div class="form-group">
                     {{ form.participant_property.label_tag }}
-                    {{ form.participant_property|add_class:"form-control" }}
+                    {{ form.participant_property|add_class:"form-control"   }}
+                    {% for error in form.participant_property.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="col-md-12">
-                <div class="form-group">
+                <div class="form-group col-md-12">
                     {{ form.event_description.label_tag }}
-                    {{ form.event_description|add_class:"form-control" }}
+                    {{ form.event_description|add_class:"form-control"   }}
+                    {% for error in form.event_description.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
+                <button type="submit" class="btn btn-outline-primary" style="width : 100%; margin-top: 10px ">Add task</button>
+                <button onclick="goBack()" class="btn btn-outline-secondary" style="width : 100%; margin-top: 10px ">Back</button>
             </div>
+            
         </div>
-        <div style="margin-top: 10px;"></div>
-        <button type="submit" class="btn btn-outline-primary">Save Changes</button>
-        <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()">Back</a>
     </form>
 </div>
 
@@ -83,4 +127,29 @@ function goBack() {
     window.history.back();
 }
 </script>
+
+<style>
+    /* Custom CSS for Select2 dropdown items */
+    .custom-select2-dropdown .select2-selection__rendered {
+        font-size: 1rem;
+        font-weight: 400;
+    }
+
+</style>
+
+<script>
+    // Initialize Select2 with the custom class
+    $('#id_participant_buyer').select2({
+        width : '100%'
+    });
+
+    $('#id_participant_owner').select2({
+        width : '100%'
+    });
+
+    $('#id_participant_property').select2({
+        width : '100%'
+    });
+</script>
+
 {% endblock %}

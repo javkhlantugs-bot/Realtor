@@ -4,7 +4,7 @@
 {% block title %}Add Notes {% endblock %}
 {% load widget_tweaks %}
 {% block content %}
-<div class="col-md-12">
+<div class="col-md-6 mx-auto">
     <h2 class="mb-4">Add Notes</h2>
     <form method="post">
         {% csrf_token %}
@@ -17,7 +17,8 @@
         
         <div class="mt-auto" style="justify-content: center; align-items: center;">
             <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; ">Save</button>
-            <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
+            <div style="height: 10px;"></div>
+            <a href="#" class="btn btn-outline-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
         </div>
     </form>
 </div>

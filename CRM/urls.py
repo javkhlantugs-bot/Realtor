@@ -4,7 +4,11 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.dashboard, name='dashboard'),
+    path('', views.EventsListView.as_view(), name='dashboard'),
+    path('ajax-search/', views.ajax_search, name='ajax_search'),
+    path('notifications/', views.notifications, name='notifications'),
+    path('mark-notification-as-read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
+    path('mark-all-notifications-as-read/', views.mark_all_notifications_as_read, name='mark_all_notifications_as_read'),
     path('create_client/', views.create_client, name='create_client'),
     path('events_list/', views.EventsListView.as_view(), name='events_list'),
     path('get_locations/', views.GetLocationsView.as_view(), name='get_locations'),
@@ -23,6 +27,7 @@ urlpatterns = [
     path('clients/<int:client_id>/', views.client_events, name='client_events'),
     path('clients/edit/<int:client_id>/', views.edit_client, name='edit_client'),
     path('clients/add_notes/<int:client_id>/', views.add_client_notes, name='add_client_notes'),
+    path('clients/update_suggestion/', views.suggest_property, name='update_suggestion'),
     path('events/delete_notes/<int:note_id>/<int:client_id>/', views.delete_client_note, name='delete_notes'),
     path('properties/', views.properties_list, name='properties_list'),
     path('properties/<int:property_id>/', views.property_events, name='property_events'),
@@ -38,5 +43,9 @@ urlpatterns = [
     path('settings/event_types_list/', views.event_types_list, name='event_types_list'),
     path('settings/edit_event_type/<int:event_type_id>/', views.edit_event_type, name='edit_event_type'),
     path('settings/delete_event_type/<int:event_type_id>/', views.delete_event_type, name='delete_event_type'),
+    path('settings/client_status_list/', views.client_status_list, name='client_status_list'),
+    path('settings/edit_client_status/<int:client_status_id>/', views.edit_client_status, name='edit_client_status'),
+    path('settings/add_client_status/', views.add_client_status, name='add_client_status'),
+    path('settings/delete_client_status/<int:client_status_id>/', views.delete_client_status, name='delete_client_status'),
     path('settings/suggestions_link_settings/', views.suggestions_link_settings, name='suggestions_link_settings'),
 ]

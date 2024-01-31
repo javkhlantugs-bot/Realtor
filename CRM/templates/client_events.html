@@ -9,16 +9,15 @@
         color: #6c757d; /* Grey text color */
         border-color: #6c757d; /* Grey border color */
     }
-    .btn-primary{
-        background-color: #1a1a1a;
-    }
+    
+    
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <style>
     #suggestionsTable td {
@@ -56,7 +55,7 @@
         
     }
 
-    </style>
+</style>
 <div class="row mb-3 container-header">
     <div class="col-md-4">
         <h2>Client: {{ client.client_name }}</h2>
@@ -101,10 +100,10 @@
             <a href="{{ client.facebook_url }}" target="_blank" style="{% if client.facebook_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none;">
                 <i class="fab fa-facebook" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
             </a>
-            <a href="{{ client.instagram_url }}" target="_blank" style="{% if client.instagram_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none;">
+            <a href="{{ client.instagram_url }}" target="_blank" style="{% if client.instagram_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none; {% if client.instagram_url %}color: #f93953;{% endif %}">
                 <i class="fab fa-instagram" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
             </a>
-            <a href="{{ client.twitter_url }}" target="_blank" style="{% if client.twitter_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none;">
+            <a href="{{ client.twitter_url }}" target="_blank" style="{% if client.twitter_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none; {% if client.twitter_url %}color: #1a1a1a;{% endif %}">
                 <i class="fab fa-twitter" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
             </a>
             
@@ -206,10 +205,10 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
                                 <div class="btn-group">
-                                    <button type="submit" name="is_suggested" value="suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected">
+                                    <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('suggested', {{ suggest.id }})">
                                         <i class="material-icons">thumb_up</i>
                                     </button>
-                                    <button type="submit" name="is_suggested" value="not_suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected">
+                                    <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('not_suggested', {{ suggest.id }})">
                                         <i class="material-icons">thumb_down</i>
                                     </button>
                                 </div>
@@ -222,6 +221,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        
         <div class="input-group mb-3" style="margin-top: 20px;">
             <span class="input-group-text">Suggestion Link</span>
             <input type="text" id="generatedLink" class="form-control" value="https://estates.solutions/suggested_properties/{{ user }}/{{ client.link }}" readonly>
@@ -291,11 +291,34 @@
     <div id="map-container" style=" height: 300px; width: 100%; margin-top: 20px;">
         <div id="map" style="height: 100%;"></div>
     </div>
+    <script>
+        function updateSuggestion(value, suggestionId) {
+            var opposite_value = (value === 'suggested') ? 'not_suggested' : 'suggested';
+            $.ajax({
+                type: 'POST',
+                url: '{% url "update_suggestion" %}',  // Replace with your Django URL for updating suggestions
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    suggestion_id: suggestionId,
+                    is_suggested: value
+                },
+                success: function (data) {
+                        // Update the button states based on the received data
+                        var buttons = $('[onclick*="updateSuggestion(\'' + opposite_value + '\', ' + suggestionId + ')"]');
+                        buttons.removeClass('active');  // Remove active class from all buttons
+        
+                        var button = $('[onclick*="updateSuggestion(\'' + value + '\', ' + suggestionId + ')"]');
+                        button.addClass('active');  // Add active class to the clicked button
+                    },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.error('Error:', errorThrown);
+                }
+            });
+        }
+    </script>
 </div>
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-
 
 <script>
     function goBack() {
@@ -313,7 +336,6 @@
         alert('URL copied to clipboard!');
     }
 </script>
-
 <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {
@@ -374,8 +396,6 @@
         });
     });
 </script>
-
-
 <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {
@@ -478,6 +498,33 @@
 {{ rest_map|json_script:"rest_json"}}
 
 <script>
+    function submitForm(interest, suggestion_id) {
+        event.stopPropagation();
+        var form = $('#likeForm');
+        var url = form.data('url');
+        var opposite_interested = (interest === 'interested') ? 'not_interested' : 'interested';
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                csrfmiddlewaretoken: form.find('[name=csrfmiddlewaretoken]').val(),
+                suggestion_id: suggestion_id,
+                is_interested: interest
+            },
+            success: function (data) {
+                // Update the button states based on the received data
+                var buttons = $('[onclick*="submitForm(\'' + opposite_interested + '\', ' + suggestion_id + ')"]');
+                buttons.removeClass('active');  // Remove active class from all buttons
+
+                var button = $('[onclick*="submitForm(\'' + interest + '\', ' + suggestion_id + ')"]');
+                button.addClass('active');  // Add active class to the clicked button
+            },
+        });
+    }
+</script>
+
+<script>
     var map = L.map('map');
     var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -558,8 +605,7 @@
     // Fit the map view to the bounds of the marker group
     map.fitBounds(markerGroup.getBounds());
 </script>
-
-
+    
 
 
 {% endblock %}

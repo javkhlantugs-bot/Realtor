@@ -90,10 +90,10 @@
                             {% csrf_token %}
                             <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
                             <div class="btn-group">
-                                <button type="submit" name="is_suggested" value="suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected">
+                                <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('suggested', {{ suggest.id }})">
                                     <i class="material-icons">thumb_up</i>
                                 </button>
-                                <button type="submit" name="is_suggested" value="not_suggested" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected">
+                                <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('not_suggested', {{ suggest.id }})">
                                     <i class="material-icons">thumb_down</i>
                                 </button>
                             </div>
@@ -111,7 +111,31 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-
+<script>
+    function updateSuggestion(value, suggestionId) {
+        var opposite_value = (value === 'suggested') ? 'not_suggested' : 'suggested';
+        $.ajax({
+            type: 'POST',
+            url: '{% url "update_suggestion" %}',  // Replace with your Django URL for updating suggestions
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                suggestion_id: suggestionId,
+                is_suggested: value
+            },
+            success: function (data) {
+                    // Update the button states based on the received data
+                    var buttons = $('[onclick*="updateSuggestion(\'' + opposite_value + '\', ' + suggestionId + ')"]');
+                    buttons.removeClass('active');  // Remove active class from all buttons
+    
+                    var button = $('[onclick*="updateSuggestion(\'' + value + '\', ' + suggestionId + ')"]');
+                    button.addClass('active');  // Add active class to the clicked button
+                },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error:', errorThrown);
+            }
+        });
+    }
+</script>
 <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {

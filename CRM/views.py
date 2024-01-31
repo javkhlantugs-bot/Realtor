@@ -1,9 +1,9 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, PropertyForm1, ClientForm1, ClientPhoneNumbers, ClientRelationships, PropertyImageForm, EventTypeForm, ClientInterestForm, suggestion_link_setup
+from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, PropertyForm1, ClientForm1, ClientPhoneNumbers, ClientRelationships, PropertyImageForm, EventTypeForm, ClientInterestForm, suggestion_link_setup, ClientStatusForm
 from Realtor.models import Property
 from django.contrib import messages
-from .models import Files, Event, Clent, Client_suggestion, ClientInterest, event_type_model, suggestion_link_settings
+from .models import Files, Event, Clent, Client_suggestion, ClientInterest, event_type_model, suggestion_link_settings,  client_status_types, Notification
 from Realtor.models import PropertyImage
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -300,7 +300,8 @@ def edit_event(request, event_id):
         event_form = EventForm(request.POST, instance=event, user = request.user.id)
 
         if event_form.is_valid():
-            event_form.save()
+            event = event_form.save(commit=False)
+            event.save()
 
             # Redirect to the referrer URL or a default URL
             return redirect('events_list')
@@ -380,6 +381,18 @@ def client_events(request, client_id):
 
     return render(request, 'client_events.html', {'client': client, 'events': events, 'form': form, 'suggestions': suggestions,'interested_map':interested_map, 'wishes':wishes,'suggested_map':suggested_map,'rest_map':rest_map})
 
+def suggest_property(request):
+    if request.method == 'POST':
+        suggestion_id = request.POST.get('suggestion_id')
+        is_suggested = request.POST.get('is_suggested')
+        suggestion = get_object_or_404(Client_suggestion, id=suggestion_id)
+        suggestion.is_suggested = is_suggested
+        suggestion.save()
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
 def add_client_notes(request, client_id):
     if request.method == 'POST':
         form = ClientInterestForm(request.POST)
@@ -414,6 +427,7 @@ def edit_client(request, client_id):
         relationships = ClientRelationships(request.POST)
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
+            form = form.save(commit=False)
             form.save()
             client_events_url = reverse('client_events', args=[client_id])
             # Redirect to the referrer URL or a default URL
@@ -513,34 +527,17 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from pathlib import Path
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 SCOPES = ['https://www.googleapis.com/auth/contacts.readonly']
 
-# def google_authenticate(request):
-#     # Get the path to the current directory
-#     current_directory = Path(__file__).resolve().parent
-#     # Path to the client secret file
-#     client_secret_path = current_directory / 'client_secret_526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com.json'
-#     # OAuth flow to authenticate and get credentials
-#     flow = InstalledAppFlow.from_client_secrets_file(client_secret_path, SCOPES)
-#     # Run the local server to get credentials
-    
-#     credentials = flow.run_local_server(port=8001)
-#     print(credentials)
-
-#     # Save credentials to session as JSON string
-#     request.session['credentials'] = credentials.to_json()
-
-#     # Redirect to the page where you fetch contacts
-#     return redirect('import_google_contacts')
 client_id = "526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com"
 client_secret = "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"
 authorization_base_url = 'https://accounts.google.com/o/oauth2/auth'
 token_url = 'https://accounts.google.com/o/oauth2/token'
 grant_type = 'authorization_code'
 scope = ['https://www.googleapis.com/auth/contacts.readonly']
-# response_type = 'code'
+
 from uuid import uuid4
 from requests_oauthlib import OAuth2Session
 
@@ -616,8 +613,8 @@ def import_google_contacts(request):
     except json.JSONDecodeError:
         return HttpResponse("Invalid JSON format")
 
-
-    credentials_info['expires_at'] = datetime.fromisoformat(credentials_info['expires_at'])
+    expiry_key = 'expires_at' if 'expires_at' in credentials_info else 'expiry'
+    credentials_info[expiry_key] = datetime.fromisoformat(credentials_info[expiry_key])
 
     # Create Credentials object
     credentials = Credentials(
@@ -627,14 +624,16 @@ def import_google_contacts(request):
         client_secret=credentials_info.get('client_secret'),
         scopes=credentials_info.get('scopes'),
         universe_domain=credentials_info.get('universe_domain'),
-        expiry=credentials_info.get('expires_at')
+        expiry=credentials_info.get(expiry_key)
     )
-    # Convert the expiry string to a datetime object
+    # Make utcnow aware of the UTC timezone
+    utc_now = datetime.utcnow().replace(tzinfo=timezone.utc)
+
     # If the credentials are expired, refresh them
-    if credentials.expired:
+    if credentials_info[expiry_key] < utc_now:
         credentials.refresh(Request())
         # Update the expiry and refresh token in the credentials_info dictionary
-        credentials_info['expires_at'] = credentials.expiry
+        credentials_info[expiry_key] = credentials.expiry
         credentials_info['refresh_token'] = credentials.refresh_token
         # credentials.expiry = datetime.strptime(credentials.expiry, "%Y-%m-%dT%H:%M:%S.%fZ")
 
@@ -761,8 +760,6 @@ def add_event_type(request):
         form = EventTypeForm()
     return render(request, 'add_event_type.html', {'form': form})
 
-
-
 def event_types_list(request):
     event_types = event_type_model.objects.filter(user=request.user)
     return render(request, 'event_types_list.html', {'event_types': event_types})
@@ -789,6 +786,47 @@ def delete_event_type(request, event_type_id):
 
     return render(request, 'delete_event_type.html', {'event_type': event_types})
 
+def add_client_status(request):
+    if request.method == 'POST':
+        form = ClientStatusForm(request.POST)
+        if form.is_valid():
+            stats = form.save(commit=False)
+            stats.user = request.user
+            stats.save()
+            return redirect('client_status_list')
+        else:
+            print(form.errors)
+    else:
+        form = ClientStatusForm()
+    return render(request, 'add_client_status.html', {'form': form})
+
+def client_status_list(request):
+    client_statuses = client_status_types.objects.filter(user=request.user)
+    return render(request, 'client_status_list.html', {'client_statuses': client_statuses})
+
+def edit_client_status(request, client_status_id):
+    client_status = get_object_or_404(client_status_types, id=client_status_id, user=request.user)
+
+    if request.method == 'POST':
+        form = ClientStatusForm(request.POST, instance=client_status)
+        if form.is_valid():
+            form.save()
+            return redirect('client_status_list')
+    else:
+        form = ClientStatusForm(instance=client_status)
+
+    return render(request, 'edit_client_status.html', {'client_status': client_status, 'form': form})
+
+def delete_client_status(request, client_status_id):
+    client_status = get_object_or_404(client_status_types, id=client_status_id, user=request.user)
+
+    if request.method == 'POST':
+        client_status.delete()
+        return redirect('client_status_list')
+
+    return render(request, 'delete_client_status.html', {'event_type': client_status})
+
+
 def suggestions_link_settings(request):
     
     setups = get_object_or_404(suggestion_link_settings, user=request.user)
@@ -802,3 +840,87 @@ def suggestions_link_settings(request):
         form = suggestion_link_setup(instance=setups)
 
     return render(request, 'edit_event_type.html', {'setups': setups, 'form': form})
+
+from django.db.models import Q, F, Value, CharField
+from django.db.models.functions import Concat
+
+def ajax_search(request):
+    query = request.GET.get('query', '')
+    client_results = Clent.objects.filter(Q(client_name__icontains=query) | Q(phone_number__icontains=query), user=request.user).values(
+        name=Concat(F('client_name'), Value(', phone: '),F('phone_number')),
+        ids=F('id'),
+        type=Value('Client'),
+        links=Concat(Value('/clients/'), F('id'), Value('/'), output_field=CharField())
+    )
+
+    property_results = Property.objects.filter(address__icontains=query, user=request.user).values(
+        name=F('address'),
+        ids=F('id'),
+        type=Value('Property'),
+        links=Concat(Value('/properties/'), F('id'), Value('/'), output_field=CharField())
+    )
+
+    events_result = Event.objects.filter(event_description__icontains=query, user=request.user).values(
+        name=F('event_description'),
+        ids=F('id'),
+        type=Value('Event'),
+        links=Concat(Value('/events/edit/'), F('id'), Value('/'), output_field=CharField())
+    )
+
+    results = list(client_results) + list(property_results)+  list(events_result)
+    return JsonResponse({'results': results})
+
+from django.utils.timesince import timesince
+from django.utils import timezone
+
+def calculate_timesince(timestamp):
+    now = timezone.now()
+    diff = now - timestamp
+    print(now)
+    print(timestamp)
+    print(diff)
+    minutes = diff.total_seconds() / 60
+
+    if minutes < 1:
+        return "just now"
+    elif minutes < 60:
+        return f"{int(minutes)} {'minute' if int(minutes) == 1 else 'minutes'} ago"
+    elif minutes < 1440:
+        return f"{int(minutes / 60)} {'hour' if int(minutes / 60) == 1 else 'hours'} ago"
+    else:
+        return f"{int(minutes / 1440)} {'day' if int(minutes / 1440) == 1 else 'days'} ago"
+
+def notifications(request):
+    now = timezone.now()
+    notifications = Notification.objects.filter(user=request.user, is_seen=False).order_by('-timestamp')
+    data = [
+        {
+            'messages': notification.message,
+            'timestamps': calculate_timesince(notification.timestamp),
+            'client_ids': notification.client_id,
+            'notification_id' : notification.pk,
+        }
+        for notification in notifications
+    ]
+    return JsonResponse({'notifications': data})
+
+
+def mark_notification_as_read(request, notification_id):
+    notification = Notification.objects.get(pk=notification_id)
+    notification.is_seen = True
+    notification.save()
+    return JsonResponse({'status': 'success'})
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def mark_all_notifications_as_read(request):
+    if request.method == 'POST':
+        # Assuming the user is authenticated
+        user = request.user.id
+
+        # Mark all notifications as read for the current user
+        Notification.objects.filter(user=user, is_seen=False).update(is_seen=True)
+
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})

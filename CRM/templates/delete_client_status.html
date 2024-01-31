@@ -1,0 +1,18 @@
+{% extends 'base_event.html' %}
+
+{% block title %}Delete Client Status{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Delete Client Status</h2>
+
+    <p>Are you sure you want to delete the status "{{ event_type.event_type }}"?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-danger">Delete</button>
+    </form>
+
+    <a href="{% url 'client_status_list' %}" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+{% endblock %}

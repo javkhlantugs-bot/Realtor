@@ -10,6 +10,13 @@ from django.utils import timezone
 from django.db.models.signals import pre_save
 import datetime
 
+class client_status_types(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    status = models.CharField(max_length = 255)
+
+    def __str__(self):
+        return f"{self.status}"
+
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
@@ -26,17 +33,8 @@ class Clent(models.Model):
     instagram_url = models.URLField(null=True, blank=True)
     twitter_url = models.URLField(null=True, blank=True)
     google_resource_id = models.CharField(null=True,blank = True, max_length= 255)
-
-    status_choices = (
-        ('looking_for_property', 'Looking For Property'),
-        ('looking_for_rental_property', 'Looking For Rental'),
-        ('selling_property', 'Selling property'),
-        ('renting_Property', 'Renting Property'),
-        ('tenant', 'Tenant'),
-        ('inactive', 'Inactive'),
-    )
-
-    status = models.CharField(choices=status_choices, max_length=50, null=True, blank=True)
+  
+    status = models.ForeignKey(client_status_types, max_length=50, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return f"{self.client_name} - {self.phone_number} - {self.email}"
@@ -132,13 +130,6 @@ class event_type_model(models.Model):
 
     def __str__(self):
         return f"{self.event_type}"
-
-class client_status_types(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    status = models.CharField(max_length = 255)
-
-    def __str__(self):
-        return f"{self.status}"
 
 class Event(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -262,10 +253,34 @@ class ClientInterest(models.Model):
 
 class suggestion_link_settings(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-    contacts = models.CharField(max_length=255, blank=True, null=True)
-    welcome_message = models.CharField(max_length=255, blank=True, null=True)
+    contacts = models.CharField(max_length=50, blank=True, null=True)
+    welcome_message = models.CharField(max_length=50, blank=True, null=True)
 
 @receiver(post_save, sender=CustomUser)
 def create_suggestion_link_settings(sender, instance, created, **kwargs):
     if created:
         suggestion_link_settings.objects.create(user=instance)
+
+class Notification(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    property = models.ForeignKey(Property, on_delete= models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey(Clent, on_delete= models.CASCADE, null=True, blank=True)
+    is_seen = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user} - {self.message} - {self.timestamp}"
+
+def create_notification(sender, instance, **kwargs):
+    if instance.is_interested == 'interested':
+        notification_message = f"{instance.client.client_name} is interested in {instance.property.address}"
+        Notification.objects.create(
+            user=instance.user,
+            message=notification_message,
+            client=instance.client,
+            property=instance.property
+        )
+
+# Connect the signal to the create_notification function
+models.signals.post_save.connect(create_notification, sender=Client_suggestion)

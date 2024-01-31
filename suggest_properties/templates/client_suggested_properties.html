@@ -11,7 +11,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <title>Suggested Properties for {{ client.client_name }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@100;300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
         html{
             overflow: hidden;
         }
@@ -148,11 +148,16 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
         }
 
-        .header-content {
-            padding: 5px; /* Add padding to content */
-            border-radius: 5px; /* Add rounded corners to content */
-            margin: 5px;
+        .header-container h2 {
+            padding-top: 5px; /* Add padding to content */
         }
+
+        .header-content{
+            padding: 0px;
+            margin: 0px;
+            
+        }
+
         @media (max-width: 767px) {
             .header-container h2 {
                 font-size: 1rem; /* Adjust the font size for small screens */
@@ -172,11 +177,11 @@
         
         <div class="container-fluid">
             <div class="row justify-content-center align-items-center header-container">
-                <div class="col-md-8 col-sm-12 text-center header-content">
-                    <h2 class="h2 h-md-auto h-lg-auto">{{ setups.welcome_message }}</h2>
+                <div class="col-md-8 col-sm-12 text-left header-content">
+                    <h2 class="h2 h-md-auto h-lg-auto"  style="padding-left: 15px;">{{ setups.welcome_message }}</h2>
                 </div>
-                <div class="col-md-4 col-sm-12 text-center header-content">
-                    <h3 class="h3 h-md-auto h-lg-auto">
+                <div class="col-md-4 col-sm-12 text-right header-content">
+                    <h3 class="h3 h-md-auto h-lg-auto" style="padding-right: 15px;">
                         {{ setups.contacts }}
                     </h3>
                 </div>
@@ -200,10 +205,10 @@
                                                 {% csrf_token %}
                                                 <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-outline-primary {% if suggest.is_interested == 'interested' %}active{% endif %} not-selected" onclick="submitForm('interested',{{ suggest.id }}, event)">
+                                                    <button type="button" class="btn btn-outline-primary not-selected {% if suggest.is_interested == 'interested' %}active{% endif %}" onclick="submitForm('interested', {{ suggest.id }})">
                                                         <i class="material-icons">thumb_up</i>
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-secondary {% if suggest.is_interested == 'not_interested' %}active{% endif %} not-selected" onclick="submitForm('not_interested',{{ suggest.id }}, event)">
+                                                    <button type="button" class="btn btn-outline-secondary not-selected {% if suggest.is_interested == 'not_interested' %}active{% endif %}" onclick="submitForm('not_interested', {{ suggest.id }})">
                                                         <i class="material-icons">thumb_down</i>
                                                     </button>
                                                 </div>
@@ -321,7 +326,8 @@
                 event.stopPropagation();
                 var form = $('#likeForm');
                 var url = form.data('url');
-                
+                var opposite_interested = (interest === 'interested') ? 'not_interested' : 'interested';
+        
                 $.ajax({
                     type: 'POST',
                     url: url,
@@ -331,15 +337,13 @@
                         is_interested: interest
                     },
                     success: function (data) {
-                        // Toggle the active class for the clicked button
+                        // Update the button states based on the received data
+                        var buttons = $('[onclick*="submitForm(\'' + opposite_interested + '\', ' + suggestion_id + ')"]');
+                        buttons.removeClass('active');  // Remove active class from all buttons
+        
                         var button = $('[onclick*="submitForm(\'' + interest + '\', ' + suggestion_id + ')"]');
-                        button.toggleClass('active');
-
-                        // Remove active class from the other button
-                        var otherButton = button.siblings('button');
-                        otherButton.removeClass('active');
+                        button.addClass('active');  // Add active class to the clicked button
                     },
-                    
                 });
             }
         </script>

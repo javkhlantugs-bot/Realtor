@@ -1,0 +1,6 @@
+{% for notification in notifications %}
+    <div>
+        <p>{{ notification.message }}</p>
+        <small>{{ notification.timestamp }}</small>
+    </div>
+{% endfor %}

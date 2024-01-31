@@ -1,10 +1,10 @@
 {% extends 'base_event.html' %}
 
-{% block title %}Edit Event Type{% endblock %}
+{% block title %}Edit Client Status{% endblock %}
 
 {% block content %}
   <div class="container">
-    <h2>Edit Event Type</h2>
+    <h2>Edit Client Status</h2>
 
     <form method="post">
       {% csrf_token %}
@@ -12,6 +12,6 @@
       <button type="submit" class="btn btn-outline-primary">Save Changes</button>
     </form>
 
-    <a href="{% url 'event_types_list' %}" class="btn btn-outline-secondary">Cancel</a>
+    <a href="{% url 'client_status_list' %}" class="btn btn-outline-secondary">Cancel</a>
   </div>
 {% endblock %}

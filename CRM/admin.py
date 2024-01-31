@@ -1,6 +1,6 @@
 # CRM/admin.py
 from django.contrib import admin
-from .models import Clent, Event, Client_suggestion, ClientInterest, event_type_model, client_status_types
+from .models import Clent, Event, Client_suggestion, ClientInterest, event_type_model, client_status_types, Notification
 from django import forms
 
 class EventAdminForm(forms.ModelForm):
@@ -23,3 +23,4 @@ admin.site.register(ClientInterest)
 admin.site.register(Client_suggestion)
 admin.site.register(event_type_model)
 admin.site.register(client_status_types)
+admin.site.register(Notification)
