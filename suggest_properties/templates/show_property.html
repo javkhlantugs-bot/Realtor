@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 </head>
@@ -175,19 +176,36 @@ body {
     align-items: center;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
     position: fixed;
-    top: 20px;
+    top: 15px;
     left: 20px;
-    border: none;
+    border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
     transition: background-color 0.3s ease-in-out;
     z-index: 1000;
 }
 
+.btn-group{
+    position: fixed;
+    z-index: 1000;
+    top: 15px;
+    right: 20px;
+}
+
 .floating-button:hover {
     background-color: #0056b3;
     color: #fff;
     text-decoration: none;
+}
+
+.header-row {
+    top: 0;
+    width: 100vw;
+    height: 70px;
+    position: fixed;
+    z-index: 1000;
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(26, 26, 26, 1);
 }
 
 @media screen and (max-width: 768px) {
@@ -219,10 +237,49 @@ body {
 }
 </style>
 <body>
-    <div class="row" >
+    <div class="header-row" >
         <a href="javascript:void(0)" class="floating-button" onclick="goBack()">
             <i class="material-icons">arrow_back</i>
         </a>
+        <form method="post" id="likeForm" >
+            {% csrf_token %}
+            <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary not-selected {% if suggest.is_interested == 'interested' %}active{% endif %}" onclick="submitForm('interested', {{ suggest.id }})">
+                    <i class="material-icons">thumb_up</i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary not-selected {% if suggest.is_interested == 'not_interested' %}active{% endif %}" onclick="submitForm('not_interested', {{ suggest.id }})">
+                    <i class="material-icons">thumb_down</i>
+                </button>
+            </div>
+            
+        </form>
+        <script>
+            function submitForm(interest, suggestion_id) {
+                event.stopPropagation();
+                var form = $('#likeForm');
+                var url = form.data('url');
+                var opposite_interested = (interest === 'interested') ? 'not_interested' : 'interested';
+        
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        csrfmiddlewaretoken: form.find('[name=csrfmiddlewaretoken]').val(),
+                        suggestion_id: suggestion_id,
+                        is_interested: interest
+                    },
+                    success: function (data) {
+                        // Update the button states based on the received data
+                        var buttons = $('[onclick*="submitForm(\'' + opposite_interested + '\', ' + suggestion_id + ')"]');
+                        buttons.removeClass('active');  // Remove active class from all buttons
+        
+                        var button = $('[onclick*="submitForm(\'' + interest + '\', ' + suggestion_id + ')"]');
+                        button.addClass('active');  // Add active class to the clicked button
+                    },
+                });
+            }
+        </script>
     </div>
     
 
@@ -276,6 +333,7 @@ body {
                         {% endif %}
                     </div>
                 </div>    
+                
                 <hr>
                 <h5>Features</h5>
                 <div class="row">
@@ -446,7 +504,6 @@ body {
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 

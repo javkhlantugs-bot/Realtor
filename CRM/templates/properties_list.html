@@ -14,13 +14,22 @@
     .pac-container{
         z-index: 1000000;
     }
+    @media (max-width: 767px) {
+        .modal{
+            margin-top: 25vw !important;
+        }
+    }
 </style>
 <div class="row container-header" style="margin-bottom: 20px;">
     <h2 class="col-md-4">Properties</h2>
     <div class="col-md-8 d-flex justify-content-end" >
-    <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#propertyModal">
-        <i class="material-icons mr-2">add</i> Add Property
-    </a>
+        
+        <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"  
+                data-toggle="modal" data-target="#propertyModal">
+                <i class="fas fa-plus"></i>
+                <span class="d-none d-md-inline">Add</span>  
+        </button>
+    </div>
 </div>
     
 </div>

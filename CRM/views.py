@@ -628,7 +628,7 @@ def import_google_contacts(request):
     )
     # Make utcnow aware of the UTC timezone
     utc_now = datetime.utcnow().replace(tzinfo=timezone.utc)
-
+    
     # If the credentials are expired, refresh them
     if credentials_info[expiry_key] < utc_now:
         credentials.refresh(Request())
@@ -839,7 +839,7 @@ def suggestions_link_settings(request):
     else:
         form = suggestion_link_setup(instance=setups)
 
-    return render(request, 'edit_event_type.html', {'setups': setups, 'form': form})
+    return render(request, 'suggestions_link_setup.html', {'setups': setups, 'form': form})
 
 from django.db.models import Q, F, Value, CharField
 from django.db.models.functions import Concat

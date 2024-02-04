@@ -65,16 +65,16 @@
     </div>
     <div class="col-md-4 d-flex justify-content-end">
         <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="generateLink('{{ user }}','{{ client.link }}' )">
-            Link <i class="fas fa-link"></i> 
+            <span class="button-text">Link</span> <i class="fas fa-link"></i> 
         </button>
         <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="create_note()">
-            Note <i class="fas fa-sticky-note"></i>  
+            <span class="button-text">Note</span> <i class="fas fa-sticky-note"></i>  
         </button>
         <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="addEvent()">
-            Task <i class="fas fa-calendar-plus"></i> 
+            <span class="button-text">Task</span> <i class="fas fa-calendar-plus"></i> 
         </button>
         <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="editClient()">
-            Edit <i class="fas fa-edit"></i>
+            <span class="button-text">Edit</span> <i class="fas fa-edit"></i>
         </button>
     </div>
 </div>
@@ -127,7 +127,7 @@
     </div>
     <hr>
     <div style="border-radius: 10px;padding: 10px;">
-        <h5 style="text-align: center;">Events</h5>
+        <h5 style="text-align: center;">Tasks List</h5>
         <table id="eventsTable" class="display">
             <thead>
                 <tr>

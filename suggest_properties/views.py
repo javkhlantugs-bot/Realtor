@@ -42,6 +42,7 @@ class ClientSuggestedPropertiesView(View):
     
 def show_property(request, user, id, address):
     property = get_object_or_404(Property, id=id, user__username=user) 
+    suggestions = Client_suggestion.objects.filter(property=property, is_suggested='suggested')
     locations = list(Property.objects.values('latitude', 'longitude','id').filter(user=request.user.id, id = id))
     photos = PropertyImage.objects.filter(property=property)
     fields = Property._meta.fields
@@ -50,5 +51,6 @@ def show_property(request, user, id, address):
         'photos': photos,
         'address': address,
         'fields':fields,
-        'locations':locations
+        'locations':locations,
+        'suggestions':suggestions
     })

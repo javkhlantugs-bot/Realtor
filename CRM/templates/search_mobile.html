@@ -1,0 +1,97 @@
+
+
+
+<script>
+    const searchInput = document.getElementById('search-input');
+    const resultsContainer = document.getElementById('search-results-container');
+  
+    searchInput.addEventListener('input', function () {
+      const query = this.value.trim();
+  
+      if (query.length > 0) {
+        fetch(`/crm/ajax-search/?query=${query}`)
+          .then(response => response.json())
+          .then(data => {
+            displayResults(data.results);
+          })
+          .catch(error => console.error('Error fetching search results:', error));
+      } else {
+        clearResults();
+      }
+    });
+  
+    function displayResults(results) {
+      clearResults();
+  
+      if (results.length > 0) {
+        const resultList = document.createElement('ul');
+  
+        results.forEach(result => {
+          const listItem = document.createElement('li');
+          listItem.textContent = `${result.type}: ${result.name}` ;
+          listItem.setAttribute('data-links', result.links);
+          listItem.setAttribute('data-id', result.ids);
+          listItem.addEventListener('click', navigateToResult);
+          resultList.appendChild(listItem);
+        });
+  
+        resultsContainer.appendChild(resultList);
+      } else {
+        const noResultsMessage = document.createElement('p');
+        noResultsMessage.textContent = 'No results found.';
+        noResultsMessage.setAttribute('class','noResultsMessage')
+        resultsContainer.appendChild(noResultsMessage);
+      }
+    }
+    
+        // Click away event
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#search-input').length && !$(event.target).closest('#search-results-container').length) {
+            clearResults();
+        }
+    });
+
+    // Esc key event
+    $(document).on('keydown', function(event) {
+        if (event.key === 'Escape') {
+            clearResults();
+        }
+    });
+
+    function clearResults() {
+      while (resultsContainer.firstChild) {
+        resultsContainer.removeChild(resultsContainer.firstChild);
+      }
+    }
+  
+    function navigateToResult(event) {
+        const resultLinks = event.target.getAttribute('data-links');  // assuming 'data-links' is the attribute name
+        window.location.href = `/crm${resultLinks}`; 
+    }
+    
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const clearButton = document.getElementById('clear-button');
+        const resultsContainer = document.getElementById('search-results-container');
+        console.log('triggered DOM')
+        function toggleClearButton() {
+            clearButton.style.display = searchInput.value.length > 0 ? 'block' : 'none';
+        }
+
+        clearButton.addEventListener('mousedown', function(event) {
+            // Prevent the button from submitting a form (if it's inside a form)
+            event.preventDefault();
+            searchInput.value = '';
+            clearButton.style.display = 'none';
+            resultsContainer.removeChild(resultsContainer.firstChild);
+        });
+
+        searchInput.addEventListener('input', toggleClearButton);
+        searchInput.addEventListener('focus', toggleClearButton);
+        searchInput.addEventListener('blur', function() {
+            clearButton.style.display = 'none';
+        });
+    });
+</script>

@@ -4,13 +4,15 @@
 {% block title %}Client Status List{% endblock %}
 
 {% block content %}
-    <h2>Client Status List
-      <a href="{% url 'add_client_status' %}" class="btn btn-outline-secondary" type="button">
-          <i class="material-icons">add</i> 
-      </a>
-    </h2>
-  
-    <table class="table table-striped">
+<div class="row container-header">
+  <h2>Client Status List
+    <a href="{% url 'add_client_status' %}" class="btn btn-outline-secondary" type="button">
+        <i class="material-icons">add</i> 
+    </a>
+  </h2>
+</div>    
+<div class="container-content">
+  <table class="table table-striped">
       <thead>
         <tr>
           <th>Status</th>
@@ -30,4 +32,5 @@
       </tbody>
     </table>
   </div>
+</div>
 {% endblock %}

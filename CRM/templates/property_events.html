@@ -7,7 +7,7 @@
 {% load widget_tweaks %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
@@ -15,36 +15,53 @@
         color: #6c757d; /* Grey text color */
         border-color: #6c757d; /* Grey border color */
     }
-    .btn-primary{
-        background-color: #1a1a1a;
-    }
-</style>
-<div  class="row container-header">
-    <h2 class="col-md-10">{{ property.address }}</h2>
     
-    <!-- <a class="col-md-1 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" href="{% url 'edit_property' property.id %}">
-        Edit property<i class="material-icons mr-2">edit</i> 
-    </a> -->
-    <div class="col-md-2 d-flex justify-content-end" >
-        <a class="col-md-2 btn btn-danger d-flex align-items-center justify-content-center"
-            style="width: 200px; margin-right: 10px;"
-            href="{% url 'delete_property' property_id=property.id %}">
-            <i class="material-icons mr-2">clear</i> Delete
-        </a>
-        <br>
-        <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px; margin-right: 10px;" href="{% url 'show_property' user=user.username id=property.id address=property.address%}">
-            <i class="material-icons mr-2">link</i> Link
-        </a>
-        <br>
-        <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" href="{% url 'edit_property' property.id %}">
-            <i class="material-icons mr-2">edit</i> Edit
-        </a>
+</style>
+<div  class="row mb-3 container-header">
+    <div class="col-md-8">
+        <h2 >{{ property.address }}</h2>
     </div>
+    <div class="col-md-4 d-flex justify-content-end" >
+        <button class="btn btn-outline-danger mr-2"
+                style="margin-right: 5px;"
+                onclick="deleteProperty({{ property.id }})">
+                <span class="button-text">Delete</span> <i class="fas fa-trash"></i>
+        </button>
+
+        <button class="btn btn-outline-primary mr-2" 
+                style="margin-right: 5px;" 
+                onclick="showProperty('{{ user.username }}', {{ property.id }}, '{{ property.address }}')">
+                <span class="button-text">Link</span> <i class="fas fa-link"></i>
+        </button>
+
+        <button class="btn btn-outline-primary" 
+                onclick="editProperty({{ property.id }})">
+                <span class="button-text">Edit</span> <i class="fas fa-edit"></i>
+        </button>
+    </div>
+    <script>
+        function deleteProperty(propertyId) {
+            window.location.href = '/crm/properties/delete/' + propertyId + '/' ;
+        }
+    
+        function showProperty(username, propertyId, address) {
+            // Assuming you want to navigate to the show property page
+            // Replace the following line with your actual navigation logic
+            window.location.href = '/suggested_properties/show_properties/' + username + '/' + propertyId + '/' + address + '/';
+        }
+    
+        function editProperty(propertyId) {
+            // Assuming you want to navigate to the edit property page
+            // Replace the following line with your actual navigation logic
+            window.location.href = '/crm/properties/edit/' + propertyId + '/';
+        }
+    </script>
+    
 </div>
 
 <div class="col-md-12 container-content">
     <div class="col-md-12">
-        <h5 class="mb-4" style="text-align: center;">Event List</h5>
+        <h5 class="mb-4" style="text-align: center;">Tasks List</h5>
         <table id="eventsTable" class="display">
             <thead>
                 <tr>

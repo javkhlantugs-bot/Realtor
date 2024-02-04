@@ -6,113 +6,121 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-
-<div class="col-md-12">
-    <div class="row container-header" style="margin-bottom: 10px;">
-        <h2 class="col-md-4">Clients List</h2>
-        <div class="col-md-8 d-flex justify-content-end" >
-            <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center" style="width: 200px;" data-toggle="modal" data-target="#contactModal">
-                <i class="material-icons mr-2">add</i> Add Contact
-            </a>
-        </div>
+<div class="row container-header" style="margin-bottom: 10px;">
+    <h2 class="col-md-4">Clients List</h2>
+    <div class="col-md-8 d-flex justify-content-end" >
+        <!-- <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center"  data-toggle="modal" data-target="#contactModal">
+            <i class="material-icons mr-2">add</i> <span class="d-none d-md-inline"> Add Contact</span>
+        </a> -->
+        <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"  
+                data-toggle="modal" data-target="#contactModal">
+                <i class="fas fa-plus"></i>
+                <span class="d-none d-md-inline">Add</span> 
+        </button>
     </div>
-    <div class="container-content">
-        <table id="clientsTable" class="display">
-            <thead>
+</div>
+<div class="container-content">
+    <table id="clientsTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone number</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Details</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
                 <tr>
-                    <th>Name</th>
-                    <th>Phone number</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Details</th>
-
+                    <td>{{ client.client_name }}</td>
+                    <td>{{ client.phone_number }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.get_status_display }}</td>
+                    <td>
+                        <a href="{% url 'client_events' client.id %}">Show more</a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for client in clients %}
-                    <tr>
-                        <td>{{ client.client_name }}</td>
-                        <td>{{ client.phone_number }}</td>
-                        <td>{{ client.email }}</td>
-                        <td>{{ client.get_status_display }}</td>
-                        <td>
-                            <a href="{% url 'client_events' client.id %}">Show more</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-    <div class="modal" id="contactModal" >
-        <div class="modal-dialog">
-            <div class="modal-content">
-    
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Add contact</h4>
-                    <button data-dismiss="modal" style="background: none; border: none; cursor: pointer;">
-                        <span class="material-icons">clear</span>
-                    </button>
-                </div>
-                <div class="modal-body" >
-                    <!-- Your property form goes here -->
-                    <form method="post">
-                        {% csrf_token %}
-                        <style>
-                            .form-group input{
-                                width: 100%;
-                                height: 30px;
+<div class="modal" id="contactModal" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add Contact</h4>
+                <button data-dismiss="modal" style="background: none; border: none; cursor: pointer;">
+                    <span class="material-icons">clear</span>
+                </button>
+            </div>
+            <div class="modal-body" >
+                <!-- Your property form goes here -->
+                <form method="post">
+                    {% csrf_token %}
+                    <style>
+                        .form-group input{
+                            width: 100%;
+                            height: 30px;
+                        }
+                        .form-group select{
+                            width: 100%;
+                            height: 30px;
+                        }
+                        .form-group {
+                            padding: 10px;
+                        }
+                        @media (max-width: 767px) {
+                            .modal{
+                                margin-top: 25vw !important;
                             }
-                            .form-group select{
-                                width: 100%;
-                                height: 30px;
-                            }
-                            .form-group {
-                                padding: 10px;
-                            }
-                        </style>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    {{ form.client_name.label_tag }}
-                                    {{ form.client_name|add_class:"form-control"  }}
-                                    {% for error in form.client_name.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                                <div class="form-group">
-                                    {{ form.phone_number.label_tag }}
-                                    {{ form.phone_number|add_class:"form-control"  }}
-                                    {% for error in form.phone_number.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
-                                </div>
+                        }
+                    </style>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.client_name.label_tag }}
+                                {{ form.client_name|add_class:"form-control"  }}
+                                {% for error in form.client_name.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    {{ form.email.label_tag }}
-                                    {{ form.email|add_class:"form-control"  }}
-                                    {% for error in form.email.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                                <div class="form-group">
-                                    {{ form.status.label_tag }}
-                                    {{ form.status|add_class:"form-control"  }}
-                                    {% for error in form.status.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
-                                </div>
+                            <div class="form-group">
+                                {{ form.phone_number.label_tag }}
+                                {{ form.phone_number|add_class:"form-control"  }}
+                                {% for error in form.phone_number.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-outline-primary" style="margin-left: 10px; margin-top: 10px; width: 100%;">Add contact</button>
-                    </form>
-                </div>  
-            </div>
-        </div>  
-    </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.email.label_tag }}
+                                {{ form.email|add_class:"form-control"  }}
+                                {% for error in form.email.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.status.label_tag }}
+                                {{ form.status|add_class:"form-control"  }}
+                                {% for error in form.status.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary" style="margin-left: 10px; margin-top: 10px; width: 100%;">Add contact</button>
+                </form>
+            </div>  
+        </div>
+    </div>  
 </div>
 
 <script>

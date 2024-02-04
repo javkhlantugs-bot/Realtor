@@ -4,31 +4,31 @@
 {% block title %}Edit {{ client.client_name }}{% endblock %}
 {% load widget_tweaks %}
 {% block content %}
-<div class="col-md-12">
+<div class="col-md-6 mx-auto">
     <h2 class="mb-4">Edit {{ client.client_name }}</h2>
     <form method="post">
         {% csrf_token %}
         <h5>General</h5>
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.client_name.label_tag }}
                     {{ form.client_name|add_class:"form-control" }}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.status.label_tag }}
                     {{ form.status|add_class:"form-control" }}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.phone_number.label_tag }}
                     {{ form.phone_number|add_class:"form-control" }}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.email.label_tag }}
                     {{ form.email|add_class:"form-control" }}
@@ -38,19 +38,19 @@
         <hr>
         <h5>Significant life events</h5>
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.birthday.label_tag }}
                     {{ form.birthday|add_class:"form-control" }}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.wedding_anniversary.label_tag }}
                     {{ form.wedding_anniversary|add_class:"form-control" }}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.home_anniversary.label_tag }}
                     {{ form.home_anniversary|add_class:"form-control" }}
@@ -60,19 +60,19 @@
         <hr>
         <h5>Social accounts</h5>
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.facebook_url.label_tag }}
                     {{ form.facebook_url|add_class:"form-control" }}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.instagram_url.label_tag }}
                     {{ form.instagram_url|add_class:"form-control" }}
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="form-group">
                     {{ form.twitter_url.label_tag }}
                     {{ form.twitter_url|add_class:"form-control" }}

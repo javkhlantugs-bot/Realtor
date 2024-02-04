@@ -45,7 +45,7 @@
                 font-size: 0.2rem;
             }
             .cont-list{
-                max-height: 50vh;
+                max-height: 55vh;
                 margin-bottom: 20px;
             }
             #map-container{
@@ -142,10 +142,8 @@
             background-color: #333; /* Color when scrollbar thumb is being dragged */
         }
         .header-container {
-            background-color: #f8f9fa; /* Add your desired background color */
+            background-color: transparent; /* Add your desired background color */
             margin-top: 5px; /* Add padding for better spacing */
-            border-radius: 10px; /* Add rounded corners */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
         }
 
         .header-container h2 {
@@ -176,15 +174,28 @@
     <body>
         
         <div class="container-fluid">
-            <div class="row justify-content-center align-items-center header-container">
-                <div class="col-md-8 col-sm-12 text-left header-content">
+            <div class="row justify-content-left align-items-center header-container">
+                <div class="col-md-6 col-sm-12 text-left header-content">
                     <h2 class="h2 h-md-auto h-lg-auto"  style="padding-left: 15px;">{{ setups.welcome_message }}</h2>
                 </div>
+                <a href="tel:+123456789" id="callButton">Call Us</a>
                 <div class="col-md-4 col-sm-12 text-right header-content">
                     <h3 class="h3 h-md-auto h-lg-auto" style="padding-right: 15px;">
                         {{ setups.contacts }}
                     </h3>
                 </div>
+                <script>
+                    // JavaScript to prevent the default behavior on non-mobile devices
+                    document.getElementById('callButton').addEventListener('click', function (event) {
+                        // Check if the device is not a mobile device
+                        if (!/Mobi|Android/i.test(navigator.userAgent)) {
+                            // Prevent the default behavior (e.g., following the link) on non-mobile devices
+                            event.preventDefault();
+                            // You can add additional logic or provide a message for non-mobile users if needed
+                            alert("This feature is available on mobile devices only.");
+                        }
+                    });
+                </script>
             </div>
             <hr>
             <div class="row">
