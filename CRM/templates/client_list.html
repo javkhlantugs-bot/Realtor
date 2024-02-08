@@ -28,7 +28,8 @@
                 <th>Name</th>
                 <th>Phone number</th>
                 <th>Email</th>
-                <th>Status</th>
+                <th>Interested</th>
+                <th>Events</th>
                 <th>Details</th>
 
             </tr>
@@ -36,10 +37,23 @@
         <tbody>
             {% for client in clients %}
                 <tr>
-                    <td>{{ client.client_name }}</td>
-                    <td>{{ client.phone_number }}</td>
+                    <td><h6>{{ client.client_name }}</h6></td>
+                    <td>
+                        <a href="tel:{{ client.phone_number }}" id="callButton">{{ client.phone_number }}</a>
+                    </td>
                     <td>{{ client.email }}</td>
-                    <td>{{ client.get_status_display }}</td>
+                    <td>
+                        <div class="progress" style="position: relative; height: 30px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ client.suggest_percent }}%; height: 100% !important" aria-valuenow="{{ client.interested_count }}" aria-valuemin="0" aria-valuemax="client.suggested_count"></div>
+                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--color-text-rgba) !important;">{{ client.interested_count }} / {{ client.suggested_count }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress" style="position: relative; height: 30px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ client.events_percent }}%;" aria-valuenow="{{ client.completed_events }}" aria-valuemin="0" aria-valuemax="client.events_total"></div>
+                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--color-text-rgba) !important;">{{ client.events_completed }} / {{ client.events_total }}</span>
+                        </div>
+                    </td>
                     <td>
                         <a href="{% url 'client_events' client.id %}">Show more</a>
                     </td>
@@ -47,6 +61,18 @@
             {% endfor %}
         </tbody>
     </table>
+    <script>
+        // JavaScript to prevent the default behavior on non-mobile devices
+        document.getElementById('callButton').addEventListener('click', function (event) {
+            // Check if the device is not a mobile device
+            if (!/Mobi|Android/i.test(navigator.userAgent)) {
+                // Prevent the default behavior (e.g., following the link) on non-mobile devices
+                event.preventDefault();
+                // You can add additional logic or provide a message for non-mobile users if needed
+                alert("This feature is available on mobile devices only.");
+            }
+        });
+    </script>
 </div>
 
 <div class="modal" id="contactModal" >
@@ -116,7 +142,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-outline-primary" style="margin-left: 10px; margin-top: 10px; width: 100%;">Add contact</button>
+                    <button type="submit" class="btn btn-outline-primary" style="width: 100%;margin-top: 10px; ">Add contact</button>
                 </form>
             </div>  
         </div>
@@ -147,7 +173,9 @@ function goBack() {
                     className: 'd-none d-sm-table-cell', // Hide on small screens
                     targets: [1, 2, 3] // Adjust column indices based on your table structure
                 }
-            ]
+            ],
+            pageLength: 14,
+            
         });
     });
 </script>

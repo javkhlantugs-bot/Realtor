@@ -10,12 +10,12 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
-<div class="col-md-12">
+<h2 class="mb-4 container-header">Edit Event</h2>
+<div class="col-md-12 container-content">
     <form method="post">
         {% csrf_token %}
         <div class="row">
             <div class="col-md-6 mx-auto">
-                <h2 class="mb-4">Edit Event</h2>
                 <div class="form-group">
                     {{ form.event_type.label_tag }}
                     {{ form.event_type|add_class:"form-control"   }}

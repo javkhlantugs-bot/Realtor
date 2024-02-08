@@ -10,13 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<style>
-    .not-selected {
-        color: #6c757d; /* Grey text color */
-        border-color: #6c757d; /* Grey border color */
-    }
-    
-</style>
+
 <div  class="row mb-3 container-header">
     <div class="col-md-8">
         <h2 >{{ property.address }}</h2>
@@ -61,6 +55,7 @@
 
 <div class="col-md-12 container-content">
     <div class="col-md-12">
+        <div style="height: 5vh;"></div>
         <h5 class="mb-4" style="text-align: center;">Tasks List</h5>
         <table id="eventsTable" class="display">
             <thead>
@@ -68,6 +63,9 @@
                     <th>Type</th>
                     <th>Date</th>
                     <th>Description</th>
+                    <th>Completed</th>
+                    <th>Action</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -76,6 +74,12 @@
                         <td>{{ event.event_type }}</td>
                         <td>{{ event.event_date }}</td>
                         <td>{{ event.event_description }}</td>
+                        <td>{{ event.is_completed }}</td>
+                        <td>
+                            <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">
+                                <i class="material-icons">edit</i> 
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -101,16 +105,19 @@
                             {{ suggest.client.client_name }}
                         </a>
                     </td>
-                    <td>{{ suggest.client.phone_number }}</td>
+                    <td>
+                        <a href="tel:{{ suggest.client.phone_number }}">{{ suggest.client.phone_number }}</a>
+                        
+                    </td>
                     <td>
                         <form method="post" action="{% url 'property_events' property_id=property.id %}">
                             {% csrf_token %}
                             <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('suggested', {{ suggest.id }})">
+                                <button type="button" class="btn btn-outline-secondary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('suggested', {{ suggest.id }})">
                                     <i class="material-icons">thumb_up</i>
                                 </button>
-                                <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('not_suggested', {{ suggest.id }})">
+                                <button type="button" class="btn btn-outline-secondary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('not_suggested', {{ suggest.id }})">
                                     <i class="material-icons">thumb_down</i>
                                 </button>
                             </div>

@@ -1,11 +1,11 @@
 <!-- add_event.html -->
 {% extends 'base_event.html' %}
 
-{% block title %}Add Notes {% endblock %}
+{% block title %}Add Notes {{client.client_name}} {% endblock %}
 {% load widget_tweaks %}
 {% block content %}
-<div class="col-md-6 mx-auto">
-    <h2 class="mb-4">Add Notes</h2>
+<h2 class="mb-4 container-header">Add Notes {{client.client_name}}</h2>
+<div class="col-md-6 mx-auto container-content">
     <form method="post">
         {% csrf_token %}
         <div class="row">

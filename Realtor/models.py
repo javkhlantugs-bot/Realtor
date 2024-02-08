@@ -80,22 +80,24 @@ class Property(models.Model):
     city = models.CharField(max_length=255, blank=True, null=True)
     district = models.CharField(max_length=255, blank=True, null=True)
     sub_district = models.CharField(max_length=255, blank=True, null=True)
-
-    @property
-    def total_price(self):
-        try:
-            total_price_calc = self.price_sqrm * self.sqr_meter
-        except :
-            total_price_calc = None
-        return total_price_calc
+    total_price = models.CharField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         # Save the lowercase version of the address
         self.address_lower = self.address.lower()
         super().save(*args, **kwargs)
 
+    
+    @property
+    def name(self):
+        if self.total_price:
+            return f"{self.address} - {self.total_price}"
+        else:
+            return self.address
+
     def __str__(self):
-        return f"{self.deal_type} - {self.address}"
+        return self.name
+            
     
 class PropertyImage(models.Model):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)

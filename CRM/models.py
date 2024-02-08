@@ -64,6 +64,16 @@ class Clent(models.Model):
         while Clent.objects.filter(link=unique_id).exists():
             unique_id = str(uuid.uuid4().hex)[:8]
         return unique_id
+    
+    @property
+    def name(self):
+        if self.phone_number:
+            return f"{self.client_name} - {self.phone_number}"
+        else:
+            return self.client_name
+
+    def __str__(self):
+        return self.name
 
 class client_relationships(models.Model):
     user = models.ForeignKey(Clent,on_delete=models.CASCADE)
@@ -156,7 +166,7 @@ class Event(models.Model):
     )
     event_ampm_choice = (
         ('am','AM'),
-        ('am','PM'),
+        ('pm','PM'),
     )
 
     
@@ -168,11 +178,12 @@ class Event(models.Model):
     participant_buyer = models.ForeignKey(Clent, on_delete=models.CASCADE, related_name='events_bought', null=True,blank=True)
     participant_owner = models.ForeignKey(Clent, on_delete=models.CASCADE, related_name='events_owned', null=True,blank=True)
     event_description = models.TextField(null=True,blank=True)
-    participant_property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property', null=True,blank=True)
+    participant_property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='events_property', null=True,blank=True)
     is_completed = models.BooleanField(default = False) 
     participant_owner_name = models.CharField(max_length=255, null=True, blank=True, editable=False)
     participant_buyer_name = models.CharField(max_length=255, null=True, blank=True, editable=False)
     participant_property_address = models.CharField(max_length=255, null=True, blank=True, editable=False)
+    participant_property_images = models.CharField(max_length=255, null=True, blank=True, editable=False)
     event_type_name = models.CharField(max_length=255, null=True, blank=True, editable=False)
     index_field = models.DateTimeField(blank=True, null=True, editable=False)
 
@@ -191,6 +202,10 @@ class Event(models.Model):
 
         if self.participant_property:
             self.participant_property_address = self.participant_property.address
+            try:
+                self.participant_property_images = self.participant_property.images.url
+            except:
+                pass
 
 
         if self.event_date:

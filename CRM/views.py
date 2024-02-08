@@ -154,7 +154,7 @@ def add_rental_property(request):
     return render(request, 'add_rental_property.html', {'property_form': property_form})
 
 from django.core.serializers import serialize
-
+from datetime import date
 class EventsListView(View):
     template_name = 'events_list.html'
 
@@ -166,12 +166,14 @@ class EventsListView(View):
 
         serialized_events = serialize('json', events, use_natural_primary_keys=True, use_natural_foreign_keys=True)
 
-        form = EventForm(user = request.user.id)
+        initial_date = date.today()
+        form = EventForm(user=request.user.id, initial={'event_date': initial_date})
 
         context = {
             'events': serialized_events,
             'form': form,
         }
+        print(context)
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
@@ -194,6 +196,7 @@ class EventsListView(View):
 
             return redirect('events_list')
         else:
+            initial_date = date.today()
             events = Event.objects.filter(user=request.user.id)
             serialized_events = serialize('json', events)
             return render(request, self.template_name, {'events': serialized_events, 'form': form})
@@ -331,7 +334,48 @@ def delete_property(request, property_id):
     return render(request, 'delete_property.html', {'property': property})
 
 def client_list(request):
-    clients = Clent.objects.filter(user=request.user.id)
+    sql_query = """
+        SELECT 
+            c.id,
+            c.client_name,
+            c.phone_number,
+            c.email,
+            status_t.status,
+            COUNT(DISTINCT cs.id) AS interested_count,
+            COUNT(DISTINCT CASE WHEN eb.is_completed = 1 THEN eb.id END) + COUNT(DISTINCT CASE WHEN eo.is_completed = 1 THEN eo.id END) AS events_completed,
+            COUNT(DISTINCT CASE WHEN eo.is_completed = 0 THEN eo.id END) + COUNT(DISTINCT CASE WHEN eb.is_completed = 0 THEN eb.id END) AS events_incompleted,
+            COUNT(DISTINCT cs_suggested.id) AS suggested_count
+        FROM crm_clent AS c
+        LEFT JOIN crm_client_suggestion AS cs ON cs.client_id = c.id AND cs.is_interested = 'interested'
+        LEFT JOIN crm_event AS eb ON eb.participant_buyer_id = c.id
+        LEFT JOIN crm_event AS eo ON eo.participant_owner_id = c.id
+        LEFT JOIN crm_client_suggestion AS cs_suggested ON cs_suggested.client_id = c.id AND cs_suggested.is_suggested = 'suggested'
+        LEFT JOIN crm_client_status_types as status_t on status_t.id = c.status_id
+        WHERE c.user_id = %s
+        GROUP BY c.id, c.client_name, c.phone_number
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query, [request.user.id])
+        bef_clients = cursor.fetchall()
+
+    clients = []
+    for client_data in bef_clients:
+        serialized_client = {
+            'id': client_data[0],
+            'client_name': client_data[1],
+            'phone_number': client_data[2],
+            'email': client_data[3] if client_data[3] is not None else '',  # Handle None value
+            'status': client_data[4] if client_data[4] is not None else '',  # Handle None value
+            'interested_count': client_data[5],
+            'events_completed': client_data[6],
+            'events_incompleted': client_data[7],
+            'events_percent': (client_data[6] / (client_data[7]+client_data[6]))*100 if client_data[6] != 0 else 0,
+            'events_total': client_data[7]+client_data[6],
+            'suggested_count': client_data[8],
+            'suggest_percent': (client_data[5] / client_data[8])*100 if client_data[8] != 0 else 0
+        }
+        clients.append(serialized_client)
+    
     if request.method == 'POST':
         form = ClientForm1(request.POST)
         if form.is_valid():
@@ -347,7 +391,7 @@ def client_list(request):
 
 def client_events(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
-    events = Event.objects.filter(participant_buyer=client,user = request.user.id)
+    events = Event.objects.filter(Q(participant_buyer=client) | Q(participant_owner=client), user=request.user.id)
     wishes = ClientInterest.objects.filter(client = client, user = request.user.id)
     # Retrieve all suggestions for the client
     suggestions = Client_suggestion.objects.filter(client=client_id, user = request.user.id)
@@ -406,8 +450,9 @@ def add_client_notes(request, client_id):
         else:
             print(form.errors)
     else:
+        client = get_object_or_404(Clent, id=client_id)
         form = ClientInterestForm()
-    return render(request, 'add_client_notes.html', {'form': form,'client_id':client_id})
+    return render(request, 'add_client_notes.html', {'form': form,'client_id':client_id,'client':client})
 
 def delete_client_note(request, note_id, client_id):
     note = get_object_or_404(ClientInterest, id=note_id)
@@ -455,11 +500,46 @@ def edit_client(request, client_id):
     # Pass the referrer URL to the template
     return render(request, 'edit_client.html', {'form': form, 'client': client,'phone_form':phone_numbers})
 
+from django.db import connection
 @login_required
 def properties_list(request):
-    properties = Property.objects.filter(user=request.user.id)
+    sql_query = """
+        SELECT 
+            property.id,
+            property.address,
+            property.images,
+            property.total_price,
+            COUNT(DISTINCT ps.id) AS interested_count,
+            COUNT(DISTINCT CASE WHEN e.is_completed = True THEN e.id END) AS events_completed,
+            COUNT(DISTINCT CASE WHEN e.is_completed = False THEN e.id END) AS events_incompleted,
+            COUNT(DISTINCT ps_suggested.id) AS suggested_count
+        FROM Realtor_property AS property
+        LEFT JOIN crm_Client_suggestion AS ps ON ps.property_id = property.id AND ps.is_interested = 'interested'
+        LEFT JOIN crm_Event AS e ON e.participant_property_id = property.id
+        LEFT JOIN crm_Client_suggestion AS ps_suggested ON ps_suggested.property_id = property.id AND ps_suggested.is_suggested = 'suggested'
+        WHERE property.user_id = %s
+        GROUP BY property.id, property.address
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query, [request.user.id])
+        bef_properties = cursor.fetchall()
+    print(bef_properties)
+    # Serialize the query result into a list of dictionaries
+    properties = []
+    for property_data in bef_properties:
+        serialized_property = {
+            'id': property_data[0],
+            'address': property_data[1],
+            'images': property_data[2],
+            'total_price': property_data[3],
+            'interested_count': property_data[4],
+            'events_completed': property_data[5],
+            'events_incompleted': property_data[6],
+            'suggested_count': property_data[7]
+        }
+        properties.append(serialized_property)
+    
     locations = list(Property.objects.values('latitude', 'longitude', 'address', 'deal_type', 'property_type', 'total_rooms', 'id').filter(user=request.user.id))
-
     if request.method == 'POST':
         form = PropertyForm1(request.POST)
         if form.is_valid():

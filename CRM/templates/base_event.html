@@ -2,9 +2,10 @@
 <html lang="en">
 {% load static %}
 {% load socialaccount %}
+{% load widget_tweaks %}
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -26,48 +27,36 @@
             // Your other scripts and logic go here...
         });
     </script>
-    <style>
-        /* Loading spinner styles */
-        #loading-indicator {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(26, 26, 26, 0.7); /* Semi-transparent #1a1a1a background */
-            z-index: 999999999;
-        }
-
-        .spinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 4px solid #f3f3f3; /* Light CCCCCC */
-            border-top: 4px solid #000; /* Blue */
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite; /* Spin animation */
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    
     <title>{% block title %}Estates Solutions CRM{% endblock %}</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+        :root{
+            --color-background-rgba: rgba(255, 255, 255, 1) !important;      /* White background */
+            --color-text-rgba: rgba(26, 26, 26, 1) !important;               /* Dark text */
+            --border-color-rgba: rgba(204, 204, 204, 1)  !important;   
+            --header-color-rgba: rgba(250, 250, 250, 1)       /* Light border color */
+            
+        }
+        .dark-mode-variables{
+            --color-background-rgba: rgba(26, 26, 26, 1) !important;
+            --color-text-rgba: rgba(255, 255, 255, 1) !important;
+            --border-color-rgba: rgba(43, 43, 43, 1) !important; 
+            --header-color-rgba: rgba(50, 50, 50, 1)    ;
+        }
+       
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Open Sans', sans-serif;
             display: flex;
             justify-content: space-between;
             flex-direction: column;
             overflow: hidden;
+            background-color: var(--color-background-rgba) !important;
+            color: var(--color-text-rgba);
+            border: 1px solid var(--border-color-rgba);
         }
+        
         * {
             box-sizing: border-box;
         }
@@ -96,7 +85,36 @@
             -webkit-text-size-adjust: 100%; /* 5 */
             word-break: break-word; /* 6 */
         }
+        
+        /* Loading spinner styles */
+        #loading-indicator {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-background-rgba); 
+            z-index: 999999999;
+        }
 
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid #f3f3f3; /* Light CCCCCC */
+            border-top: 4px solid var(--border-color-rgba); /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite; /* Spin animation */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .navbar {
             background-color: transparent;
             font-weight: bold;
@@ -124,10 +142,12 @@
             text-align: center; /* Center-align the text within the link */
         }
         .navbar-nav .active{
-            color: #ccc !important;
+            background-color: var(--color-text-rgba);
+            color: var(--color-background-rgba) !important;
         }
         .navbar-nav .active span{
-            color: #ccc !important;
+            background-color: var(--color-text-rgba);
+            color: var(--color-background-rgba) !important;
         }
         .navbar-nav a, span{
             color: #444444 !important;
@@ -157,13 +177,7 @@
             opacity: 1;
         }
 
-        .nav-link.website-name {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ccc; /* Choose your desired text color */
-            align-self: center;
-            align-items: center;
-        }
+        
         
         .navbar-container {
             flex: 0 0 250px; /* Set a fixed width for the navbar container */
@@ -171,13 +185,13 @@
         }
 
         .modal-content{
-            background-color: #1a1a1a;
+            background-color: var(--color-background-rgba);
         }
         .modal-content label{
-            background-color: #1a1a1a;
+            background-color: var(--color-background-rgba);
         }
         .modal-header span{
-            background-color: #1a1a1a;
+            background-color: var(--color-background-rgba);
         }
 
         .modal-content select, 
@@ -187,16 +201,16 @@
             background-color: transparent;
         }
         .form-control {
-            color: #CCC;
-            background-color: #1a1a1a;
-            border: 1px solid #CCC; /* Optional: Add a border for better visibility */
+            color: var(--color-text-rgba);
+            background-color: var(--color-background-rgba);
+            border: 1px solid var(--border-color-rgba); /* Optional: Add a border for better visibility */
         }
 
         .form-control:focus {
-            color: #1a1a1a;
-            background-color: #1a1a1a;
-            border: 1px solid #CCC; /* Optional: Adjust or remove the border as needed */
-            box-shadow: 0 0 0 2px #CCC;
+            color: var(--color-background-rgba);
+            background-color: var(--color-background-rgba);
+            border: 1px solid var(--border-color-rgba); /* Optional: Adjust or remove the border as needed */
+            box-shadow: 0 0 0 2px var(--color-text-rgba);
         }
         
         .container-header {
@@ -208,7 +222,7 @@
             width: 90vw;
             background-color: transparent;
             z-index: 555;
-            border-bottom: #2b2b2b 1px solid;
+            border-bottom: var(--border-color-rgba) 1px solid;
         }
 
         .container-content {
@@ -227,19 +241,57 @@
         /* Media query for mobile screens (max-width: 767px) */
         @media (max-width: 767px) {
             .navbar-container {
-                height: 8vh;
+                height: 6vh;
                 position: fixed;
-                bottom: 6vh;
-                width: 100%;
-                z-index: 1000;
+                bottom: 0;
+                width: 100vw;
+                z-index: 100000000;
                 left: 0;
-                border-top: 1px solid #2b2b2b;
-                background-color: transparent;
+                border-top: 1px solid var(--border-color-rgba);
+                background-color: var(--color-background-rgba);
+            }
+            .logo{
+                display: none;
             }
             html, body{
                 overflow: hidden !important;
+                height: 100vh;
+                width: 100vw;
             }
+            .navbar-nav .active{
+                height: 100%;
+            }
+            .navbar{
+                height: 100%;
+                margin-bottom: 0 !important;
+            }
+
+            .menu{
+                display: block !important;
+                position: absolute;
+                top: 2vh;
+                left: 1vh;
+                z-index: 100000000;
+                width: 1vh;
+                height: 1vh;
+                color: var(--color-text-rgba);
+            }
+            .menu span{
+                color: var(--color-text-rgba) !important;
+            }
+            .toggle-button{
+                display: none;
+            }
+            .setting-button,
+            .logout-button{
+                display: none;
+            }
+           
             
+            /* .search-container{
+                display: none;
+            } */
+
             .navbar-nav {
                 flex-direction: row; /* Display links horizontally on small screens */
                 justify-content: space-evenly;
@@ -258,49 +310,63 @@
                 display: none;
             }
             .container-header {
+                left: 10vw;
                 top: 0;
-                left: 0;
-                width: 100%;
+                padding: 0;
+                margin: 0;
+                margin-top: 1vh;
+                margin-bottom: 1vh;
+                padding-bottom: 1vh;
+                width: 100vw;
                 justify-content: center;
                 text-align: center;
-                background-color: #1a1a1a;
+                background-color: var(--color-background-rgba);
+                min-height: 5vh;
+                max-width: 80vw;
+                justify-content: center;
+                border-bottom: 0px;
+            }
+            header {
+                border-bottom: 0px  !important;
             }
 
             .container-content{
-                margin-top: 80px;
-                height: 75vh;
-                width: 100%;
-                display: block;
-                flex-grow: 1;
-                scroll-behavior: auto;
-                overflow-y: auto;
-                overflow-x: hidden;
+                margin-top: 0;
+                margin-left :0;
+                padding-left: 0;
+                padding-right: 0 !important;
+                margin-right: 0 !important;
+                width: 98vw;
             }
             
-            .search-container{
+            /* .search-container{
                 z-index: 1000;
                 margin-left: 10px;
-            }
+            } */
             .search-results-container{
                 width: 50vw;
             }
             .notification-container{
-                z-index: 100000000;
+                z-index: 10000;
             }
             #bell-icon{
                 margin-top: 0;
             }
             .modal {
                 margin-top: 20vw !important;
-                width: 95%;
             }
             .modal-body{
                 height: 70vh;
                 overflow-y: auto;
                 overflow-x: hidden;
             }
+            .modal-backdrop{
+                display: none;
+            }
             .container-fluid{
-                height: 90vh;
+                height: 80vh;
+                top: 12vh !important;
+                position: fixed;
             }
             .contents{
                 width: 100vw !important;
@@ -324,20 +390,8 @@
                 width: 66px;
             }
         }
-        .nav-link.website-name h4{
-                font-size: 1.2rem;
-        }
-        .nav-link.website-name h6{
-            font-size: 1rem;
-        }
-        @media (min-width: 990px) and (max-width: 1350px) {
-            .nav-link.website-name h4{
-                font-size: 0.8rem;
-            }
-            .nav-link.website-name h6{
-                font-size: 0.6rem;
-            }
-        }
+        
+        
 
         /* Targeting the scrollbar track */
         .container-content::-webkit-scrollbar {
@@ -347,25 +401,20 @@
 
         /* Targeting the scrollbar handle or thumb */
         .container-content::-webkit-scrollbar-thumb {
-            background-color: #CCCCCC; /* Color of the scrollbar thumb */
+            background-color: var(--color-text-rgba)CCC; /* Color of the scrollbar thumb */
             border-radius: 6px; /* Radius of the scrollbar thumb corners */
         }
 
         /* Optional: Hover effect on the scrollbar handle */
         .container-content::-webkit-scrollbar-thumb:hover {
-            background-color: #CCCCCC; /* Color when hovering over the scrollbar thumb */
+            background-color: var(--color-text-rgba)CCC; /* Color when hovering over the scrollbar thumb */
         }
 
         /* Targeting the scrollbar track when handle is being dragged */
         .container-content::-webkit-scrollbar-thumb:active {
-            background-color: #CCCCCC; /* Color when scrollbar thumb is being dragged */
+            background-color: var(--color-text-rgba)CCC; /* Color when scrollbar thumb is being dragged */
         }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #1a1a1a;
-            color: #ccc ;
-        }
         
         input,
         select,
@@ -373,29 +422,27 @@
         option,
         select
         {
-            color: #ccc ;
-            background-color: #1a1a1a;
+            color: var(--color-text-rgba) ;
+            background-color: var(--color-background-rgba);
         }
         select{
-            color: #ccc !important;
+            color: var(--color-text-rgba) !important;
         }
         input::placeholder{
-            color: #CCC;
+            color: var(--color-text-rgba);
         }
         input{
-            color: #CCC !important;
+            color: var(--color-text-rgba) !important;
         }
         input:hover,
         input:focus {
             /* Style for input on hover and focus */
-            color: #1a1a1a;
-            border: 1px solid #CCC;
-            background-color: #1a1a1a;
+            color: var(--color-background-rgba);
+            border: 1px solid var(--color-text-rgba);
+            background-color: var(--color-background-rgba);
         }
 
-        body.dark-theme input{
-            background-color: #1a1a1a;
-        }
+        
         .select2 span span{
             background-color: transparent !important;
         }
@@ -404,60 +451,94 @@
         }
         
         .btn-outline-primary{
-            color: #ccc;
-            border: 1px solid #ccc;
+            color: var(--color-background-rgba);
+            border: 2px solid var(--color-text-rgba);
+            background-color: var(--color-text-rgba);
         }
         .btn-outline-primary span{
-            color: #ccc ;
+            color: var(--color-background-rgba) !important;
+        }
+        button i {
+            color: var(--color-background-rgba);
         }
 
         .btn-outline-primary:hover{
-            background-color: #ccc;
-            color: #000 ;
-            border: 1px solid #ccc;
+            background-color: var(--color-text-rgba);
+            color: var(--border-color-rgba) ;
+            border: 2px solid var(--color-text-rgba);
         }
-        .btn-outline-secondary{
-            color: #CCC;
-            border: 1px solid #CCC;
+        .btn-outline-primary:hover  span{
+            background-color: var(--color-text-rgba);
+            color: var(--border-color-rgba) !important;
+        }
+        .btn-outline-primary:hover  i{
+            background-color: var(--color-text-rgba);
+            color: var(--border-color-rgba) !important;
+        }
+        /* .btn-outline-secondary{
+            color: var(--color-text-rgba);
+            border: 1px solid var(--border-color-rgba);
         }
 
         .btn-outline-secondary:hover{
-            background-color: #CCC;
-            color: #1a1a1a;
-            border: 1px solid #CCC;
+            background-color: var(--color-text-rgba);
+            color: var(--color-background-rgba);
+            border: 1px solid var(--border-color-rgba);
+        } */
+        .not-selected {
+            color: var(--border-color-rgba); /* Grey text color */
+            border-color: var(--border-color-rgba); /* Grey border color */
         }
+        .not-selected i{
+            color: var(--border-color-rgba); /* Grey text color */
+        }
+        .not-selected:hover{
+            color: var(--border-color-rgba); /* Grey text color */
+            border-color: var(--border-color-rgba); /* Grey border color */
+            background-color: var(--border-color-rgba);
+        }
+        .not-selected:hover i{
+            color: var(--color-background-rgba); /* Grey text color */
+        }
+        .btn-outline-secondary.active i{
+            color: var(--color-background-rgba);
+            background-color: var(--border-color-rgba);
+        }
+        .btn-outline-secondary.active {
+            background-color: var(--border-color-rgba);
+            border-color: var(--border-color-rgba);
+        }
+
         table thead tr{
-            border-color: #ccc !important;
+            border-color: var(--border-color-rgba) !important;
         }
 
         .btn-outline-danger{
             background-color: transparent;
-            color: #ccc;
-            border: 1px solid #ccc;
+            color: var(--color-text-rgba);
+            border: 1px solid var(--border-color-rgba);
         }
         .btn-outline-danger span{
-            color: #ccc ;
+            color: var(--color-text-rgba) !important;
         }
+
         .btn-outline-danger:hover{
-            color: #ccc;
-            background-color: #ccc;
-            color: #000;
-            border-color: #ccc;
+            color: var(--color-background-rgba);
+            background-color: var(--color-text-rgba);
+            border-color: var(--border-color-rgba);
+        }
+        .btn-outline-danger:hover span{
+            color: var(--color-background-rgba) !important;
         }
         
-        .btn-outline-danger:hover{
-            color: #ccc;
-            background-color: #ccc;
-            color: #000;
-            border-color: #ccc;
-        }
+        
         
         
         .notification-results-container ul,
         .option,
         .search-results-container ul{
-            background-color: #000;
-            color: #ccc;
+            color: var(--color-text-rgba);
+            z-index: 1111111111;
         }
         .container-header button span{
             transition-duration: 0.15s;
@@ -470,13 +551,13 @@
         }
         
         header{
-            border-bottom: 1px solid #2b2b2b;
+            border-bottom: 1px solid var(--border-color-rgba);
         }
         header .col-md-4{
-            border-left: 1px solid #2b2b2b;
+            border-left: 1px solid var(--border-color-rgba);
         }
         .container-fluid .navigations{
-            border-right: 1px solid #2b2b2b;
+            border-right: 1px solid var(--border-color-rgba);
             height: 100%;
         }
         .container-fluid{
@@ -485,34 +566,105 @@
         .card{
             background-color: transparent;
             width: 100%;
-            border: #2b2b2b 1px solid;
+            border: var(--border-color-rgba) 1px solid;
             justify-content: center;
             align-items: center;
         }
         tfoot,tr,td{
             background-color: transparent !important;
         }
-        .leaflet-container{
-            background-color: #1a1a1a;
-        }
-        .leaflet-layer,
-        .leaflet-control-zoom-in,
-        .leaflet-control-zoom-out,
-        .leaflet-control-attribution,
-        .leaflet-popup-content-wrapper {
+        .dark-mode-variables .leaflet-layer,
+        .dark-mode-variables .leaflet-control-zoom-in,
+        .dark-mode-variables .leaflet-control-zoom-out,
+        .dark-mode-variables .leaflet-control-attribution,
+        .dark-mode-variables .leaflet-popup-content-wrapper {
             filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
         }
-        .leaflet-popup-content a{
-            background-color: #1a1a1a !important;
+
+        .dark-mode-variables .leaflet-popup-content a {
+            background-color: var(--color-background-rgba) !important;
         }
         textarea:focus:not(:placeholder-shown) {
-            background-color: #1a1a1a;
-            color: #ccc;
+            background-color: var(--color-background-rgba);
+            color: var(--color-text-rgba);
         }
         .dataTable_info{
-            color: #ccc !important;
+            color: var(--color-text-rgba) !important;
         }
+        .setting-button{
+            position: absolute;
+            top: 76vh;
 
+        }
+        .logout-button {
+            position: absolute;
+            top: 80vh;
+        }
+        .menu{
+            display: none;
+        }
+        .dataTables_wrapper{
+            border-radius: 10px;
+            background-color: var(--header-color-rgba);
+        }
+        .dataTables_wrapper thead{
+            background-color: var(--header-color-rgba);
+            border-bottom: 0px;
+
+        }
+        .dataTables_wrapper thead tr{
+            border-bottom: var(--header-color-rgba);
+            color: var(--color-text-rgba);
+        }
+        table.dataTable thead th, table.dataTable thead td {
+            padding: 8px 10px !important; 
+            border-bottom: 0px !important;
+            color: var(--color-text-rgba);
+        }
+        table.dataTable.no-footer{
+            border-bottom: 0px !important;
+        }
+        
+        .dataTables_wrapper tr th{
+            color: var(--color-text-rgba);
+        }
+        .dataTables_wrapper .dataTables_length label{
+            background-color: var(--header-color-rgba) !important;
+            margin-left: 10px;
+            margin-top: 10px;
+            color: var(--color-text-rgba);
+        }
+        .dataTables_wrapper .dataTables_length label select[name="clientsTable_length"] {
+            color: var(--color-text-rgba) !important;
+        }
+        .dataTables_wrapper .dataTables_filter label{
+            background-color: var(--header-color-rgba) !important;
+            border-radius: 10px;
+            color: var(--color-text-rgba);
+        }
+        .dataTables_wrapper .dataTables_filter label input[type="search"] {
+            color: var(--color-text-rgba) !important; /* Change "your-desired-color" to the color you want */
+        }
+        .dataTables_wrapper .dataTables_filter input{
+            border-radius: 10px !important;
+            margin-right: 10px;
+            margin-top: 10px;
+            color: var(--color-text-rgba);
+        }
+        .dataTables_wrapper .dataTables_info{
+            margin-left: 10px;
+            margin-bottom: 10px;
+            color: var(--color-text-rgba) !important;
+        }
+        .dataTables_wrapper .dataTables_paginate{
+            margin-right: 10px;
+            margin-bottom: 10px;
+            color: var(--color-text-rgba) !important;
+        }
+        .dataTables_wrapper tbody{
+            color: var(--color-text-rgba) !important;
+            background-color: var(--color-background-rgba);
+        }
 
     </style>
 </head>
@@ -520,17 +672,14 @@
     <div class="spinner"></div>
 </div>
 
-<body class="d-flex flex-column h-100">
+<body class="{% if isDarkMode %}dark-mode-variables{% endif %}">
     <header>
-            <div class="row">
-                <div class="col-md-1 d-flex align-items-center justify-content-center" style="margin-right: 8.333px;">
-                    <a class="nav-link website-name d-none d-lg-block" href="{% url 'dashboard' %}" style="margin-top: 0px;">
-                        <h4 style="margin-bottom: 0;">Estates.</h4>
-                        <h6>Solutions</h6>
-                    </a>
+            <div class="row" id="dynamicHeightRow" style="height: 6vh;">
+                <div style="margin-left: 1vw; margin-top: 1vh; width: 8vw; height: 4vh;" class="logo">
+                    <img src="/static/image/logo.png" alt="Estates.solutions" style="width: auto; height: 4vh;">
                 </div>
                 
-                <div class="col-md-8 search-container">
+                <div class="search-container">
                     <div class="input-container">
                         <input type="text" name="query" id="search-input" autocomplete="off" placeholder="Search">
                         <button id="clear-button" class="clear-button">
@@ -539,7 +688,65 @@
                     </div>
                     <div id="search-results-container" class="search-results-container"></div>
                 </div>
+                <div class="menu"> 
+                    <span class="material-icons">menu</span>    
+                </div>
                 
+                <button class="toggle-button" onclick="toggleDarkMode()">
+                    <i id="modeIcon" class="fas fa-moon"></i> <!-- Font Awesome sun icon -->
+                </button>
+                <style>
+                    .toggle-button {
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        padding: 0;
+                        font-size: 24px; /* Adjust the font size as needed */
+                        width: 50px;
+                        right: 60px;
+                        position: fixed;
+                        top: 10px;
+                    }
+                    .fa-sun:hover{
+                        color: yellow;
+                    }
+                    .fa-moon{
+                        color: #1a1a1a;
+                    }
+                    .fa-moon:hover{
+                        color: #656565;
+                        
+                    }
+                </style>
+                <script>
+                    // JavaScript to toggle dark mode and remember user preference
+                    function toggleDarkMode() {
+                        const rootElement = document.documentElement;
+                        const isDarkMode = rootElement.classList.toggle('dark-mode-variables');
+                
+                        // Update the icon based on the dark mode state
+                        const modeIcon = document.getElementById('modeIcon');
+                        modeIcon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+                
+                        // Store user preference in localStorage as a string
+                        localStorage.setItem('darkMode', isDarkMode.toString());
+                    }
+                
+                    // Check if the user had a dark mode preference and apply it on page load
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const storedMode = localStorage.getItem('darkMode');
+                        const isDarkMode = storedMode === 'true';
+                
+                        // Apply dark mode and update the icon
+                        const rootElement = document.documentElement;
+                        const modeIcon = document.getElementById('modeIcon');
+                
+                        if (isDarkMode) {
+                            rootElement.classList.add('dark-mode-variables');
+                            modeIcon.className = 'fas fa-sun';
+                        }
+                    });
+                </script>
                 <div class="notification-container">
                     <span class="material-icons" id="bell-icon">notifications_none</span>
                     <span class="badge" id="notification-count">0</span>
@@ -549,6 +756,10 @@
                 <style>
                     .search-container {
                         margin-top: 10px;
+                        width: 30vw;
+                        position: fixed;
+                        top: 0;
+                        left: 9vw;
                     }
                 
                     .input-container {
@@ -576,7 +787,7 @@
                         position: absolute;
                         width: 30vw;
                         z-index: 1111111111;
-                        background-color: #1a1a1a;
+                        background-color: var(--border-color-rgba);
                         color: #f5f6fa;
                         border-radius: 8px;
                         max-height: 300px;
@@ -603,7 +814,7 @@
                         content: '\00a0'; 
                         font-family: 'Material Icons';
                         font-weight: 900;
-                        color: #CCCCCC;
+                        color: var(--color-text-rgba)CCC;
                     }
                     /* Targeting the scrollbar track */
                     #search-results-container::-webkit-scrollbar {
@@ -613,18 +824,18 @@
 
                     /* Targeting the scrollbar handle or thumb */
                     #search-results-container::-webkit-scrollbar-thumb {
-                        background-color: #CCCCCC; /* Color of the scrollbar thumb */
+                        background-color: var(--color-text-rgba)CCC; /* Color of the scrollbar thumb */
                         border-radius: 20px; /* Radius of the scrollbar thumb corners */
                     }
 
                     /* Optional: Hover effect on the scrollbar handle */
                     #search-results-container::-webkit-scrollbar-thumb:hover {
-                        background-color: #CCCCCC; /* Color when hovering over the scrollbar thumb */
+                        background-color: var(--color-text-rgba)CCC; /* Color when hovering over the scrollbar thumb */
                     }
 
                     /* Targeting the scrollbar track when handle is being dragged */
                     #search-results-container::-webkit-scrollbar-thumb:active {
-                        background-color: #CCCCCC; /* Color when scrollbar thumb is being dragged */
+                        background-color: var(--color-text-rgba)CCC; /* Color when scrollbar thumb is being dragged */
                     }
                     .clear-button {
                         position: absolute;
@@ -649,7 +860,7 @@
                         background-color: transparent !important;
                     }
                     table td, th{
-                        color: #ccc;
+                        color: var(--color-text-rgba);
                     }
                 </style>
                 <style>
@@ -668,11 +879,11 @@
                     #bell-icon{
                         margin-top: 10px;
                         margin-right: 50px;
-                        color: #CCC !important;
+                        color: var(--color-text-rgba) !important;
                     }
                     
                     .notification-container:hover #bell-icon{
-                        border: 1px solid #1a1a1a;
+                        border: 1px solid var(--color-background-rgba);
                         background-color: transparent;
                         border-radius: 10px;
                     }
@@ -684,7 +895,7 @@
                         margin-right: 2px; /* Adjust as needed */
                         margin-top: 5px; /* Adjust as needed */
                         font-size: 10px; /* Adjust as needed */
-                        color: #CCC !important;
+                        color: var(--color-text-rgba) !important;
                     }
                     .notification-results-container{
                         display: none;
@@ -695,8 +906,10 @@
                         right: 20px;
                         top: 25px;
                         z-index: 11111111;
-                        background-color: #000;
-                        color: #f5f6fa;
+                        background-color: var(--color-background-rgba);
+                        border-color: var(--border-color-rgba);
+                        border-style: solid;
+                        border-width: 1px;
                         border-radius: 8px;
                         margin-top: 20px;
                         overflow: auto;
@@ -714,6 +927,12 @@
                     
                     #read-all-button{
                         border-radius: 5px;
+                        background-color: var(--color-background-rgba);
+                        color: var(--color-text-rgba);
+                    }
+                    #read-all-button:hover{
+                        background-color: var(--border-color-rgba);
+                        color: var(--color-text-rgba);
                     }
                     
                     /* Targeting the scrollbar track */
@@ -724,20 +943,57 @@
 
                     /* Targeting the scrollbar handle or thumb */
                     #notification-results-container::-webkit-scrollbar-thumb {
-                        background-color: #CCCCCC; /* Color of the scrollbar thumb */
+                        background-color: var(--color-text-rgba)CCC; /* Color of the scrollbar thumb */
                         border-radius: 20px; /* Radius of the scrollbar thumb corners */
                     }
 
                     /* Optional: Hover effect on the scrollbar handle */
                     #notification-results-container::-webkit-scrollbar-thumb:hover {
-                        background-color: #CCCCCC; /* Color when hovering over the scrollbar thumb */
+                        background-color: var(--color-text-rgba)CCC; /* Color when hovering over the scrollbar thumb */
                     }
 
                     /* Targeting the scrollbar track when handle is being dragged */
                     #notification-results-container::-webkit-scrollbar-thumb:active {
-                        background-color: #CCCCCC; /* Color when scrollbar thumb is being dragged */
+                        background-color: var(--color-text-rgba)CCC; /* Color when scrollbar thumb is being dragged */
                     }
                 </style>
+                <div class="menu" onclick="toggleMenu()">
+                    <span class="material-icons">menu</span>
+                    <!-- Menu content -->
+                    <div class="menu-content" id="menuContent">
+                        <a href="#">Search</a>
+                        <a href="#">Settings</a>
+                        <a href="#">Logout</a>
+                        <a href="#" onclick="toggleDarkMode()">Dark Mode</a>
+                    </div>
+                </div>
+                <style>
+                    .menu-content {
+                        display: none;
+                        position: absolute;
+                        background-color: var(--color-background-rgba);
+                        min-width: 160px;
+                        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+                        z-index: 1;
+                    }
+                    .menu-content a {
+                        color: var(--color-text-rgba);
+                        padding: 12px 16px;
+                        text-decoration: none;
+                        display: block;
+                    }
+                </style>
+                <script>
+                    function toggleMenu() {
+                        var menuContent = document.getElementById("menuContent");
+                        if (menuContent.style.display === "block") {
+                            menuContent.style.display = "none";
+                        } else {
+                            menuContent.style.display = "block";
+                        }
+                    }
+                   
+                </script>
             </div>
     </header>
     <script>
@@ -989,7 +1245,24 @@
             show_numbers();
         });
     </script>
-    
+    <script>
+        // Get the container-header and row elements
+        const containerHeader = document.getElementsByClassName('container-header');
+        const dynamicHeightRow = document.getElementById('dynamicHeightRow');
+
+        // Function to set the height of the row equal to the height of the container-header
+        function setRowHeight() {
+            dynamicHeightRow.style.height = containerHeader.offsetHeight + 'vh';
+        }
+        console.log(dynamicHeightRow.style.height)
+        console.log(containerHeader.offsetHeight + 'px')
+
+        // Call the function initially to set the initial height
+        setRowHeight();
+
+        // Optionally, you can listen for changes in the container-header height and update the row height accordingly
+        window.addEventListener('resize', setRowHeight);
+    </script>
     <div class="container-fluid " >
         <!-- style="height: 100%; min-height: 100vh; position: inherit;" -->
         <div class="row">
@@ -1012,11 +1285,11 @@
                                 <i class="material-icons mr-2">house</i>
                                 <span >Properties</span>
                             </a>
-                            <a class="nav-link d-flex align-items-center logout-button" href="{% url 'settings' %}">
+                            <a class="nav-link d-flex align-items-center setting-button" href="{% url 'settings' %}">
                                 <i class="material-icons mr-2">settings</i>
                                 <span >Settings</span>
                             </a>
-                            <a class="nav-link d-flex align-items-center" href="{% url 'accounts:logout' %}">
+                            <a class="nav-link d-flex align-items-center logout-button" href="{% url 'accounts:logout' %}">
                                 <i class="material-icons mr-2">exit_to_app</i>
                                 <span >Logout</span>
                             </a>

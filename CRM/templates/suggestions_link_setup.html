@@ -8,24 +8,26 @@
     <h2 class="mb-4">Suggestion link headers</h2>
 </div>
 <div class="container-content">
-    <form method="post">
-        {% csrf_token %}
-        <div class="row">
-            <div class="form-group">
-                {{ form.contacts.label_tag }}
-                {{ form.contacts|add_class:"form-control" }}
+    <div class="col-md-6 max-auto">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="form-group">
+                    {{ form.contacts.label_tag }}
+                    {{ form.contacts|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                    {{ form.welcome_message.label_tag }}
+                    {{ form.welcome_message|add_class:"form-control" }}
+                </div>
             </div>
-            <div class="form-group">
-                {{ form.welcome_message.label_tag }}
-                {{ form.welcome_message|add_class:"form-control" }}
+            
+            <div class="mt-auto" style="justify-content: center; align-items: center;">
+                <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; ">Save</button>
+                <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
             </div>
-        </div>
-        
-        <div class="mt-auto" style="justify-content: center; align-items: center;">
-            <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; ">Save</button>
-            <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 <script>
     function goBack() {

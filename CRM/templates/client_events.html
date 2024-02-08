@@ -9,8 +9,6 @@
         color: #6c757d; /* Grey text color */
         border-color: #6c757d; /* Grey border color */
     }
-    
-    
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
@@ -26,33 +24,13 @@
 </style>
 <style>
     #eventsTable td {
-        background-color: #ffffff; /* Set the background color of the cells to white */
+        background-color: transparent; /* Set the background color of the cells to white */
     }
-    #suggestionsTable tfoot {
-        background-color: #f4f4f4; /* Change the background color */
-        color: #333; /* Change the text color */
-        padding: 0px;
-    }
+    
 
     #suggestionsTable tbody tr td{
         justify-content: center;
         align-items: center;
-    }
-
-    #suggestionsTable tfoot th {
-        padding: 0px; /* Adjust the padding as needed */
-        text-align: left; /* Adjust the text alignment */
-    }
-
-    #suggestionsTable tfoot input {
-        width: 100%; /* Make the input fields take 100% width */
-        border: none;
-    }
-    @media (max-width: 767px)  {
-        #suggestionsTable tfoot {
-            display: none;
-        }
-        
     }
 
 </style>
@@ -61,7 +39,7 @@
         <h2>Client: {{ client.client_name }}</h2>
     </div>
     <div class="col-md-4">
-        <h2>Status: {{ client.get_status_display}}</h2>
+        <h2>Status: {{ client.status}}</h2>
     </div>
     <div class="col-md-4 d-flex justify-content-end">
         <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="generateLink('{{ user }}','{{ client.link }}' )">
@@ -80,6 +58,7 @@
 </div>
     
 <div class="container-content">
+    <div style="height: 5vh;"></div>
     <div class="row mb-12">
         <div class="col-md-4" style="text-align: center;">
             <h5>Client Info</h5>
@@ -117,7 +96,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text">{{ note.note }}</p>
-                        <a href="#" class="btn btn-danger" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="position: absolute; top: 5px; right: 5px;">
+                        <a href="#" class="btn btn-outline-danger" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="position: absolute; top: 5px; right: 5px;">
                             <i class="material-icons">delete</i>
                         </a>
                     </div>
@@ -127,6 +106,7 @@
     </div>
     <hr>
     <div style="border-radius: 10px;padding: 10px;">
+        
         <h5 style="text-align: center;">Tasks List</h5>
         <table id="eventsTable" class="display">
             <thead>
@@ -134,6 +114,7 @@
                     <th>Event Type</th>
                     <th>Event Date</th>
                     <th>Event Description</th>
+                    <th>Completed</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -143,12 +124,13 @@
                         <td>{{ event.event_type }}</td>
                         <td>{{ event.event_date }}</td>
                         <td>{{ event.event_description }}</td>
+                        <td>{{ event.is_completed }}</td>
                         <td>
                             
                             <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">
                                 <i class="material-icons">edit</i> 
                             </a>
-                            <a href="#" class="btn btn-danger" onclick="confirmDelete('{{ event.id }}')">
+                            <a href="#" class="btn btn-outline-danger" onclick="confirmDelete('{{ event.id }}')">
                                 <i class="material-icons">delete</i> 
                             </a>
                             
@@ -161,7 +143,6 @@
     <hr>
     <!-- client_events.html -->
     <div class="col-md-12 suggestionsTable_container" style="width: 100%; overflow-x: auto;">
-        <h5 style="text-align: center;">Properties List</h5>
         <table id="suggestionsTable" class="display">
             <thead>
                 <tr>
@@ -175,18 +156,7 @@
                     <th class="text-center">Interested</th>
                 </tr>
             </thead>
-            <tfoot>
-                <tr>
-                    <td>Property Address</td>
-                    <td>Deal type</td>
-                    <td>Total room</td>
-                    <td>Bed room</td>
-                    <td>Toilet</td>
-                    <td>Square Meter</td>
-                    <td>Suggestion</td>
-                    <td>Is Interested</td>
-                </tr>
-            </tfoot>
+           
             <tbody>
                 {% for suggest in suggestions %}
                     <tr>
@@ -205,10 +175,10 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('suggested', {{ suggest.id }})">
+                                    <button type="button" class="btn btn-outline-secondary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('suggested', {{ suggest.id }})">
                                         <i class="material-icons">thumb_up</i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-primary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('not_suggested', {{ suggest.id }})">
+                                    <button type="button" class="btn btn-outline-secondary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('not_suggested', {{ suggest.id }})">
                                         <i class="material-icons">thumb_down</i>
                                     </button>
                                 </div>
@@ -237,6 +207,7 @@
                 .input-group{
                     max-width: 250px;
                 }
+
             }
             
         </style>
@@ -284,6 +255,9 @@
             @media (max-width: 767px)  {
                 #map-legend{
                     flex-direction: column;
+                }
+                #map-container{
+                    margin-bottom: 5vh;
                 }
             }
         </style>
@@ -339,9 +313,7 @@
 <script>
     jQuery.noConflict();
     jQuery(document).ready(function($) {
-        $('#suggestionsTable tfoot td').each(function () {
-            $(this).html('<input type="text" style="width: 100px;" placeholder="Search ' + $(this).text() + '"/>');
-        });
+        
         
         
         // Your DataTables initialization code here
@@ -367,33 +339,16 @@
                     className: 'd-none d-sm-table-cell', // Hide on small screens
                     targets: [1, 2, 3, 4,5,7] // Adjust column indices based on your table structure
                 }
-            ]
+            ],
+            initComplete: function () {
+                // Wrap the length selector and filter input in a container
+                $('.dataTables_length, .dataTables_filter').wrapAll('<div class="datatable-controls"></div>');
+                
+                // Add the title element and position it in the center
+                $('.datatable-controls').after('<div class="datatable-title"><h5 style="text-align: center; padding-top: 10px">Properties List</h5></div>');
+            }
         });
-
-        $("#suggestAllButton").click(function (e) {
-            e.preventDefault(); // Prevent the default form submission behavior
-
-            $(".suggest-btn").each(function () {
-                var form = $(this).closest("form");
-                var suggestionValue = $(this).data("value");
-                form.find("input[name='is_suggested']").val(suggestionValue);
-
-                // Perform an asynchronous form submission using AJAX
-                $.ajax({
-                    type: form.attr('method'),
-                    url: form.attr('action'),
-                    data: form.serialize(),
-                    success: function (data) {
-                        // Handle the success response if needed
-                        console.log('Form submitted successfully');
-                    },
-                    error: function (data) {
-                        // Handle the error response if needed
-                        console.error('Form submission failed', data);
-                    }
-                });
-            });
-        });
+        
     });
 </script>
 <script>
@@ -414,6 +369,7 @@
                     targets: [0, 2] // Adjust column indices based on your table structure
                 }
             ]
+            
         });
     });
 </script>

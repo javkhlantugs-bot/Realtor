@@ -18,6 +18,43 @@
         .modal{
             margin-top: 25vw !important;
         }
+            
+        .modal-backdrop{
+            display: none;
+        }
+        
+        .properties-list{
+            width: 100vw !important;
+            height: 50vh !important;
+        }
+        .image-container{
+            width: 45vw !important;
+        }
+        .card-text-content{
+            width: 45vw !important;
+            padding-right: 20px;
+        }
+        .card-img-left{
+            max-width: 43vw !important;
+            margin-left: 20px;
+        }
+        #main-map-container{
+            width: 100vw !important;
+            height: 60vh !important;
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+            margin-bottom: 5vh;
+            left: 0;
+        }
+        .container-fluid{
+            padding-left: 0;
+        }
+        .container-content{
+            width: 100vw !important;
+        }
+        .container-content .row{
+            width: 100vw !important;
+        }
     }
 </style>
 <div class="row container-header" style="margin-bottom: 20px;">
@@ -33,35 +70,95 @@
 </div>
     
 </div>
+<style>
+    .card-img-left{
+        border-radius: 10px;
+        max-width: 20vw;
+    }
+    .image-container{
+        width: 20vw;
+    }
+    .card-text-content{
+        width: 20vw;
+    }
+    .card{
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+        margin: 1px;
+        border-radius: 10px;
+        margin-bottom: 1vh;
+    }
+    .properties-list{
+        height: 78vh;
+        width: 50vw;
+        overflow-y: auto;
+        margin-bottom: 1vh;
+    }
+    #main-map-container{
+        border-radius: 10px;
+        width: 40vw;
+        height: 78vh;
+        margin-left: 1vw;
+    }
+    #main-map {
+        border-top-left-radius: 30px; /* Radius for top-left corner */
+        border-top-right-radius: 30px; /* Radius for top-right corner */
+        border-bottom-left-radius: 0; /* No radius for bottom-left corner */
+        border-bottom-right-radius: 0; /* No radius for bottom-right corner */
+        
+    }
+    .properties-list::-webkit-scrollbar {
+            width: 12px; /* Adjust the width of the scrollbar */
+            margin-right: -12px; /* Move the scrollbar to the left by its width */
+    }
 
+    /* Targeting the scrollbar handle or thumb */
+    .properties-list::-webkit-scrollbar-thumb {
+        background-color: var(--color-text-rgba); /* Color of the scrollbar thumb */
+        border-radius: 6px; /* Radius of the scrollbar thumb corners */
+    }
+
+    /* Optional: Hover effect on the scrollbar handle */
+    .properties-list::-webkit-scrollbar-thumb:hover {
+        background-color: var(--color-text-rgba); /* Color when hovering over the scrollbar thumb */
+    }
+
+    /* Targeting the scrollbar track when handle is being dragged */
+    .properties-list::-webkit-scrollbar-thumb:active {
+        background-color: var(--color-text-rgba); /* Color when scrollbar thumb is being dragged */
+    }
+    
+</style>
 <div class="col-md-12 container-content">
-    <table id="propertiesTable" class="display">
-        <thead>
-            <tr>
-                <th>Address</th>
-                <th>Deal</th>
-                <th>Type</th>
-                <th>Total rooms</th>
-                <th>Details</th>
-
-            </tr>
-        </thead>
-        <tbody>
+    <div class="row">
+        <div class="row properties-list">
             {% for property in properties %}
-                <tr>
-                    <td>{{ property.address }}</td>
-                    <td>{{ property.get_deal_type_display }}</td>
-                    <td>{{ property.get_property_type_display }}</td>
-                    <td>{{ property.total_rooms }}</td>
-                    <td>
-                        <a href="{% url 'property_events' property.id %}">Show more</a>
-                    </td>
-                </tr>
+                <div class="col-md-12 mb-12">
+                    <div class="card">
+                        <div class="card-body d-flex"> <!-- Add d-flex and align-items-stretch classes -->
+                            {% if property.images %}
+                                <div class="image-container">
+                                    <img class="card-img-left flex-shrink-0" src="/media/{{ property.images }}" alt=""> <!-- Add flex-shrink-0 class -->
+                                </div>
+                            {% endif %}
+                            <div style="padding-left: 20px;" class="card-text-content"> <!-- Create a div to hold the card content -->
+                                <h5 class="card-title">{{ property.address }}</h5>
+                                <p class="card-text">Type: {{ property.get_property_type_display }}</p>
+                                <p class="card-text">Total Value: <strong>{{ property.total_price }}</strong></p>
+                                <p class="card-text">Interested/Suggested: <strong>{{ property.interested_count }}/{{ property.suggested_count }}</strong></p>
+                                <p class="card-text">Completed tasks: <strong>{{ property.events_completed }}</strong></p>
+                                <p class="card-text">Incomplete tasks: <strong>{{ property.events_incompleted }}</strong></p>
+                                
+                                <a href="{% url 'property_events' property.id %}" class="btn btn-outline-primary">Show more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
-    <div id="main-map-container" style="height: 600px; width: 100%; margin-top: 20px;">
-        <div id="main-map" style="height: 100%;"></div>
+            <div style="height: 10vh;"></div>
+        </div>
+        <div id="main-map-container">
+            <div id="main-map" style="height: 100%;"></div>
+        </div>
     </div>
     <div class="modal" id="propertyModal" >
         <div class="modal-dialog">
@@ -379,6 +476,22 @@ function goBack() {
     map.fitBounds(markerGroup.getBounds());
 </script>
 
+<script>
+    const propertiesList = document.querySelector('.properties-list');
+    const mainMapContainer = document.querySelector('#main-map-container');
+
+    // Add click event listener to .properties-list
+    propertiesList.addEventListener('click', function() {
+        // Scroll to the top of the content element
+        propertiesList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Add click event listener to .main-map-container
+    mainMapContainer.addEventListener('click', function() {
+        // Scroll to the bottom of the content element
+        mainMapContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>

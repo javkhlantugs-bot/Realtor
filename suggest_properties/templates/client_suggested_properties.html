@@ -153,7 +153,10 @@
         .header-content{
             padding: 0px;
             margin: 0px;
-            
+        }
+        .header-content h2 a {
+            text-decoration: none;
+            color: #1a1a1a;
         }
 
         @media (max-width: 767px) {
@@ -178,11 +181,10 @@
                 <div class="col-md-6 col-sm-12 text-left header-content">
                     <h2 class="h2 h-md-auto h-lg-auto"  style="padding-left: 15px;">{{ setups.welcome_message }}</h2>
                 </div>
-                <a href="tel:+123456789" id="callButton">Call Us</a>
                 <div class="col-md-4 col-sm-12 text-right header-content">
-                    <h3 class="h3 h-md-auto h-lg-auto" style="padding-right: 15px;">
-                        {{ setups.contacts }}
-                    </h3>
+                    <h2 class="h2 h-md-auto h-lg-auto" style="padding-right: 15px;">
+                        <a id= 'callButton' href="tel:{{ setups.contacts }}">Call: {{ setups.contacts }}</a>
+                    </h2>
                 </div>
                 <script>
                     // JavaScript to prevent the default behavior on non-mobile devices

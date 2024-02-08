@@ -26,18 +26,18 @@
     }
 
     .fc-daygrid-day-frame .event-count-span{
-        color: #ccc !important;
+        color: var(--color-text-rgba) !important;
     }
     .fc-daygrid-day-frame .date-span{
-        color: #fff !important;
+        color: var(--color-text-rgba) !important;
     }
 
     #main-map-container {
         position: absolute;
-        top: 50%; /* Adjust as needed */
+        top: 34vh; /* Adjust as needed */
         left: 0;
         width: calc(50% - 25px); /* Adjust as needed, considering column-gap */
-        height: 350px;
+        height: 45vh;
     }
 
     .task_list h5{
@@ -52,7 +52,7 @@
         top: 5%; /* Adjust as needed */
         right: 0;
         width: calc(50% - 25px); /* Adjust as needed, considering column-gap */
-        height: 73vh; /* Adjust as needed */
+        height: 74vh; /* Adjust as needed */
         overflow-y: auto;
     }
 
@@ -60,30 +60,44 @@
         .container-content {
             position: relative;
         }
-
+        .calendar-container{
+            height: 30vh;
+        }
+        .calendar{
+            height: 30vh !important; 
+        }
         #calendar,
         #main-map-container,
         #events-list {
             position: absolute;
             width: 100%;
         }
+        .date-span {
+            height: 20px; /* Adjust the height as needed */
+            display: inline-block; /* Ensure it's an inline-block element */
+        }
         .task_list h5{
-            top: 55%;
+            top: 35vh;
             width: 100%;
         }
         #events-list {
-            top: 60%;
+            top: 38vh;
             height: 40vh;
             overflow-y: auto;
+            padding: 0 !important;
+        }
+        .event{
+            padding-right: 0 !important;
+            width: inherit;
         }
 
         #main-map-container {
-            top: 120%;
+            top: 85vh;
+            padding-bottom: 10vh;
         }
-        .fc-scrollgrid-sync-table tbody tr{
-            height: 10px !important;
+        #schedule-title{
+            display: none;
         }
-
         
     }
     /* Targeting the scrollbar track */
@@ -94,26 +108,27 @@
 
     /* Targeting the scrollbar handle or thumb */
     #events-list::-webkit-scrollbar-thumb {
-        background-color: #CCCCCC; /* Color of the scrollbar thumb */
+        background-color: var(--border-color-rgba); /* Color of the scrollbar thumb */
         border-radius: 6px; /* Radius of the scrollbar thumb corners */
     }
 
     /* Optional: Hover effect on the scrollbar handle */
     #events-list::-webkit-scrollbar-thumb:hover {
-        background-color: #CCCCCC; /* Color when hovering over the scrollbar thumb */
+        background-color: var(--border-color-rgba); /* Color when hovering over the scrollbar thumb */
     }
 
     /* Targeting the scrollbar track when handle is being dragged */
     #events-list::-webkit-scrollbar-thumb:active {
-        background-color: #CCCCCC; /* Color when scrollbar thumb is being dragged */
+        background-color: var(--border-color-rgba); /* Color when scrollbar thumb is being dragged */
     }
+    
     .fc-button-group button span{
-        color: #ccc !important;
+        color: var(--color-text-rgba) !important;
     }
 </style>
 
 <div class="row container-header" >
-    <h2 class="col-md-4">Schedule</h2>
+    <h2 class="col-md-4" id="schedule-title">Schedule</h2>
     <div class="col-md-4" id="selected-date" style="font-weight: 900; font-size: 2rem;"></div>
     <div class="col-md-4 d-flex justify-content-end" >
         <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"  
@@ -372,7 +387,7 @@
         overflow-y: auto;
     }
     .date-span-container span{
-        color: #CCC;
+        color: var(--color-text-rgba);
     }
     .event-actions {
         display: flex;
@@ -382,28 +397,29 @@
         color: #9f9e9e;
     }
     .action-button {
-        margin: 0 5px;  /* Adjust the margin as needed for spacing between buttons */
         justify-items: center;
     }
     .event-actions .material-icons{
         padding-top: 4px;
+        margin: 0;
     }
 
     #go-to-down {
         display: none; /* Initially hide both buttons */
-        width: 100%;
-        color: #fff;
-        height: 30px;
+        width: 100vw;
+        color: var(--border-color-rgba);
+        height: 3vh;
+        border-top: var(--border-color-rgba) 1px solid;
         padding: 0;
-        background-color: #1a1a1a;
+        background-color: var(--color-text-rgba);
         border: none;
         cursor: pointer;
         outline: none;
         position: fixed;
         left: 0;
-        bottom: 8%;
+        bottom: 6vh;
         text-align: center;
-        border-radius: 5px;
+        z-index: 10000000;
     }
 
     @media (max-width: 767px) {
@@ -419,7 +435,7 @@
         padding: 10px;
         margin-bottom: 5px;
         border-radius: 5px;
-        border: #CCC solid 1px;
+        border: var(--border-color-rgba) solid 1px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -428,6 +444,15 @@
     .event-content {
         flex-grow: 1;
         margin-right: 10px;
+        margin-left: 10px;
+    }
+    .event-image-div{
+        width: 10vw;
+    }
+    .event-image img{
+        flex-grow: 1;
+        width: 10vw;
+        border-radius: 10px;
     }
 
 
@@ -437,7 +462,7 @@
     }
 
     .event-time {
-        color: #CCC;
+        color: var(--color-text-rgba);
     }
     
     .event-property {
@@ -450,13 +475,11 @@
     }
 
     .action-button {
-        margin-right: 5px;
         cursor: pointer;
         background-color: transparent;
-        color: #fff;
+        color: var(--color-text-rgba);
         border: none;
         border-radius: 3px;
-        padding: 5px 10px;
     }
     .calendar-container {
         height: 200px;
@@ -469,7 +492,7 @@
 
     .fc-header-toolbar {
             background-color: transparent ; /* Bootstrap primary color for background */
-            color: #fff; /* Set text color to white */
+            color: var(--color-text-rgba); /* Set text color to white */
             border-top-left-radius: 5px; /* Set top-left corner radius */
             border-top-right-radius: 5px; /* Set top-right corner radius */
         }
@@ -480,7 +503,7 @@
     }
 
     .fc-today-button{
-        color: #fff;
+        color: var(--color-text-rgba);
     }
 
     /* Customize the day grid */
@@ -503,7 +526,7 @@
 
     /* Style links inside column header cells */
     .fc-col-header-cell .fc-scrollgrid-sync-inner a {
-        color: #fff; /* Set link color to white */
+        color: var(--color-text-rgba); /* Set link color to white */
         text-decoration: none; /* Remove default link underline */
         font-size: 1rem;
     }
@@ -523,7 +546,7 @@
         width: 100%;
         height: 100%;
         text-align: center;
-        }
+    }
 
     .event-count-span {
         position: absolute;
@@ -535,7 +558,7 @@
     }
     @media (max-width: 500px) {
         .fc-daygrid-day-frame .fc-daygrid-day-top a{
-            font-size: 1.5rem;
+            font-size: 1rem;
             width: 100%;
             height: 100%;
             padding: 0;
@@ -544,24 +567,26 @@
         .date-span-container{
             width: 100%;
             height: 100%;
-            justify-content: center;
-            align-items: center;
         }
-
+        
         .date-span {
             display: block; /* Ensure each span is on a new line */
             width: 100%;
             height: 100%;
             text-align: center;
-            padding-top: 15px;
+            padding-top: 6px;
+        }
+        .fc-toolbar-title{
+            font-size: 1.2rem !important;
         }
         .event-count-span {
             position: absolute;
             top: 0;
             right: 0;
             color: #6a6a6a;
-            font-size: 1rem; /* Adjust the font size as needed */
+            font-size: 0.5rem; /* Adjust the font size as needed */
             padding-right: 5px;
+            padding-top: 2px;
         }
         .event-actions {
             display: flex;
@@ -574,9 +599,14 @@
             align-items: center;
         }
         .event-actions  button .material-icons{
-            color: #FFF;
-            border-bottom: 1px solid #fff;
+            color: var(--color-text-rgba);
+            border-bottom: 1px solid var(--color-text-rgba);
         }
+        
+        .fc-daygrid-day-frame{
+            height: 5px;
+        }
+        
         
     }
     
@@ -631,8 +661,6 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
-            // height: 500,
-            height: 330,
             dayCellContent: function (arg) {
                     const eventCount = calculateEventCount(arg.date);
                     const date = arg.date.getDate();
@@ -660,7 +688,7 @@
                     // Return the container element as the day cell content
                     return { html: container.outerHTML }; // Use { html: container.outerHTML } to render HTML content
                 },
-
+            
             dateClick: function (info) {
                 // Fetch locations based on the selected date using AJAX
                 fetch(`/crm/get_locations/?selected_date=${info.dateStr}`)
@@ -722,9 +750,21 @@
                     const formattedTime = event.fields.event_hour && event.fields.event_minute && event.fields.event_ampm
                         ? `${event.fields.event_hour}:${event.fields.event_minute} ${event.fields.event_ampm}`
                         : '';
-                    console.log(filteredEvents)
+                        
                     const eventDiv = document.createElement('div');
                     eventDiv.classList.add('event');
+                    
+                    const eventImageContainer = document.createElement('div');
+                    eventImageContainer.classList.add('event-image');
+                    // Create an image element and set its src attribute
+                    
+                    const imgElement = document.createElement('img');
+                    imgElement.src = event.fields.participant_property_images;
+                    imgElement.alt = 'Image'; // Set alternative text for accessibility
+                    eventImageContainer.appendChild(imgElement);
+                    const eventImageDiv = document.createElement('div');
+                    eventImageDiv.classList.add('event-image-div');
+                    eventImageDiv.appendChild(eventImageContainer);
 
                     const eventContentDiv = document.createElement('div');
                     eventContentDiv.classList.add('event-content');
@@ -764,6 +804,7 @@
                     eventContentDiv.appendChild(eventBuyerDiv);
                     eventContentDiv.appendChild(eventDescriptionDiv);
                     
+                    
 
                     const eventActionsDiv = document.createElement('div');
                     eventActionsDiv.classList.add('event-actions');
@@ -800,10 +841,10 @@
                     const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
                     
                     const completeButton = document.createElement('button');
-                    completeButton.classList.add('btn', 'action-button');
+                    completeButton.classList.add('action-button');
                     completeButton.innerHTML = event.fields.is_completed
-                        ? '<i class="material-icons">check_circle</i>'
-                        : '<i class="material-icons">check</i>';
+                        ? '<i class="material-icons" title="Clear complete check">clear</i>'
+                        : '<i class="material-icons" title="Task completed">check</i>';
                     // Set initial background color based on is_completed
                     function isMobileDevice() {
                         return window.innerWidth <= 767;
@@ -812,15 +853,16 @@
                     // Your existing code to change styles based on the condition
                     eventDiv.style.background = event.fields.is_completed ? '':'';
                     eventDiv.style.backgroundSize = '100% 33%';
-                    eventTypeDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventDescriptionDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventTimeDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventBuyerDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventOwnerDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    editButton.style.background = event.fields.is_completed ? (isMobileDevice() ? 'transparent' : '#666') : '';
-                    deleteButton.style.background = event.fields.is_completed ? (isMobileDevice() ? 'transparent' : '#666') : '';
-                    completeButton.style.background = event.fields.is_completed ? (isMobileDevice() ? 'transparent' : '#666') : '';
-                    eventPropertyDiv.style.color = event.fields.is_completed ? '#666' : '';
+                    eventTypeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventDescriptionDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventTimeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventBuyerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventOwnerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventPropertyDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    imgElement.style.filter = event.fields.is_completed ? 'grayscale(100%)' : 'none';
+                    editButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
+                    deleteButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
+                    completeButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
                     
                     completeButton.onclick = function () {
                         const eventId = event.pk;
@@ -844,30 +886,32 @@
                             .then(data => {
                             // Update the UI based on the completion status
                             if (data.is_complete) {
-                                completeButton.innerHTML = '<i class="material-icons">check_circle</i>'; // Change icon
+                                completeButton.innerHTML = '<i class="material-icons">clear</i>'; // Change icon
                                 eventDiv.style.background = ''; // Diagonal line pattern
                                 eventDiv.style.backgroundSize = '100% 33%';
-                                eventTypeDiv.style.color = '#666';
-                                eventDescriptionDiv.style.color = '#666';
-                                eventTimeDiv.style.color='#666';
-                                eventBuyerDiv.style.color='#666';
-                                eventOwnerDiv.style.color='#666';
-                                editButton.style.background = isMobileDevice() ? 'transparent' : '#666';
-                                deleteButton.style.background = isMobileDevice() ? 'transparent' : '#666';
-                                completeButton.style.background = isMobileDevice() ? 'transparent' : '#666';
-                                eventPropertyDiv.style.color = '#666';
+                                eventTypeDiv.style.color = 'var(--border-color-rgba)';
+                                eventDescriptionDiv.style.color = 'var(--border-color-rgba)';
+                                eventTimeDiv.style.color='var(--border-color-rgba)';
+                                eventBuyerDiv.style.color='var(--border-color-rgba)';
+                                eventOwnerDiv.style.color='var(--border-color-rgba)';
+                                eventPropertyDiv.style.color = 'var(--border-color-rgba)';
+                                imgElement.style.filter = 'grayscale(100%)';
+                                editButton.style.color = 'var(--border-color-rgba)';
+                                deleteButton.style.color = 'var(--border-color-rgba)';
+                                completeButton.style.color = 'var(--border-color-rgba)';
                             } else {
                                 completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
                                 eventDiv.style.background = isMobileDevice() ? 'transparent' : ''; // Reset background color to default
-                                eventTypeDiv.style.color = '#fff';
-                                eventPropertyDiv.style.color = '#fff';
-                                eventDescriptionDiv.style.color = '#fff';
-                                eventTimeDiv.style.color = '#fff';
-                                eventBuyerDiv.style.color = '#fff';
-                                eventOwnerDiv.style.color = '#fff';
-                                editButton.style.background = isMobileDevice() ? 'transparent' : '#1a1a1a';
-                                deleteButton.style.background = isMobileDevice() ? 'transparent' : '#1a1a1a';
-                                completeButton.style.background = isMobileDevice() ? 'transparent' : '#1a1a1a';
+                                eventTypeDiv.style.color = 'var(--color-text-rgba)';
+                                eventPropertyDiv.style.color = 'var(--color-text-rgba)';
+                                eventDescriptionDiv.style.color = 'var(--color-text-rgba)';
+                                eventTimeDiv.style.color = 'var(--color-text-rgba)';
+                                eventBuyerDiv.style.color = 'var(--color-text-rgba)';
+                                eventOwnerDiv.style.color = 'var(--color-text-rgba)';
+                                imgElement.style.filter = 'none';
+                                editButton.style.color = 'var(--color-text-rgba)';
+                                deleteButton.style.color = 'var(--color-text-rgba)';
+                                completeButton.style.color = 'var(--color-text-rgba)';
                             }
 
                             // Perform any additional UI updates if needed
@@ -887,7 +931,10 @@
                     eventActionsDiv.appendChild(deleteButton);
                     // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
                     eventActionsDiv.appendChild(completeButton);
-
+                    if (event.fields.participant_property_images) { // Check if participant_property_images is not null or empty
+                        eventDiv.appendChild(eventImageDiv);
+                    }
+                    
                     eventDiv.appendChild(eventContentDiv);
                     eventDiv.appendChild(eventActionsDiv);
 
@@ -970,6 +1017,19 @@
                     const eventDiv = document.createElement('div');
                     eventDiv.classList.add('event');
 
+                    const eventImageContainer = document.createElement('div');
+                    eventImageContainer.classList.add('event-image');
+                    // Create an image element and set its src attribute
+                    const imgElement = document.createElement('img');
+                    imgElement.src = event.fields.participant_property_images;
+                    imgElement.alt = 'Image'; // Set alternative text for accessibility
+                    eventImageContainer.appendChild(imgElement);
+                    const eventImageDiv = document.createElement('div');
+                    eventImageDiv.classList.add('event-image-div');
+                    eventImageDiv.appendChild(eventImageContainer);
+                    
+                    
+
                     const eventContentDiv = document.createElement('div');
                     eventContentDiv.classList.add('event-content');
 
@@ -1008,7 +1068,6 @@
                     eventContentDiv.appendChild(eventBuyerDiv);
                     eventContentDiv.appendChild(eventOwnerDiv);
                     eventContentDiv.appendChild(eventDescriptionDiv);
-                    
 
                     const eventActionsDiv = document.createElement('div');
                     eventActionsDiv.classList.add('event-actions');
@@ -1045,7 +1104,7 @@
                     const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
                     
                     const completeButton = document.createElement('button');
-                    completeButton.classList.add('btn', 'action-button');
+                    completeButton.classList.add('action-button');
                     completeButton.innerHTML = event.fields.is_completed
                         ? '<i class="material-icons" title="Clear complete check">clear</i>'
                         : '<i class="material-icons" title="Task completed">check</i>';
@@ -1057,15 +1116,16 @@
                     // Your existing code to change styles based on the condition
                     eventDiv.style.background = event.fields.is_completed ? '':''; 
                     eventDiv.style.backgroundSize = '100% 33%';
-                    eventTypeDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventDescriptionDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventTimeDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventBuyerDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    eventOwnerDiv.style.color = event.fields.is_completed ? '#666' : '';
-                    editButton.style.background = event.fields.is_completed ? (isMobileDevice() ? 'transparent' : '#666') : '';
-                    deleteButton.style.background = event.fields.is_completed ? (isMobileDevice() ? 'transparent' : '#666') : '';
-                    completeButton.style.background = event.fields.is_completed ? (isMobileDevice() ? 'transparent' : '#666') : '';
-                    eventPropertyDiv.style.color = event.fields.is_completed ? '#666' : '';
+                    eventTypeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventDescriptionDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventTimeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventBuyerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventOwnerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    eventPropertyDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    editButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    deleteButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    completeButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                    imgElement.style.filter = event.fields.is_completed ? 'grayscale(100%)':'none';
                     
                     completeButton.onclick = function () {
                         const eventId = event.pk;
@@ -1092,27 +1152,30 @@
                                 completeButton.innerHTML = '<i class="material-icons">clear</i>'; // Change icon
                                 eventDiv.style.background = '';
                                 eventDiv.style.backgroundSize = '100% 33%';
-                                eventTypeDiv.style.color = '#666';
-                                eventDescriptionDiv.style.color = '#666';
-                                eventTimeDiv.style.color = '#666';
-                                eventBuyerDiv.style.color = '#666';
-                                eventOwnerDiv.style.color = '#666';
-                                editButton.style.background = isMobileDevice() ? 'transparent' : '#666';
-                                deleteButton.style.background = isMobileDevice() ? 'transparent' : '#666';
-                                completeButton.style.background = isMobileDevice() ? 'transparent' : '#666';
-                                eventPropertyDiv.style.color = '#666';
+                                eventTypeDiv.style.color = 'var(--border-color-rgba)';
+                                eventDescriptionDiv.style.color = 'var(--border-color-rgba)';
+                                eventTimeDiv.style.color = 'var(--border-color-rgba)';
+                                eventBuyerDiv.style.color = 'var(--border-color-rgba)';
+                                eventOwnerDiv.style.color = 'var(--border-color-rgba)';
+                                eventPropertyDiv.style.color = 'var(--border-color-rgba)';
+                                imgElement.style.filter = 'grayscale(100%)';
+                                editButton.style.color = 'var(--border-color-rgba)';
+                                deleteButton.style.color = 'var(--border-color-rgba)';
+                                completeButton.style.color = 'var(--border-color-rgba)';
+                                
                             } else {
                                 completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
                                 eventDiv.style.background = isMobileDevice() ? 'transparent' : ''; // Reset background color to default
-                                eventTypeDiv.style.color = '#ccc';
-                                eventPropertyDiv.style.color = '#ccc';
-                                eventDescriptionDiv.style.color = '#ccc';
-                                eventTimeDiv.style.color = '#ccc';
-                                eventBuyerDiv.style.color = '#ccc';
-                                eventOwnerDiv.style.color = '#ccc';
-                                editButton.style.background = isMobileDevice() ? 'transparent' : '#1a1a1a';
-                                deleteButton.style.background = isMobileDevice() ? 'transparent' : '#1a1a1a';
-                                completeButton.style.background = isMobileDevice() ? 'transparent' : '#1a1a1a';
+                                eventTypeDiv.style.color = 'var(--color-text-rgba)';
+                                eventPropertyDiv.style.color = 'var(--color-text-rgba)';
+                                eventDescriptionDiv.style.color = 'var(--color-text-rgba)';
+                                eventTimeDiv.style.color = 'var(--color-text-rgba)';
+                                eventBuyerDiv.style.color = 'var(--color-text-rgba)';
+                                eventOwnerDiv.style.color = 'var(--color-text-rgba)';
+                                imgElement.style.filter = 'none';
+                                editButton.style.color = 'var(--color-text-rgba)';
+                                deleteButton.style.color = 'var(--color-text-rgba)';
+                                completeButton.style.color = 'var(--color-text-rgba)';
                             }
 
                             // Perform any additional UI updates if needed
@@ -1132,7 +1195,10 @@
                     eventActionsDiv.appendChild(deleteButton);
                     // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
                     eventActionsDiv.appendChild(completeButton);
-
+                    if (event.fields.participant_property_images) { // Check if participant_property_images is not null or empty
+                        eventDiv.appendChild(eventImageDiv);
+                    }
+                    
                     eventDiv.appendChild(eventContentDiv);
                     eventDiv.appendChild(eventActionsDiv);
 
@@ -1173,5 +1239,27 @@
     });
 </script>
 
+<script>
+    const eventsList = document.querySelector('#events-list');
+    const mainMapContainer = document.querySelector('#main-map-container');
+    const calendar = document.querySelector('#calendar');
+
+    // Add click event listener to .properties-list
+    calendar.addEventListener('click', function() {
+        // Scroll to the top of the content element
+        calendar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    // Add click event listener to .properties-list
+    eventsList.addEventListener('click', function() {
+        // Scroll to the top of the content element
+        eventsList.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // Add click event listener to .main-map-container
+    mainMapContainer.addEventListener('click', function() {
+        // Scroll to the bottom of the content element
+        mainMapContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    });
+</script>
 
 {% endblock %}

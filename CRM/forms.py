@@ -129,6 +129,7 @@ class PropertyForm(forms.ModelForm):
                     'bedrooms',
                     'status',
                     'total_rooms',
+                    'total_price',
                     'toilets',
                     'garage',
                     'fireplace',
