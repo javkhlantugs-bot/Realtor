@@ -37,7 +37,7 @@
         <h2>Status: {{ client.status}}</h2>
     </div>
     <div class="col-md-4 d-flex justify-content-end">
-        <button class="btn btn-outline-danger mr-2"
+        <button class="btn btn-outline-primary mr-2"
                 style="margin: 5px;"
                 onclick="deleteClient({{ client.id }})">
                 <span class="button-text">Delete</span> <i class="fas fa-trash"></i>
@@ -124,7 +124,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text">{{ note.note }}</p>
-                        <a href="#" class="btn btn-outline-danger" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="position: absolute; top: 5px; right: 5px;">
+                        <a href="#" class="btn btn-outline-primary" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="position: absolute; top: 5px; right: 5px;">
                             <i class="material-icons">delete</i>
                         </a>
                     </div>
