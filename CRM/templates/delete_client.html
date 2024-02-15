@@ -1,0 +1,21 @@
+<!-- delete_event.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Delete Contact{% endblock %}
+
+{% block content %}
+<div class="col-md-6">
+    <h2 class="mb-4">Delete Contact</h2>
+    <p>Are you sure you want to delete the contact "{{ client }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete Contact</button>
+    </form>
+    <a href="#" class="btn btn-outline-secondary mt-3" onclick="goBack()">Cancel</a>
+</div>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+    </script>
+{% endblock %}

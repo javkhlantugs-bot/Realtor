@@ -8,50 +8,47 @@ class LinkModel(models.Model):
     def __str__(self):
         return self.description
 
+class property_status(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='crm_property_statuses')
+    status = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.status}"
+    
+class property_type(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='crm_property_types')
+    type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.type}"
+    
+class deal_type(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='crm_property_deal_types')
+    deal_type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.deal_type}"
+
 class Property(models.Model):
-    PROPERTY_TYPES = (
-        ('office', 'Office'),
-        ('apartment', 'Apartment'),
-        ('house', 'House'),
-    )
 
-    DEAL_TYPE = (
-        ('rental', 'Rental'),
-        ('selling', 'Selling'),
-    )
-
-    STATUS_CHOICES = (
-        ('active',"Active"),
-        ('cancelled','Cancelled'),
-    )
-
-    CONDITION_CHOICES = (
-        ('cash', 'Бэлэн'),
-        ('barter', 'Бартер'),
-        ('Leasing','Лизинг'),
-        ('3 plus 1','3 + 1'),
-        ('6 plus 1','6 + 1'),
-        ('12 plus 1','12 + 1'),
-        ('1 plus 1','1 + 1'),
-    )
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES, blank=True, null = True)
-    deal_type = models.CharField(max_length=10, choices=DEAL_TYPE, blank=True, null = True)
+    property_type = models.ForeignKey(property_type,max_length=20, blank=True, null = True, on_delete=models.CASCADE, related_name = 'property_types')
+    deal_type = models.ForeignKey(deal_type,max_length=10, blank=True, null = True, on_delete=models.CASCADE, related_name = 'property_deal_type')
     address = models.CharField(max_length=255, blank=True, null = True)
     images = models.ImageField(blank=True, null=True)
     sqr_meter = models.IntegerField(blank=True, null = True)
     price_sqrm = models.FloatField(null=True, blank = True)
-    price_month = models.FloatField(null=True, blank = True)
+    price_month = models.CharField(null=True, blank = True, max_length = 30)
     condition = models.CharField(max_length=20, blank=True, null = True)
     address_lower = models.CharField(max_length=255, blank=True, null = True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    listing_date = models.DateField(null = True,blank = True)
+    listing_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     lot_size = models.IntegerField(null=True, blank=True)
     monthly_fees = models.IntegerField(null=True, blank=True)
     year_built = models.IntegerField(null=True, blank=True)
     unit = models.CharField(max_length=20, blank=True, null=True)
-    status = models.CharField(max_length=30,choices=STATUS_CHOICES,blank=True, null= True)
+    status = models.ForeignKey(property_status,max_length=30,blank=True, null= True, on_delete=models.CASCADE,related_name= 'property_status_type')
 
     bedrooms = models.IntegerField(blank=True, null = True)
     total_rooms = models.IntegerField(blank=True, null = True)
@@ -81,7 +78,8 @@ class Property(models.Model):
     district = models.CharField(max_length=255, blank=True, null=True)
     sub_district = models.CharField(max_length=255, blank=True, null=True)
     total_price = models.CharField(max_length=255, blank=True, null=True)
-
+    added_date = models.DateTimeField(auto_now_add=True, blank= True,null=True)
+    views_count = models.IntegerField(default=0)
     def save(self, *args, **kwargs):
         # Save the lowercase version of the address
         self.address_lower = self.address.lower()

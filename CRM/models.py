@@ -16,6 +16,8 @@ class client_status_types(models.Model):
 
     def __str__(self):
         return f"{self.status}"
+    
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)

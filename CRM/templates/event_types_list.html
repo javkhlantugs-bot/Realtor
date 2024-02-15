@@ -1,36 +1,45 @@
-
 {% extends 'base_event.html' %}
 
 {% block title %}Event Types List{% endblock %}
 
 {% block content %}
+<style>
+  .list-group-item{
+    background-color: transparent !important;
+    color: var(--color-text-rgba);
+    border-color: var(--border-color-rgba);
+  }
+</style>
 <div class="row container-header">
   <h2>Event Types List
-      <a href="{% url 'add_event_type' %}" class="btn btn-outline-secondary" type="button">
+      <a href="{% url 'add_event_type' %}" class="btn btn-outline-primary" type="button">
           <i class="material-icons">add</i> 
       </a>
     </h2>
 </div>  
 <div class="container-content">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Event Type</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
+    <div class="col-md-6 mx-auto">
+      <ul class="list-group">
         {% for event_type in event_types %}
-          <tr>
-            <td>{{ event_type.event_type }}</td>
-            <td>
-              <a href="{% url 'edit_event_type' event_type.id %}" class="btn btn-outline-primary btn-sm">Edit</a>
-              <a href="{% url 'delete_event_type' event_type.id %}" class="btn btn-danger btn-sm">Delete</a>
-            </td>
-          </tr>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ event_type.event_type }}
+            <div>
+              <a href="{% url 'edit_event_type' event_type.id %}" class="btn btn-outline-primary btn-sm"><i class="material-icons">edit</i> </a>
+              <a href="{% url 'delete_event_type' event_type.id %}" class="btn btn-outline-danger btn-sm"><i class="material-icons">delete</i> </a>
+            </div>
+            
+          </li>
         {% endfor %}
-      </tbody>
-    </table>
+      </ul>
+      <div class="mt-auto" style="justify-content: center; align-items: center; margin-top: 20px !important;">
+        <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
+      </div>
+    </div>
   </div>
 </div>
+<script>
+  function goBack() {
+  window.history.back();
+}
+</script>
 {% endblock %}

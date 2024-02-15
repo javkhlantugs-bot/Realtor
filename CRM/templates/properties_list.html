@@ -15,6 +15,14 @@
         z-index: 1000000;
     }
     @media (max-width: 767px) {
+        .container-content{
+            margin: 0;
+        }
+        .contents{
+            width: 100vw !important;
+            padding: 0;
+            margin: 0;
+        }
         .modal{
             margin-top: 25vw !important;
         }
@@ -24,36 +32,66 @@
         }
         
         .properties-list{
+            position: fixed;
             width: 100vw !important;
             height: 50vh !important;
+            overflow-x: hidden;
+            margin: 0;
+            top: 48vh;
+            border: var(--border-color-rgba);
         }
         .image-container{
-            width: 45vw !important;
+            width: 88vw !important;
         }
         .card-text-content{
-            width: 45vw !important;
+            width: 88vw !important;
             padding-right: 20px;
         }
         .card-img-left{
-            max-width: 43vw !important;
+            max-width: 70vw !important;
             margin-left: 20px;
         }
         #main-map-container{
             width: 100vw !important;
-            height: 60vh !important;
+            height: 30vh !important;
             margin-right: 0 !important;
             margin-left: 0 !important;
             margin-bottom: 5vh;
             left: 0;
+            position: fixed;
+            top: 11vh;
+        }
+        #main-map{
+            position: fixed;
+            height: 34vh !important;
+            width: 100vw !important;
+            left: 0;
+            margin-left: 0;
+            padding-left: 0;
+            border-top-left-radius: 0px !important;
+            border-top-right-radius: 0px !;
         }
         .container-fluid{
             padding-left: 0;
         }
+        .container-fluid .row{
+            margin-right: 0;
+            padding-right: 0;
+        }
         .container-content{
             width: 100vw !important;
         }
-        .container-content .row{
-            width: 100vw !important;
+        .card{
+            width: 90vw;
+            left: 0;
+        }
+        .card-body{
+            flex-direction: column;
+            width: 88vw;
+        }
+        .cards{
+            width: 100vw;
+            left: 0;
         }
     }
 </style>
@@ -100,10 +138,7 @@
         margin-left: 1vw;
     }
     #main-map {
-        border-top-left-radius: 30px; /* Radius for top-left corner */
-        border-top-right-radius: 30px; /* Radius for top-right corner */
-        border-bottom-left-radius: 0; /* No radius for bottom-left corner */
-        border-bottom-right-radius: 0; /* No radius for bottom-right corner */
+        border-radius: 20px;
         
     }
     .properties-list::-webkit-scrollbar {
@@ -126,13 +161,27 @@
     .properties-list::-webkit-scrollbar-thumb:active {
         background-color: var(--color-text-rgba); /* Color when scrollbar thumb is being dragged */
     }
+    .no-properties {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center horizontally */
+        justify-content: center; /* Center vertically */
+        height: 100%; /* Ensure the div takes up the entire height of its container */
+        background: linear-gradient(45deg, var(--color-stripe-rgba) 25%, transparent 25%, transparent 50%, var(--color-stripe-rgba) 50%, var(--color-stripe-rgba) 75%, transparent 75%, transparent);
+        background-size: 20px 20px; /* Adjust the size of the stripes */
+        border-radius: 10px;
+    }
+    .no-properties h5{
+        margin-bottom: 20px;
+        background-color: transparent;
+    }
     
 </style>
 <div class="col-md-12 container-content">
-    <div class="row">
+    <div class="row" style="width: 99vw; margin: 0;">
         <div class="row properties-list">
             {% for property in properties %}
-                <div class="col-md-12 mb-12">
+                <div class="col-md-12 mb-12 cards" >
                     <div class="card">
                         <div class="card-body d-flex"> <!-- Add d-flex and align-items-stretch classes -->
                             {% if property.images %}
@@ -142,19 +191,33 @@
                             {% endif %}
                             <div style="padding-left: 20px;" class="card-text-content"> <!-- Create a div to hold the card content -->
                                 <h5 class="card-title">{{ property.address }}</h5>
-                                <p class="card-text">Type: {{ property.get_property_type_display }}</p>
+                                <p class="card-text">Type: <strong>{{ property.property_type }}</strong></p>
                                 <p class="card-text">Total Value: <strong>{{ property.total_price }}</strong></p>
                                 <p class="card-text">Interested/Suggested: <strong>{{ property.interested_count }}/{{ property.suggested_count }}</strong></p>
-                                <p class="card-text">Completed tasks: <strong>{{ property.events_completed }}</strong></p>
-                                <p class="card-text">Incomplete tasks: <strong>{{ property.events_incompleted }}</strong></p>
+                                <p class="card-text">Tasks: <strong>{{ property.events_completed }}/{{ property.events_incompleted }}</strong></p>
+                                <p class="card-text">Listed: <strong>{{ property.listing_date|date:"M. d, Y" }}</strong></p>
+                                <p class="card-text">Views: <strong>{{ property.views_count }}</strong></p>
                                 
                                 <a href="{% url 'property_events' property.id %}" class="btn btn-outline-primary">Show more</a>
                             </div>
                         </div>
                     </div>
                 </div>
+            {% empty %}
+                <!-- Display this if there are no properties -->
+                <div class="col-md-12 mb-12 no-properties">
+                    <h3>There is no Properties</h3>
+                    <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"  
+                            data-toggle="modal" data-target="#propertyModal">
+                            <i class="fas fa-plus"></i>
+                            <span class="d-none d-md-inline" style="padding-left:10px">Add a new Property</span>  
+                    </button>
+                </div>
             {% endfor %}
-            <div style="height: 10vh;"></div>
+            {% if properties %}
+                <div style="height: 10vh;"></div>
+            {% endif %}
+            
         </div>
         <div id="main-map-container">
             <div id="main-map" style="height: 100%;"></div>
@@ -455,17 +518,27 @@ function goBack() {
     let locations = JSON.parse(document.getElementById('locations_json').textContent);
     
     var markers = [];
-    
     locations.forEach(location => {
         if (location.id) {
+            var url = `${location.id}/`;
             var marker = L.marker([location.latitude, location.longitude]).addTo(map);
             // Create a popup with property information and "Show More" button
-            var popupContent = "<b>Address:</b> " + location.address + "<br>" +
-                            "<b>Deal:</b> " + location.deal_type + "<br>" +
-                            "<b>Type:</b> " + location.property_type + "<br>" +
-                            "<b>Total rooms:</b> " + location.total_rooms + "<br>" +
-                            "<a href='property.id'>Show more</a>";
-
+            var popupContent = "<b>Address:</b> " + location.address + "<br>";
+            // Include additional property details if they exist
+                if (location.total_rooms) {
+                    popupContent += "<b>Total rooms:</b> " + location.total_rooms + "<br>";
+                }
+                if (location.bedrooms) {
+                    popupContent += "<b>Bedrooms:</b> " + location.bedrooms + "<br>";
+                }
+                
+                if (location.total_price) {
+                    popupContent += "<b>Total Price:</b> " + location.total_price + "<br>";
+                }
+                if (location.price_month) {
+                    popupContent += "<b>Rental Price:</b> " + location.price_month + "<br>";
+                }
+                popupContent += `<a href='${url}'>Show more</a>`;
             marker.bindPopup(popupContent);}
             markers.push(marker);
         });

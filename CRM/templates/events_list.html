@@ -40,7 +40,7 @@
         height: 45vh;
     }
 
-    .task_list h5{
+    .task_list #task_list_header{
         position: absolute;
         top: 0;
         right: 0;
@@ -76,7 +76,7 @@
             height: 20px; /* Adjust the height as needed */
             display: inline-block; /* Ensure it's an inline-block element */
         }
-        .task_list h5{
+        .task_list #task_list_header{
             top: 35vh;
             width: 100%;
         }
@@ -124,6 +124,20 @@
     
     .fc-button-group button span{
         color: var(--color-text-rgba) !important;
+    }
+    .no-events {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center horizontally */
+        justify-content: center; /* Center vertically */
+        height: 100%; /* Ensure the div takes up the entire height of its container */
+        background: linear-gradient(45deg, var(--color-stripe-rgba) 25%, transparent 25%, transparent 50%, var(--color-stripe-rgba) 50%, var(--color-stripe-rgba) 75%, transparent 75%, transparent);
+        background-size: 20px 20px; /* Adjust the size of the stripes */
+        border-radius: 10px;
+    }
+    .no-events h5{
+        margin-bottom: 20px;
+        background-color: transparent;
     }
 </style>
 
@@ -316,7 +330,7 @@
     </div>
     
     <div class="task_list">
-        <h5 style="text-align: center;">Task list</h5>
+        <h2 style="text-align: center;" id="task_list_header">Task list</h2>
         <div id="events-list">
         </div>
     </div>
@@ -706,7 +720,7 @@
 
                 // Filter events within the selected date
                 const selectedDate = new Date(info.dateStr);
-                
+                const formattedSelectedDate = selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 const filteredEvents = JSON.parse('{{ events | safe  | escapejs }}').filter(function (event) {
                     const eventDate = new Date(event.fields.event_date);
                     return eventDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0];
@@ -748,202 +762,208 @@
                 const selectedDateElement = document.getElementById('selected-date');
                 selectedDateElement.textContent = selectedDate.toDateString();
 
-                // Display filtered events
-                filteredEvents.forEach(function(event) {
-                    const formattedTime = event.fields.event_hour && event.fields.event_minute && event.fields.event_ampm
-                        ? `${event.fields.event_hour}:${event.fields.event_minute} ${event.fields.event_ampm}`
-                        : '';
+                if (!filteredEvents || filteredEvents.length === 0) {
+                    var noEventsMessage = 
+                                            '<div class="no-events"><h3>There is no task for </h3><h5>'+formattedSelectedDate+'.</h5>'
+                                            +'<button class="btn btn-outline-primary d-flex align-items-center justify-content-center" data-toggle="modal" data-target="#taskModal">'
+                                            +'<i class="fas fa-plus"></i><span class="d-none d-md-inline" style="padding-left:10px">Add a new task</span> </button></div>';
+                    eventsDiv.innerHTML = noEventsMessage;}
+                else{
+                    filteredEvents.forEach(function(event) {
+                        const formattedTime = event.fields.event_hour && event.fields.event_minute && event.fields.event_ampm
+                            ? `${event.fields.event_hour}:${event.fields.event_minute} ${event.fields.event_ampm}`
+                            : '';
+                            
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event');
                         
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('event');
-                    
-                    const eventImageContainer = document.createElement('div');
-                    eventImageContainer.classList.add('event-image');
-                    // Create an image element and set its src attribute
-                    
-                    const imgElement = document.createElement('img');
-                    imgElement.src = event.fields.participant_property_images;
-                    imgElement.alt = 'Image'; // Set alternative text for accessibility
-                    eventImageContainer.appendChild(imgElement);
-                    const eventImageDiv = document.createElement('div');
-                    eventImageDiv.classList.add('event-image-div');
-                    eventImageDiv.appendChild(eventImageContainer);
+                        const eventImageContainer = document.createElement('div');
+                        eventImageContainer.classList.add('event-image');
+                        // Create an image element and set its src attribute
+                        
+                        const imgElement = document.createElement('img');
+                        imgElement.src = event.fields.participant_property_images;
+                        imgElement.alt = 'Image'; // Set alternative text for accessibility
+                        eventImageContainer.appendChild(imgElement);
+                        const eventImageDiv = document.createElement('div');
+                        eventImageDiv.classList.add('event-image-div');
+                        eventImageDiv.appendChild(eventImageContainer);
 
-                    const eventContentDiv = document.createElement('div');
-                    eventContentDiv.classList.add('event-content');
+                        const eventContentDiv = document.createElement('div');
+                        eventContentDiv.classList.add('event-content');
 
-                    const eventTypeDiv = document.createElement('div');
-                    eventTypeDiv.classList.add('event-type');
-                    eventTypeDiv.textContent = event.fields.event_type_name;
+                        const eventTypeDiv = document.createElement('div');
+                        eventTypeDiv.classList.add('event-type');
+                        eventTypeDiv.textContent = event.fields.event_type_name;
 
-                    const eventTimeDiv = document.createElement('div');
-                    eventTimeDiv.classList.add('event-time');
-                    eventTimeDiv.textContent = formattedTime;
-                    
-                    const eventBuyerDiv = document.createElement('div');
-                    eventBuyerDiv.classList.add('event-buyer');
-                    eventBuyerDiv.textContent = event.fields.participant_buyer_name;
-                    
-                    const eventOwnerDiv = document.createElement('div');
-                    eventOwnerDiv.classList.add('event-owner');
-                    eventOwnerDiv.textContent = event.fields.participant_owner_name;
+                        const eventTimeDiv = document.createElement('div');
+                        eventTimeDiv.classList.add('event-time');
+                        eventTimeDiv.textContent = formattedTime;
+                        
+                        const eventBuyerDiv = document.createElement('div');
+                        eventBuyerDiv.classList.add('event-buyer');
+                        eventBuyerDiv.textContent = event.fields.participant_buyer_name;
+                        
+                        const eventOwnerDiv = document.createElement('div');
+                        eventOwnerDiv.classList.add('event-owner');
+                        eventOwnerDiv.textContent = event.fields.participant_owner_name;
 
-                    const eventDescriptionDiv = document.createElement('div');
-                    eventDescriptionDiv.classList.add('event-desc');
-                    const fullEventDescription = event.fields.event_description;
-                    const truncatedEventDescription = fullEventDescription.length > 200
-                    ? `${fullEventDescription.substring(0, 200)}...`
-                    : fullEventDescription;
+                        const eventDescriptionDiv = document.createElement('div');
+                        eventDescriptionDiv.classList.add('event-desc');
+                        const fullEventDescription = event.fields.event_description;
+                        const truncatedEventDescription = fullEventDescription.length > 200
+                        ? `${fullEventDescription.substring(0, 200)}...`
+                        : fullEventDescription;
 
-                    eventDescriptionDiv.textContent = truncatedEventDescription;
-                    const eventPropertyDiv = document.createElement('div');
-                    eventPropertyDiv.classList.add('event-property');
-                    eventPropertyDiv.textContent = event.fields.participant_property_address;  // Assuming participant_property is a related property object ID
+                        eventDescriptionDiv.textContent = truncatedEventDescription;
+                        const eventPropertyDiv = document.createElement('div');
+                        eventPropertyDiv.classList.add('event-property');
+                        eventPropertyDiv.textContent = event.fields.participant_property_address;  // Assuming participant_property is a related property object ID
 
-                    eventContentDiv.appendChild(eventTypeDiv);
-                    eventContentDiv.appendChild(eventPropertyDiv);
-                    eventContentDiv.appendChild(eventTimeDiv);
-                    eventContentDiv.appendChild(eventOwnerDiv);
-                    eventContentDiv.appendChild(eventBuyerDiv);
-                    eventContentDiv.appendChild(eventDescriptionDiv);
-                    
-                    
+                        eventContentDiv.appendChild(eventTypeDiv);
+                        eventContentDiv.appendChild(eventPropertyDiv);
+                        eventContentDiv.appendChild(eventTimeDiv);
+                        eventContentDiv.appendChild(eventOwnerDiv);
+                        eventContentDiv.appendChild(eventBuyerDiv);
+                        eventContentDiv.appendChild(eventDescriptionDiv);
+                        
+                        
 
-                    const eventActionsDiv = document.createElement('div');
-                    eventActionsDiv.classList.add('event-actions');
+                        const eventActionsDiv = document.createElement('div');
+                        eventActionsDiv.classList.add('event-actions');
 
-                    const editButton = document.createElement('button');
-                    editButton.classList.add('action-button');
-                    editButton.innerHTML = '<i class="material-icons">edit</i>'; // Material Icons delete icon
-                    editButton.onclick = function() {
-                        // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
-                        const eventId = event.pk;
+                        const editButton = document.createElement('button');
+                        editButton.classList.add('action-button');
+                        editButton.innerHTML = '<i class="material-icons">edit</i>'; // Material Icons delete icon
+                        editButton.onclick = function() {
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
 
-                        // Construct the edit event URL
-                        const editEventUrl = `/crm/events/edit/${eventId}/`;
+                            // Construct the edit event URL
+                            const editEventUrl = `/crm/events/edit/${eventId}/`;
 
-                        // Redirect to the edit event page
-                        window.location.href = editEventUrl;
-                    };
-                    
-                    const deleteButton = document.createElement('button');
-                    deleteButton.classList.add('action-button');
-                    deleteButton.innerHTML = '<i class="material-icons">delete</i>'; // Material Icons delete icon
-                    deleteButton.onclick = function () {
-                        // Get the event ID from your data source (e.g., data attribute, etc.)
-                        // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
-                        const eventId = event.pk;
-
-                        // Construct the edit event URL
-                        const deleteEventUrl = `/crm/events/delete/${eventId}/`;
-
-                        // Redirect to the edit event page
-                        window.location.href = deleteEventUrl;
-                    };
-                    const csrfTokenInput = document.getElementById('csrf-form').querySelector('[name=csrfmiddlewaretoken]');
-                    const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-                    
-                    const completeButton = document.createElement('button');
-                    completeButton.classList.add('action-button');
-                    completeButton.innerHTML = event.fields.is_completed
-                        ? '<i class="material-icons" title="Clear complete check">clear</i>'
-                        : '<i class="material-icons" title="Task completed">check</i>';
-                    // Set initial background color based on is_completed
-                    function isMobileDevice() {
-                        return window.innerWidth <= 767;
-                    }
-
-                    // Your existing code to change styles based on the condition
-                    eventDiv.style.background = event.fields.is_completed ? '':'';
-                    eventDiv.style.backgroundSize = '100% 33%';
-                    eventTypeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventDescriptionDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventTimeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventBuyerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventOwnerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventPropertyDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    imgElement.style.filter = event.fields.is_completed ? 'grayscale(100%)' : 'none';
-                    editButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
-                    deleteButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
-                    completeButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
-                    
-                    completeButton.onclick = function () {
-                        const eventId = event.pk;
-
-                        // Check if the CSRF token is available
-                        if (csrfToken) {
-                            // Toggle is_complete using AJAX
-                            fetch(`/crm/events/toggle_complete/${eventId}/`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrfToken,
-                            },
-                            })
-                            .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                            })
-                            .then(data => {
-                            // Update the UI based on the completion status
-                            if (data.is_complete) {
-                                completeButton.innerHTML = '<i class="material-icons">clear</i>'; // Change icon
-                                eventDiv.style.background = ''; // Diagonal line pattern
-                                eventDiv.style.backgroundSize = '100% 33%';
-                                eventTypeDiv.style.color = 'var(--border-color-rgba)';
-                                eventDescriptionDiv.style.color = 'var(--border-color-rgba)';
-                                eventTimeDiv.style.color='var(--border-color-rgba)';
-                                eventBuyerDiv.style.color='var(--border-color-rgba)';
-                                eventOwnerDiv.style.color='var(--border-color-rgba)';
-                                eventPropertyDiv.style.color = 'var(--border-color-rgba)';
-                                imgElement.style.filter = 'grayscale(100%)';
-                                editButton.style.color = 'var(--border-color-rgba)';
-                                deleteButton.style.color = 'var(--border-color-rgba)';
-                                completeButton.style.color = 'var(--border-color-rgba)';
-                            } else {
-                                completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
-                                eventDiv.style.background = isMobileDevice() ? 'transparent' : ''; // Reset background color to default
-                                eventTypeDiv.style.color = 'var(--color-text-rgba)';
-                                eventPropertyDiv.style.color = 'var(--color-text-rgba)';
-                                eventDescriptionDiv.style.color = 'var(--color-text-rgba)';
-                                eventTimeDiv.style.color = 'var(--color-text-rgba)';
-                                eventBuyerDiv.style.color = 'var(--color-text-rgba)';
-                                eventOwnerDiv.style.color = 'var(--color-text-rgba)';
-                                imgElement.style.filter = 'none';
-                                editButton.style.color = 'var(--color-text-rgba)';
-                                deleteButton.style.color = 'var(--color-text-rgba)';
-                                completeButton.style.color = 'var(--color-text-rgba)';
-                            }
-
-                            // Perform any additional UI updates if needed
-                            })
-                            .catch(error => {
-                            console.error('Error toggling completion:', error);
-                            });
-                        } else {
-                            console.error('CSRF token is not available.');
-                        }
+                            // Redirect to the edit event page
+                            window.location.href = editEventUrl;
                         };
+                        
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add('action-button');
+                        deleteButton.innerHTML = '<i class="material-icons">delete</i>'; // Material Icons delete icon
+                        deleteButton.onclick = function () {
+                            // Get the event ID from your data source (e.g., data attribute, etc.)
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
 
-                    
+                            // Construct the edit event URL
+                            const deleteEventUrl = `/crm/events/delete/${eventId}/`;
+
+                            // Redirect to the edit event page
+                            window.location.href = deleteEventUrl;
+                        };
+                        const csrfTokenInput = document.getElementById('csrf-form').querySelector('[name=csrfmiddlewaretoken]');
+                        const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+                        
+                        const completeButton = document.createElement('button');
+                        completeButton.classList.add('action-button');
+                        completeButton.innerHTML = event.fields.is_completed
+                            ? '<i class="material-icons" title="Clear complete check">clear</i>'
+                            : '<i class="material-icons" title="Task completed">check</i>';
+                        // Set initial background color based on is_completed
+                        function isMobileDevice() {
+                            return window.innerWidth <= 767;
+                        }
+
+                        // Your existing code to change styles based on the condition
+                        eventDiv.style.background = event.fields.is_completed ? '':'';
+                        eventDiv.style.backgroundSize = '100% 33%';
+                        eventTypeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventDescriptionDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventTimeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventBuyerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventOwnerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventPropertyDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        imgElement.style.filter = event.fields.is_completed ? 'grayscale(100%)' : 'none';
+                        editButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
+                        deleteButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
+                        completeButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)':'';
+                        
+                        completeButton.onclick = function () {
+                            const eventId = event.pk;
+
+                            // Check if the CSRF token is available
+                            if (csrfToken) {
+                                // Toggle is_complete using AJAX
+                                fetch(`/crm/events/toggle_complete/${eventId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': csrfToken,
+                                },
+                                })
+                                .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                                })
+                                .then(data => {
+                                // Update the UI based on the completion status
+                                if (data.is_complete) {
+                                    completeButton.innerHTML = '<i class="material-icons">clear</i>'; // Change icon
+                                    eventDiv.style.background = ''; // Diagonal line pattern
+                                    eventDiv.style.backgroundSize = '100% 33%';
+                                    eventTypeDiv.style.color = 'var(--border-color-rgba)';
+                                    eventDescriptionDiv.style.color = 'var(--border-color-rgba)';
+                                    eventTimeDiv.style.color='var(--border-color-rgba)';
+                                    eventBuyerDiv.style.color='var(--border-color-rgba)';
+                                    eventOwnerDiv.style.color='var(--border-color-rgba)';
+                                    eventPropertyDiv.style.color = 'var(--border-color-rgba)';
+                                    imgElement.style.filter = 'grayscale(100%)';
+                                    editButton.style.color = 'var(--border-color-rgba)';
+                                    deleteButton.style.color = 'var(--border-color-rgba)';
+                                    completeButton.style.color = 'var(--border-color-rgba)';
+                                } else {
+                                    completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
+                                    eventDiv.style.background = isMobileDevice() ? 'transparent' : ''; // Reset background color to default
+                                    eventTypeDiv.style.color = 'var(--color-text-rgba)';
+                                    eventPropertyDiv.style.color = 'var(--color-text-rgba)';
+                                    eventDescriptionDiv.style.color = 'var(--color-text-rgba)';
+                                    eventTimeDiv.style.color = 'var(--color-text-rgba)';
+                                    eventBuyerDiv.style.color = 'var(--color-text-rgba)';
+                                    eventOwnerDiv.style.color = 'var(--color-text-rgba)';
+                                    imgElement.style.filter = 'none';
+                                    editButton.style.color = 'var(--color-text-rgba)';
+                                    deleteButton.style.color = 'var(--color-text-rgba)';
+                                    completeButton.style.color = 'var(--color-text-rgba)';
+                                }
+
+                                // Perform any additional UI updates if needed
+                                })
+                                .catch(error => {
+                                console.error('Error toggling completion:', error);
+                                });
+                            } else {
+                                console.error('CSRF token is not available.');
+                            }
+                            };
+
+                        
 
 
-                    eventActionsDiv.appendChild(editButton);
-                    eventActionsDiv.appendChild(deleteButton);
-                    // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
-                    eventActionsDiv.appendChild(completeButton);
-                    if (event.fields.participant_property_images) { // Check if participant_property_images is not null or empty
-                        eventDiv.appendChild(eventImageDiv);
-                    }
-                    
-                    eventDiv.appendChild(eventContentDiv);
-                    eventDiv.appendChild(eventActionsDiv);
+                        eventActionsDiv.appendChild(editButton);
+                        eventActionsDiv.appendChild(deleteButton);
+                        // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
+                        eventActionsDiv.appendChild(completeButton);
+                        if (event.fields.participant_property_images) { // Check if participant_property_images is not null or empty
+                            eventDiv.appendChild(eventImageDiv);
+                        }
+                        
+                        eventDiv.appendChild(eventContentDiv);
+                        eventDiv.appendChild(eventActionsDiv);
 
-                    eventsDiv.appendChild(eventDiv);
-                });
-                
+                        eventsDiv.appendChild(eventDiv);
+                    });
+                }
                 // Log latitude and longitude of each event
                 
                 // Update the map with the filtered locations
@@ -969,6 +989,7 @@
 
                 // Filter events within the selected date
                 const selectedDate = new Date();
+                const formattedSelectedDate = selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 
                 const filteredEvents = JSON.parse('{{ events | safe  | escapejs }}').filter(function (event) {
                     const eventDate = new Date(event.fields.event_date);
@@ -1010,203 +1031,210 @@
                 eventsDiv.innerHTML = ''; // Clear previous events
                 const selectedDateElement = document.getElementById('selected-date');
                 selectedDateElement.textContent = selectedDate.toDateString();
-
+                if (!filteredEvents || filteredEvents.length === 0) {
+                    var noEventsMessage = 
+                                            '<div class="no-events"><h3>There is no task for </h3><h5>'+formattedSelectedDate+'.</h5>'
+                                            +'<button class="btn btn-outline-primary d-flex align-items-center justify-content-center" data-toggle="modal" data-target="#taskModal">'
+                                            +'<i class="fas fa-plus"></i><span class="d-none d-md-inline" style="padding-left:10px">Add a new task</span> </button></div>';
+                    eventsDiv.innerHTML = noEventsMessage;}
+                else{
                 // Display filtered events
-                filteredEvents.forEach(function(event) {
-                    const formattedTime = event.fields.event_hour && event.fields.event_minute && event.fields.event_ampm
-                        ? `${event.fields.event_hour}:${event.fields.event_minute} ${event.fields.event_ampm}`
-                        : '';
+                    filteredEvents.forEach(function(event) {
+                        const formattedTime = event.fields.event_hour && event.fields.event_minute && event.fields.event_ampm
+                            ? `${event.fields.event_hour}:${event.fields.event_minute} ${event.fields.event_ampm}`
+                            : '';
 
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('event');
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event');
 
-                    const eventImageContainer = document.createElement('div');
-                    eventImageContainer.classList.add('event-image');
-                    // Create an image element and set its src attribute
-                    const imgElement = document.createElement('img');
-                    imgElement.src = event.fields.participant_property_images;
-                    imgElement.alt = 'Image'; // Set alternative text for accessibility
-                    eventImageContainer.appendChild(imgElement);
-                    const eventImageDiv = document.createElement('div');
-                    eventImageDiv.classList.add('event-image-div');
-                    eventImageDiv.appendChild(eventImageContainer);
-                    
-                    
+                        const eventImageContainer = document.createElement('div');
+                        eventImageContainer.classList.add('event-image');
+                        // Create an image element and set its src attribute
+                        const imgElement = document.createElement('img');
+                        imgElement.src = event.fields.participant_property_images;
+                        imgElement.alt = 'Image'; // Set alternative text for accessibility
+                        eventImageContainer.appendChild(imgElement);
+                        const eventImageDiv = document.createElement('div');
+                        eventImageDiv.classList.add('event-image-div');
+                        eventImageDiv.appendChild(eventImageContainer);
+                        
+                        
 
-                    const eventContentDiv = document.createElement('div');
-                    eventContentDiv.classList.add('event-content');
+                        const eventContentDiv = document.createElement('div');
+                        eventContentDiv.classList.add('event-content');
 
-                    const eventTypeDiv = document.createElement('div');
-                    eventTypeDiv.classList.add('event-type');
-                    eventTypeDiv.textContent = event.fields.event_type_name;
+                        const eventTypeDiv = document.createElement('div');
+                        eventTypeDiv.classList.add('event-type');
+                        eventTypeDiv.textContent = event.fields.event_type_name;
 
-                    const eventTimeDiv = document.createElement('div');
-                    eventTimeDiv.classList.add('event-time');
-                    eventTimeDiv.textContent = formattedTime;
-                    
-                    const eventBuyerDiv = document.createElement('div');
-                    eventBuyerDiv.classList.add('event-buyer');
-                    eventBuyerDiv.textContent = event.fields.participant_buyer_name;
-                    
-                    const eventOwnerDiv = document.createElement('div');
-                    eventOwnerDiv.classList.add('event-owner');
-                    eventOwnerDiv.textContent = event.fields.participant_owner_name;
+                        const eventTimeDiv = document.createElement('div');
+                        eventTimeDiv.classList.add('event-time');
+                        eventTimeDiv.textContent = formattedTime;
+                        
+                        const eventBuyerDiv = document.createElement('div');
+                        eventBuyerDiv.classList.add('event-buyer');
+                        eventBuyerDiv.textContent = event.fields.participant_buyer_name;
+                        
+                        const eventOwnerDiv = document.createElement('div');
+                        eventOwnerDiv.classList.add('event-owner');
+                        eventOwnerDiv.textContent = event.fields.participant_owner_name;
 
-                    const eventDescriptionDiv = document.createElement('div');
-                    eventDescriptionDiv.classList.add('event-desc');
-                    const fullEventDescription = event.fields.event_description;
-                    const truncatedEventDescription = fullEventDescription.length > 200
-                    ? `${fullEventDescription.substring(0, 200)}...`
-                    : fullEventDescription;
+                        const eventDescriptionDiv = document.createElement('div');
+                        eventDescriptionDiv.classList.add('event-desc');
+                        const fullEventDescription = event.fields.event_description;
+                        const truncatedEventDescription = fullEventDescription.length > 200
+                        ? `${fullEventDescription.substring(0, 200)}...`
+                        : fullEventDescription;
 
-                    eventDescriptionDiv.textContent = truncatedEventDescription;
-                    const eventPropertyDiv = document.createElement('div');
-                    eventPropertyDiv.classList.add('event-property');
-                    eventPropertyDiv.textContent = event.fields.participant_property_address;
-                    
+                        eventDescriptionDiv.textContent = truncatedEventDescription;
+                        const eventPropertyDiv = document.createElement('div');
+                        eventPropertyDiv.classList.add('event-property');
+                        eventPropertyDiv.textContent = event.fields.participant_property_address;
+                        
 
-                    eventContentDiv.appendChild(eventTypeDiv);
-                    eventContentDiv.appendChild(eventPropertyDiv);
-                    eventContentDiv.appendChild(eventTimeDiv);
-                    eventContentDiv.appendChild(eventBuyerDiv);
-                    eventContentDiv.appendChild(eventOwnerDiv);
-                    eventContentDiv.appendChild(eventDescriptionDiv);
+                        eventContentDiv.appendChild(eventTypeDiv);
+                        eventContentDiv.appendChild(eventPropertyDiv);
+                        eventContentDiv.appendChild(eventTimeDiv);
+                        eventContentDiv.appendChild(eventBuyerDiv);
+                        eventContentDiv.appendChild(eventOwnerDiv);
+                        eventContentDiv.appendChild(eventDescriptionDiv);
 
-                    const eventActionsDiv = document.createElement('div');
-                    eventActionsDiv.classList.add('event-actions');
+                        const eventActionsDiv = document.createElement('div');
+                        eventActionsDiv.classList.add('event-actions');
 
-                    const editButton = document.createElement('button');
-                    editButton.classList.add('action-button');
-                    editButton.innerHTML = '<i class="material-icons">edit</i>'; // Material Icons delete icon
-                    editButton.onclick = function() {
-                        // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
-                        const eventId = event.pk;
+                        const editButton = document.createElement('button');
+                        editButton.classList.add('action-button');
+                        editButton.innerHTML = '<i class="material-icons">edit</i>'; // Material Icons delete icon
+                        editButton.onclick = function() {
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
 
-                        // Construct the edit event URL
-                        const editEventUrl = `/crm/events/edit/${eventId}/`;
+                            // Construct the edit event URL
+                            const editEventUrl = `/crm/events/edit/${eventId}/`;
 
-                        // Redirect to the edit event page
-                        window.location.href = editEventUrl;
-                    };
-                    
-                    const deleteButton = document.createElement('button');
-                    deleteButton.classList.add('action-button');
-                    deleteButton.innerHTML = '<i class="material-icons">delete</i>'; // Material Icons delete icon
-                    deleteButton.onclick = function () {
-                        // Get the event ID from your data source (e.g., data attribute, etc.)
-                        // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
-                        const eventId = event.pk;
-
-                        // Construct the edit event URL
-                        const deleteEventUrl = `/crm/events/delete/${eventId}/`;
-
-                        // Redirect to the edit event page
-                        window.location.href = deleteEventUrl;
-                    };
-                    const csrfTokenInput = document.getElementById('csrf-form').querySelector('[name=csrfmiddlewaretoken]');
-                    const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-                    
-                    const completeButton = document.createElement('button');
-                    completeButton.classList.add('action-button');
-                    completeButton.innerHTML = event.fields.is_completed
-                        ? '<i class="material-icons" title="Clear complete check">clear</i>'
-                        : '<i class="material-icons" title="Task completed">check</i>';
-                    // Set initial background color based on is_completed
-                    function isMobileDevice() {
-                        return window.innerWidth <= 767;
-                    }
-
-                    // Your existing code to change styles based on the condition
-                    eventDiv.style.background = event.fields.is_completed ? '':''; 
-                    eventDiv.style.backgroundSize = '100% 33%';
-                    eventTypeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventDescriptionDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventTimeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventBuyerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventOwnerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    eventPropertyDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    editButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    deleteButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    completeButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
-                    imgElement.style.filter = event.fields.is_completed ? 'grayscale(100%)':'none';
-                    
-                    completeButton.onclick = function () {
-                        const eventId = event.pk;
-
-                        // Check if the CSRF token is available
-                        if (csrfToken) {
-                            // Toggle is_complete using AJAX
-                            fetch(`/crm/events/toggle_complete/${eventId}/`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrfToken,
-                            },
-                            })
-                            .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                            })
-                            .then(data => {
-                            // Update the UI based on the completion status
-                            if (data.is_complete) {
-                                completeButton.innerHTML = '<i class="material-icons">clear</i>'; // Change icon
-                                eventDiv.style.background = '';
-                                eventDiv.style.backgroundSize = '100% 33%';
-                                eventTypeDiv.style.color = 'var(--border-color-rgba)';
-                                eventDescriptionDiv.style.color = 'var(--border-color-rgba)';
-                                eventTimeDiv.style.color = 'var(--border-color-rgba)';
-                                eventBuyerDiv.style.color = 'var(--border-color-rgba)';
-                                eventOwnerDiv.style.color = 'var(--border-color-rgba)';
-                                eventPropertyDiv.style.color = 'var(--border-color-rgba)';
-                                imgElement.style.filter = 'grayscale(100%)';
-                                editButton.style.color = 'var(--border-color-rgba)';
-                                deleteButton.style.color = 'var(--border-color-rgba)';
-                                completeButton.style.color = 'var(--border-color-rgba)';
-                                
-                            } else {
-                                completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
-                                eventDiv.style.background = isMobileDevice() ? 'transparent' : ''; // Reset background color to default
-                                eventTypeDiv.style.color = 'var(--color-text-rgba)';
-                                eventPropertyDiv.style.color = 'var(--color-text-rgba)';
-                                eventDescriptionDiv.style.color = 'var(--color-text-rgba)';
-                                eventTimeDiv.style.color = 'var(--color-text-rgba)';
-                                eventBuyerDiv.style.color = 'var(--color-text-rgba)';
-                                eventOwnerDiv.style.color = 'var(--color-text-rgba)';
-                                imgElement.style.filter = 'none';
-                                editButton.style.color = 'var(--color-text-rgba)';
-                                deleteButton.style.color = 'var(--color-text-rgba)';
-                                completeButton.style.color = 'var(--color-text-rgba)';
-                            }
-
-                            // Perform any additional UI updates if needed
-                            })
-                            .catch(error => {
-                            console.error('Error toggling completion:', error);
-                            });
-                        } else {
-                            console.error('CSRF token is not available.');
-                        }
+                            // Redirect to the edit event page
+                            window.location.href = editEventUrl;
                         };
+                        
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add('action-button');
+                        deleteButton.innerHTML = '<i class="material-icons">delete</i>'; // Material Icons delete icon
+                        deleteButton.onclick = function () {
+                            // Get the event ID from your data source (e.g., data attribute, etc.)
+                            // Get the event ID from your data source (e.g., data attribute, AJAX call, etc.)
+                            const eventId = event.pk;
 
-                    
+                            // Construct the edit event URL
+                            const deleteEventUrl = `/crm/events/delete/${eventId}/`;
+
+                            // Redirect to the edit event page
+                            window.location.href = deleteEventUrl;
+                        };
+                        const csrfTokenInput = document.getElementById('csrf-form').querySelector('[name=csrfmiddlewaretoken]');
+                        const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+                        
+                        const completeButton = document.createElement('button');
+                        completeButton.classList.add('action-button');
+                        completeButton.innerHTML = event.fields.is_completed
+                            ? '<i class="material-icons" title="Clear complete check">clear</i>'
+                            : '<i class="material-icons" title="Task completed">check</i>';
+                        // Set initial background color based on is_completed
+                        function isMobileDevice() {
+                            return window.innerWidth <= 767;
+                        }
+
+                        // Your existing code to change styles based on the condition
+                        eventDiv.style.background = event.fields.is_completed ? '':''; 
+                        eventDiv.style.backgroundSize = '100% 33%';
+                        eventTypeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventDescriptionDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventTimeDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventBuyerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventOwnerDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        eventPropertyDiv.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        editButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        deleteButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        completeButton.style.color = event.fields.is_completed ? 'var(--border-color-rgba)' : '';
+                        imgElement.style.filter = event.fields.is_completed ? 'grayscale(100%)':'none';
+                        
+                        completeButton.onclick = function () {
+                            const eventId = event.pk;
+
+                            // Check if the CSRF token is available
+                            if (csrfToken) {
+                                // Toggle is_complete using AJAX
+                                fetch(`/crm/events/toggle_complete/${eventId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': csrfToken,
+                                },
+                                })
+                                .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                                })
+                                .then(data => {
+                                // Update the UI based on the completion status
+                                if (data.is_complete) {
+                                    completeButton.innerHTML = '<i class="material-icons">clear</i>'; // Change icon
+                                    eventDiv.style.background = '';
+                                    eventDiv.style.backgroundSize = '100% 33%';
+                                    eventTypeDiv.style.color = 'var(--border-color-rgba)';
+                                    eventDescriptionDiv.style.color = 'var(--border-color-rgba)';
+                                    eventTimeDiv.style.color = 'var(--border-color-rgba)';
+                                    eventBuyerDiv.style.color = 'var(--border-color-rgba)';
+                                    eventOwnerDiv.style.color = 'var(--border-color-rgba)';
+                                    eventPropertyDiv.style.color = 'var(--border-color-rgba)';
+                                    imgElement.style.filter = 'grayscale(100%)';
+                                    editButton.style.color = 'var(--border-color-rgba)';
+                                    deleteButton.style.color = 'var(--border-color-rgba)';
+                                    completeButton.style.color = 'var(--border-color-rgba)';
+                                    
+                                } else {
+                                    completeButton.innerHTML = '<i class="material-icons">check</i>'; // Change icon
+                                    eventDiv.style.background = isMobileDevice() ? 'transparent' : ''; // Reset background color to default
+                                    eventTypeDiv.style.color = 'var(--color-text-rgba)';
+                                    eventPropertyDiv.style.color = 'var(--color-text-rgba)';
+                                    eventDescriptionDiv.style.color = 'var(--color-text-rgba)';
+                                    eventTimeDiv.style.color = 'var(--color-text-rgba)';
+                                    eventBuyerDiv.style.color = 'var(--color-text-rgba)';
+                                    eventOwnerDiv.style.color = 'var(--color-text-rgba)';
+                                    imgElement.style.filter = 'none';
+                                    editButton.style.color = 'var(--color-text-rgba)';
+                                    deleteButton.style.color = 'var(--color-text-rgba)';
+                                    completeButton.style.color = 'var(--color-text-rgba)';
+                                }
+
+                                // Perform any additional UI updates if needed
+                                })
+                                .catch(error => {
+                                console.error('Error toggling completion:', error);
+                                });
+                            } else {
+                                console.error('CSRF token is not available.');
+                            }
+                            };
+
+                        
 
 
-                    eventActionsDiv.appendChild(editButton);
-                    eventActionsDiv.appendChild(deleteButton);
-                    // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
-                    eventActionsDiv.appendChild(completeButton);
-                    if (event.fields.participant_property_images) { // Check if participant_property_images is not null or empty
-                        eventDiv.appendChild(eventImageDiv);
-                    }
-                    
-                    eventDiv.appendChild(eventContentDiv);
-                    eventDiv.appendChild(eventActionsDiv);
+                        eventActionsDiv.appendChild(editButton);
+                        eventActionsDiv.appendChild(deleteButton);
+                        // eventActionsDiv.appendChild(event.fields.is_completed ? incompleteButton : completeButton);
+                        eventActionsDiv.appendChild(completeButton);
+                        if (event.fields.participant_property_images) { // Check if participant_property_images is not null or empty
+                            eventDiv.appendChild(eventImageDiv);
+                        }
+                        
+                        eventDiv.appendChild(eventContentDiv);
+                        eventDiv.appendChild(eventActionsDiv);
 
-                    eventsDiv.appendChild(eventDiv);
-                });
+                        eventsDiv.appendChild(eventDiv);
+                    });
+                }
             }
         });
         calendar.select(new Date());

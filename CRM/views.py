@@ -1,7 +1,7 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, PropertyForm1, ClientForm1, ClientPhoneNumbers, ClientRelationships, PropertyImageForm, EventTypeForm, ClientInterestForm, suggestion_link_setup, ClientStatusForm
-from Realtor.models import Property
+from .forms import EventForm, ClientForm, PropertyForm, RentalPropertyForm, ClientSuggestionForm, PropertyForm1, ClientForm1, ClientPhoneNumbers, ClientRelationships, PropertyImageForm, EventTypeForm, ClientInterestForm, suggestion_link_setup, ClientStatusForm, PropertyStatusForm, PropertyTypeForm, PropertyDealTypeForm
+from Realtor.models import Property, property_status, property_type, deal_type
 from django.contrib import messages
 from .models import Files, Event, Clent, Client_suggestion, ClientInterest, event_type_model, suggestion_link_settings,  client_status_types, Notification
 from Realtor.models import PropertyImage
@@ -44,6 +44,14 @@ def create_client(request):
 
     return render(request, 'create_client.html', {'form': form})
 
+@login_required
+def delete_client(request, client_id):
+    client = get_object_or_404(Clent, id=client_id)
+    if request.method == 'POST':
+        client.delete()
+        return redirect('client_list')
+    
+    return render(request, 'delete_client.html', {'client': client})
 
 @login_required
 def add_property(request):
@@ -105,8 +113,13 @@ def edit_property(request, property_id):
             property_events_url = reverse('property_events', args=[property_id])
             # Redirect to the referrer URL or a default URL
             return redirect(property_events_url)
+        else:
+            print(form.errors)
     else:
         form = PropertyForm(instance=property)
+        form.fields['status'].queryset = property_status.objects.filter(user=request.user)
+        form.fields['property_type'].queryset = property_type.objects.filter(user=request.user)
+        form.fields['deal_type'].queryset = deal_type.objects.filter(user=request.user)
 
     # Pass the referrer URL to the template
     return render(request, 'edit_property.html', {'form': form, 'property': property, 'referrer': referrer,'locations': locations, 'photos':photos})
@@ -512,13 +525,19 @@ def properties_list(request):
             COUNT(DISTINCT ps.id) AS interested_count,
             COUNT(DISTINCT CASE WHEN e.is_completed = True THEN e.id END) AS events_completed,
             COUNT(DISTINCT CASE WHEN e.is_completed = False THEN e.id END) AS events_incompleted,
-            COUNT(DISTINCT ps_suggested.id) AS suggested_count
+            COUNT(DISTINCT ps_suggested.id) AS suggested_count,
+            property.listing_date,
+            property_type.type as property_type,
+            property.views_count
+
         FROM Realtor_property AS property
         LEFT JOIN crm_Client_suggestion AS ps ON ps.property_id = property.id AND ps.is_interested = 'interested'
         LEFT JOIN crm_Event AS e ON e.participant_property_id = property.id
         LEFT JOIN crm_Client_suggestion AS ps_suggested ON ps_suggested.property_id = property.id AND ps_suggested.is_suggested = 'suggested'
+        LEFT JOIN Realtor_property_type AS property_type ON property.property_type_id = property_type.id
         WHERE property.user_id = %s
-        GROUP BY property.id, property.address
+        GROUP BY property.id, property.address, property.images,property.total_price,property.listing_date,property_type.type,property.views_count
+        ORDER BY property.listing_date DESC
     """
     with connection.cursor() as cursor:
         cursor.execute(sql_query, [request.user.id])
@@ -535,11 +554,14 @@ def properties_list(request):
             'interested_count': property_data[4],
             'events_completed': property_data[5],
             'events_incompleted': property_data[6],
-            'suggested_count': property_data[7]
+            'suggested_count': property_data[7],
+            'listing_date': property_data[8],
+            'property_type': property_data[9],
+            'views_count': property_data[10],
         }
         properties.append(serialized_property)
     
-    locations = list(Property.objects.values('latitude', 'longitude', 'address', 'deal_type', 'property_type', 'total_rooms', 'id').filter(user=request.user.id))
+    locations = list(Property.objects.values('latitude', 'longitude', 'address', 'deal_type', 'property_type', 'total_rooms', 'id','total_price','price_month').filter(user=request.user.id))
     if request.method == 'POST':
         form = PropertyForm1(request.POST)
         if form.is_valid():
@@ -826,6 +848,9 @@ def mail_send(request):
     else:
         return render(request, 'contact.html')
     
+
+
+# --------------------------- EVENT TYPE ---------------------------
 def add_event_type(request):
     if request.method == 'POST':
         form = EventTypeForm(request.POST)
@@ -833,7 +858,7 @@ def add_event_type(request):
             event = form.save(commit=False)
             event.user = request.user
             event.save()
-            return redirect('events_list')
+            return redirect('event_types_list')
         else:
             print(form.errors)
     else:
@@ -865,6 +890,9 @@ def delete_event_type(request, event_type_id):
         return redirect('event_types_list')
 
     return render(request, 'delete_event_type.html', {'event_type': event_types})
+
+
+# --------------------------- CLIENT STATUS ---------------------------
 
 def add_client_status(request):
     if request.method == 'POST':
@@ -906,6 +934,133 @@ def delete_client_status(request, client_status_id):
 
     return render(request, 'delete_client_status.html', {'event_type': client_status})
 
+# --------------------------- PROPERTY STATUS ---------------------------
+
+def add_property_status(request):
+    if request.method == 'POST':
+        form = PropertyStatusForm(request.POST)
+        if form.is_valid():
+            stats = form.save(commit=False)
+            stats.user = request.user
+            stats.save()
+            return redirect('property_status_list')
+        else:
+            print(form.errors)
+    else:
+        form = PropertyStatusForm()
+    return render(request, 'add_property_status.html', {'form': form})
+
+def property_status_list(request):
+    property_statuses = property_status.objects.filter(user=request.user)
+    return render(request, 'property_status_list.html', {'property_statuses': property_statuses})
+
+def edit_property_status(request, property_status_id):
+    property_statuses = get_object_or_404(property_status, id=property_status_id, user=request.user)
+
+    if request.method == 'POST':
+        form = PropertyStatusForm(request.POST, instance=property_statuses)
+        if form.is_valid():
+            form.save()
+            return redirect('property_status_list')
+    else:
+        form = PropertyStatusForm(instance=property_statuses)
+
+    return render(request, 'edit_property_status.html', {'property_status': property_statuses, 'form': form})
+
+def delete_property_status(request, property_status_id):
+    property_statuses = get_object_or_404(property_status, id=property_status_id, user=request.user)
+
+    if request.method == 'POST':
+        property_statuses.delete()
+        return redirect('property_status_list')
+
+    return render(request, 'delete_property_status.html', {'event_type': property_statuses})
+
+
+# --------------------------- PROPETTY TYPE ---------------------------
+
+def add_property_type(request):
+    if request.method == 'POST':
+        form = PropertyTypeForm(request.POST)
+        if form.is_valid():
+            forms = form.save(commit=False)
+            forms.user = request.user
+            forms.save()
+            return redirect('property_type_list')
+        else:
+            print(form.errors)
+    else:
+        form = PropertyTypeForm()
+    return render(request, 'add_property_type.html', {'form': form})
+
+def property_type_list(request):
+    property_types = property_type.objects.filter(user=request.user)
+    return render(request, 'property_type_list.html', {'property_types': property_types})
+
+def edit_property_type(request, property_type_id):
+    property_types = get_object_or_404(property_type, id=property_type_id, user=request.user)
+
+    if request.method == 'POST':
+        form = PropertyTypeForm(request.POST, instance=property_types)
+        if form.is_valid():
+            form.save()
+            return redirect('property_type_list')
+    else:
+        form = PropertyTypeForm(instance=property_types)
+
+    return render(request, 'edit_property_type.html', {'property_types': property_types, 'form': form})
+
+def delete_property_type(request, property_type_id):
+    property_types = get_object_or_404(property_type, id=property_type_id, user=request.user)
+
+    if request.method == 'POST':
+        property_types.delete()
+        return redirect('property_type_list')
+
+    return render(request, 'delete_property_type.html', {'property_type': property_types})
+
+
+# --------------------------- PROPERTY DEAL TYPE ---------------------------
+
+def add_property_deal_type(request):
+    if request.method == 'POST':
+        form = PropertyDealTypeForm(request.POST)
+        if form.is_valid():
+            stats = form.save(commit=False)
+            stats.user = request.user
+            stats.save()
+            return redirect('property_deal_type_list')
+        else:
+            print(form.errors)
+    else:
+        form = PropertyDealTypeForm()
+    return render(request, 'add_property_deal_type.html', {'form': form})
+
+def property_deal_type_list(request):
+    property_deal_types = deal_type.objects.filter(user=request.user)
+    return render(request, 'property_deal_type_list.html', {'property_deal_types': property_deal_types})
+
+def edit_property_deal_type(request, property_deal_type_id):
+    deal_types = get_object_or_404(deal_type, id=property_deal_type_id, user=request.user)
+
+    if request.method == 'POST':
+        form = PropertyDealTypeForm(request.POST, instance=deal_types)
+        if form.is_valid():
+            form.save()
+            return redirect('property_deal_type_list')
+    else:
+        form = PropertyDealTypeForm(instance=deal_types)
+
+    return render(request, 'edit_property_deal_type.html', {'property_deal_types': deal_types, 'form': form})
+
+def delete_property_deal_type(request, property_deal_type_id):
+    deal_types = get_object_or_404(deal_type, id=property_deal_type_id, user=request.user)
+
+    if request.method == 'POST':
+        deal_types.delete()
+        return redirect('property_deal_type_list')
+
+    return render(request, 'delete_property_deal_type.html', {'deal_type': deal_types})
 
 def suggestions_link_settings(request):
     

@@ -32,18 +32,20 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
         :root{
-            --color-background-rgba: rgba(255, 255, 255, 1) !important;      /* White background */
-            --color-text-rgba: rgba(26, 26, 26, 1) !important;               /* Dark text */
-            --border-color-rgba: rgba(204, 204, 204, 1)  !important;   
-            --header-color-rgba: rgba(250, 250, 250, 1)       /* Light border color */
-            
+            --color-background-rgba: rgba(255, 255, 255, 1) ;      /* White background */
+            --color-text-rgba: rgba(26, 26, 26, 1) ;               /* Dark text */
+            --border-color-rgba: rgba(204, 204, 204, 1)  ;   
+            --header-color-rgba: rgba(250, 250, 250, 1);       /* Light border color */
+            --color-stripe-rgba: rgba(240, 240, 240, 1);
         }
         .dark-mode-variables{
-            --color-background-rgba: rgba(26, 26, 26, 1) !important;
-            --color-text-rgba: rgba(255, 255, 255, 1) !important;
-            --border-color-rgba: rgba(43, 43, 43, 1) !important; 
+            --color-background-rgba: rgba(26, 26, 26, 1) ;
+            --color-text-rgba: rgba(255, 255, 255, 1) ;
+            --border-color-rgba: rgba(43, 43, 43, 1) ; 
             --header-color-rgba: rgba(50, 50, 50, 1)    ;
+            --color-stripe-rgba: rgba(40, 40, 40, 1);
         }
        
         body {
@@ -86,6 +88,24 @@
             word-break: break-word; /* 6 */
         }
         
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 2rem;
+            background-color: var(--color-text-rgba);
+            width: 7vw;
+            height: 4vh;
+            margin: 10px;
+            margin-left: 1vw;
+            margin-right: 1vw;
+            border-radius: 20px;
+        }
+
+        .logo span {
+            color: var(--color-background-rgba) !important;
+        }
         /* Loading spinner styles */
         #loading-indicator {
             display: none;
@@ -133,6 +153,12 @@
         .navbar-nav {
             width: 100%;
             text-align: center; /* Center-align the text */
+        }
+        .nav-link.active i{
+            color: var(--color-background-rgba) !important;
+        }
+        table .btn-group button.active i{
+            color: var(--color-background-rgba) !important;
         }
 
         .navbar-nav .nav-link {
@@ -371,6 +397,9 @@
             .contents{
                 width: 100vw !important;
             }
+            .progress span{
+                color: #1a1a1a !important;
+            }
         }
 
         @media (max-width: 1200px) {
@@ -423,7 +452,7 @@
         select
         {
             color: var(--color-text-rgba) ;
-            background-color: var(--color-background-rgba);
+            background-color: transparent;
         }
         select{
             color: var(--color-text-rgba) !important;
@@ -452,20 +481,19 @@
         
         .btn-outline-primary{
             color: var(--color-background-rgba);
-            border: 2px solid var(--color-text-rgba);
+            border: none;
             background-color: var(--color-text-rgba);
         }
-        .btn-outline-primary span{
+        .btn-outline-primary span {
             color: var(--color-background-rgba) !important;
         }
-        button i {
-            color: var(--color-background-rgba);
+        .btn-outline-primary i {
+            color: var(--color-background-rgba) !important;
         }
 
         .btn-outline-primary:hover{
             background-color: var(--color-text-rgba);
             color: var(--border-color-rgba) ;
-            border: 2px solid var(--color-text-rgba);
         }
         .btn-outline-primary:hover  span{
             background-color: var(--color-text-rgba);
@@ -475,16 +503,7 @@
             background-color: var(--color-text-rgba);
             color: var(--border-color-rgba) !important;
         }
-        /* .btn-outline-secondary{
-            color: var(--color-text-rgba);
-            border: 1px solid var(--border-color-rgba);
-        }
-
-        .btn-outline-secondary:hover{
-            background-color: var(--color-text-rgba);
-            color: var(--color-background-rgba);
-            border: 1px solid var(--border-color-rgba);
-        } */
+        
         .not-selected {
             color: var(--border-color-rgba); /* Grey text color */
             border-color: var(--border-color-rgba); /* Grey border color */
@@ -493,20 +512,20 @@
             color: var(--border-color-rgba); /* Grey text color */
         }
         .not-selected:hover{
-            color: var(--border-color-rgba); /* Grey text color */
-            border-color: var(--border-color-rgba); /* Grey border color */
-            background-color: var(--border-color-rgba);
+            color: var(--color-background-rgba) !important; /* Grey text color */
+            border-color: var(--color-text-rgba) !important; /* Grey border color */
+            background-color: var(--color-text-rgba) !important;
         }
         .not-selected:hover i{
-            color: var(--color-background-rgba); /* Grey text color */
+            color: var(--color-background-rgba) !important; /* Grey text color */
         }
         .btn-outline-secondary.active i{
             color: var(--color-background-rgba);
-            background-color: var(--border-color-rgba);
+            background-color: var(--color-text-rgba);
         }
         .btn-outline-secondary.active {
-            background-color: var(--border-color-rgba);
-            border-color: var(--border-color-rgba);
+            background-color: var(--color-text-rgba);
+            border-color: var(--color-text-rgba);
         }
 
         table thead tr{
@@ -518,7 +537,7 @@
             color: var(--color-text-rgba);
             border: 1px solid var(--border-color-rgba);
         }
-        .btn-outline-danger span{
+        .btn-outline-danger span, .btn-outline-danger i{
             color: var(--color-text-rgba) !important;
         }
 
@@ -527,19 +546,24 @@
             background-color: var(--color-text-rgba);
             border-color: var(--border-color-rgba);
         }
-        .btn-outline-danger:hover span{
+        .btn-outline-danger:hover .btn-outline-danger span{
             color: var(--color-background-rgba) !important;
         }
-        
-        
+        .btn-outline-danger:hover .btn-outline-danger i{
+            color: var(--color-background-rgba) !important;
+        }
         
         
         .notification-results-container ul,
         .option,
         .search-results-container ul{
             color: var(--color-text-rgba);
-            z-index: 1111111111;
+            z-index: 11111111 !important;
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
+      
         .container-header button span{
             transition-duration: 0.15s;
             padding-left: 5px;
@@ -665,7 +689,18 @@
             color: var(--color-text-rgba) !important;
             background-color: var(--color-background-rgba);
         }
-
+        .progress-bar{
+            background-color: #28a745;
+        }
+        #clientsTable_paginate span a{
+            color: var(--color-text-rgba) !important;
+        }
+        .dark-mode-variables #clientsTable_paginate span a.current{
+            color: var(--color-background-rgba) !important;
+        }
+        #clientsTable_paginate .paginate_button {
+            color: var(--color-text-rgba) !important;
+        }
     </style>
 </head>
 <div id="loading-indicator">
@@ -675,8 +710,8 @@
 <body class="{% if isDarkMode %}dark-mode-variables{% endif %}">
     <header>
             <div class="row" id="dynamicHeightRow" style="height: 6vh;">
-                <div style="margin-left: 1vw; margin-top: 1vh; width: 8vw; height: 4vh;" class="logo">
-                    <img src="/static/image/logo.png" alt="Estates.solutions" style="width: auto; height: 4vh;">
+                <div  class="logo">
+                    <span>ES</span>
                 </div>
                 
                 <div class="search-container">
@@ -691,10 +726,14 @@
                 <div class="menu"> 
                     <span class="material-icons">menu</span>    
                 </div>
+                <div class="user-link">
+                    <a href="{% url 'total_list_view' user=request.user.username %}">My link</a>
+                </div>
                 
                 <button class="toggle-button" onclick="toggleDarkMode()">
-                    <i id="modeIcon" class="fas fa-moon"></i> <!-- Font Awesome sun icon -->
+                    <i id="modeIcon" class="material-icons">brightness_4</i> <!-- Google Material Icon sun icon -->
                 </button>
+
                 <style>
                     .toggle-button {
                         background: none;
@@ -705,47 +744,58 @@
                         width: 50px;
                         right: 60px;
                         position: fixed;
-                        top: 10px;
+                        top: 12px;
                     }
-                    .fa-sun:hover{
-                        color: yellow;
+
+                    .toggle-button .material-icons {
+                        color: var(--color-text-rgba);
                     }
-                    .fa-moon{
-                        color: #1a1a1a;
-                    }
-                    .fa-moon:hover{
+
+                    .toggle-button .material-icons:hover {
                         color: #656565;
-                        
+                    }
+
+                    .toggle-button .dark-mode-variables .material-icons {
+                        color: #656565; /* Dark mode color for Material Icons */
+                    }
+                    .user-link{
+                        position: fixed;
+                        top: 20px;
+                        right: 20vw;
+                        width: 100px;
+                        z-index: 1000;
                     }
                 </style>
+
                 <script>
                     // JavaScript to toggle dark mode and remember user preference
                     function toggleDarkMode() {
                         const rootElement = document.documentElement;
                         const isDarkMode = rootElement.classList.toggle('dark-mode-variables');
-                
+
                         // Update the icon based on the dark mode state
                         const modeIcon = document.getElementById('modeIcon');
-                        modeIcon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
-                
+                        modeIcon.textContent = isDarkMode ? 'brightness_7' : 'brightness_4';
+
                         // Store user preference in localStorage as a string
                         localStorage.setItem('darkMode', isDarkMode.toString());
                     }
-                
+
                     // Check if the user had a dark mode preference and apply it on page load
                     document.addEventListener('DOMContentLoaded', () => {
                         const storedMode = localStorage.getItem('darkMode');
                         const isDarkMode = storedMode === 'true';
-                
+
                         // Apply dark mode and update the icon
                         const rootElement = document.documentElement;
                         const modeIcon = document.getElementById('modeIcon');
-                
+
                         if (isDarkMode) {
                             rootElement.classList.add('dark-mode-variables');
-                            modeIcon.className = 'fas fa-sun';
+                            modeIcon.textContent = 'brightness_7';
                         }
                     });
+                    
                 </script>
                 <div class="notification-container">
                     <span class="material-icons" id="bell-icon">notifications_none</span>
@@ -757,7 +807,7 @@
                     .search-container {
                         margin-top: 10px;
                         width: 30vw;
-                        position: fixed;
+                        position: absolute;
                         top: 0;
                         left: 9vw;
                     }
@@ -786,19 +836,16 @@
                         margin-top: 5px;
                         position: absolute;
                         width: 30vw;
-                        z-index: 1111111111;
-                        background-color: var(--border-color-rgba);
+                        z-index: 11111111 !important;
+                        background-color: var(--color-background-rgba);
                         color: #f5f6fa;
                         border-radius: 8px;
+                        background-color: var(--color-background-rgba);
                         max-height: 300px;
                         overflow: auto;
                     }
                 
-                    #search-results-container ul {
-                        list-style: none;
-                        padding: 0;
-                        margin: 0;
-                    }
+                    
                 
                     #search-results-container li {
                         position: relative;
@@ -814,7 +861,7 @@
                         content: '\00a0'; 
                         font-family: 'Material Icons';
                         font-weight: 900;
-                        color: var(--color-text-rgba)CCC;
+                        color: var(--color-text-rgba);
                     }
                     /* Targeting the scrollbar track */
                     #search-results-container::-webkit-scrollbar {
@@ -824,18 +871,18 @@
 
                     /* Targeting the scrollbar handle or thumb */
                     #search-results-container::-webkit-scrollbar-thumb {
-                        background-color: var(--color-text-rgba)CCC; /* Color of the scrollbar thumb */
+                        background-color: var(--color-text-rgba); /* Color of the scrollbar thumb */
                         border-radius: 20px; /* Radius of the scrollbar thumb corners */
                     }
 
                     /* Optional: Hover effect on the scrollbar handle */
                     #search-results-container::-webkit-scrollbar-thumb:hover {
-                        background-color: var(--color-text-rgba)CCC; /* Color when hovering over the scrollbar thumb */
+                        background-color: var(--color-text-rgba); /* Color when hovering over the scrollbar thumb */
                     }
 
                     /* Targeting the scrollbar track when handle is being dragged */
                     #search-results-container::-webkit-scrollbar-thumb:active {
-                        background-color: var(--color-text-rgba)CCC; /* Color when scrollbar thumb is being dragged */
+                        background-color: var(--color-text-rgba); /* Color when scrollbar thumb is being dragged */
                     }
                     .clear-button {
                         position: absolute;
@@ -1001,18 +1048,19 @@
         const resultsContainer = document.getElementById('search-results-container');
       
         searchInput.addEventListener('input', function () {
-          const query = this.value.trim();
-      
-          if (query.length > 0) {
-            fetch(`/crm/ajax-search/?query=${query}`)
-              .then(response => response.json())
-              .then(data => {
-                displayResults(data.results);
-              })
-              .catch(error => console.error('Error fetching search results:', error));
-          } else {
-            clearResults();
-          }
+            const query = this.value.trim();
+
+            if (query.length > 0) {
+                fetch(`/crm/ajax-search/?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayResults(data.results);
+                        resultsContainer.style.border = '1px solid var(--border-color-rgba)';
+                    })
+                    .catch(error => console.error('Error fetching search results:', error));
+            } else {
+                clearResults();
+            }
         });
       
         function displayResults(results) {
@@ -1056,6 +1104,7 @@
         function clearResults() {
           while (resultsContainer.firstChild) {
             resultsContainer.removeChild(resultsContainer.firstChild);
+            resultsContainer.style.border = 'none';
           }
         }
       
@@ -1254,8 +1303,6 @@
         function setRowHeight() {
             dynamicHeightRow.style.height = containerHeader.offsetHeight + 'vh';
         }
-        console.log(dynamicHeightRow.style.height)
-        console.log(containerHeader.offsetHeight + 'px')
 
         // Call the function initially to set the initial height
         setRowHeight();

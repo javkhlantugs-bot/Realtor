@@ -24,9 +24,7 @@
 
 <script>
     function goBack() {
-        // Navigate to the 'events_list' URL
-        var eventsListUrl = "{% url 'events_list' %}";
-        window.location.href = eventsListUrl;
-    }
+    window.history.back();
+}
 </script>
 {% endblock %}

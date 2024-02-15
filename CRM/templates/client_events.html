@@ -4,12 +4,7 @@
 {% block title %}Infos for {{ client.client_name }} {% endblock %}
 
 {% block content %}
-<style>
-    .not-selected {
-        color: #6c757d; /* Grey text color */
-        border-color: #6c757d; /* Grey border color */
-    }
-</style>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -42,6 +37,11 @@
         <h2>Status: {{ client.status}}</h2>
     </div>
     <div class="col-md-4 d-flex justify-content-end">
+        <button class="btn btn-outline-danger mr-2"
+                style="margin: 5px;"
+                onclick="deleteClient({{ client.id }})">
+                <span class="button-text">Delete</span> <i class="fas fa-trash"></i>
+        </button>
         <button style="margin: 5px;" class="btn btn-outline-primary mr-2" onclick="generateLink('{{ user }}','{{ client.link }}' )">
             <span class="button-text">Link</span> <i class="fas fa-link"></i> 
         </button>
@@ -55,6 +55,11 @@
             <span class="button-text">Edit</span> <i class="fas fa-edit"></i>
         </button>
     </div>
+    <script>
+        function deleteClient(clientId) {
+            window.location.href = '/crm/clients/delete/' + clientId + '/' ;
+        }
+    </script>
 </div>
     
 <div class="container-content">
@@ -73,20 +78,43 @@
             <p>Wedding Anniversary: {{ client.wedding_anniversary }}</p>
             <p>Home Anniversary: {{ client.home_anniversary }}</p>
         </div>
+        <style>
+            .social-link {
+                text-decoration: none;
+            }
+        
+            /* Define the color for social links with URLs */
+            .social-link.with-url {
+                color: #000; /* Black color for links with URLs */
+            }
+        
+            /* Define the color for social links without URLs */
+            .social-link.no-url {
+                color: grey !important;
+                pointer-events: none !important;
+            }
+        </style>
+        
         <div class="col-md-4" style="text-align: center;">
-            <h5  >Social accounts</h5>
+            <h5>Social accounts</h5>
             <div style="padding-top: 10px;"></div>
-            <a href="{{ client.facebook_url }}" target="_blank" style="{% if client.facebook_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none;">
+            <!-- Facebook link -->
+            <a href="{{ client.facebook_url }}" target="_blank" class="social-link{% if client.facebook_url %} with-url{% else %} no-url{% endif %}">
                 <i class="fab fa-facebook" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
             </a>
-            <a href="{{ client.instagram_url }}" target="_blank" style="{% if client.instagram_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none; {% if client.instagram_url %}color: #f93953;{% endif %}">
+            
+            <!-- Instagram link -->
+            <a href="{{ client.instagram_url }}" target="_blank" class="social-link{% if client.instagram_url %} with-url{% else %} no-url{% endif %}">
                 <i class="fab fa-instagram" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
             </a>
-            <a href="{{ client.twitter_url }}" target="_blank" style="{% if client.twitter_url is None %} color: grey; pointer-events: none;{% endif %} text-decoration: none; {% if client.twitter_url %}color: #1a1a1a;{% endif %}">
+            
+            <!-- Twitter link -->
+            <a href="{{ client.twitter_url }}" target="_blank" class="social-link{% if client.twitter_url %} with-url{% else %} no-url{% endif %}">
                 <i class="fab fa-twitter" style="font-size: 3rem; text-decoration: none; margin-right: 10px;"></i>
             </a>
-            
         </div>
+        
+        
     </div>
     <hr>
     <div style="border-radius: 10px; padding: 10px;">

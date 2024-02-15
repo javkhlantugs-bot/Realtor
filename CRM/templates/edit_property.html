@@ -14,8 +14,11 @@
     }
 </style>
 <div class="row container-header">
-    <div class="col-md-6">
+    <div class="col-md-10">
         <h2>Edit: {{ property.address }}</h2>
+    </div>
+    <div class="col-md-2 d-flex justify-content-end">
+        <a href="#" class="btn btn-outline-secondary mt-md-0 mt-3" onclick="goBack()" style=""><i class="material-icons">arrow_back</i></a>
     </div>
 </div>
 <div class="col-md-12 container-content">
@@ -62,6 +65,35 @@
                     {{ form.status|add_class:"form-control" }}
                 </div>
             </div>
+            <script>
+                // Assuming you have included jQuery
+                $(document).ready(function() {
+                    // Retrieve property statuses from Django template variable
+                    
+                    // Populate select element with property statuses
+                    var statusSelect = $('#id_status');
+            
+                    // Create the "Add Property Status" option
+                    var addPropertyStatusOption = $('<option>', {
+                        value: 'add_property_status',
+                        text: 'Add Property Status'
+                    });
+                    addPropertyStatusOption.css('color', 'grey');
+            
+                    // Append the option to the select element
+                    statusSelect.append(addPropertyStatusOption);
+            
+                    // Handle change event
+                    statusSelect.change(function() {
+                        var selectedValue = $(this).val();
+                        if (selectedValue === 'add_property_status') {
+                            // Get the URL for 'add_property_status' using Django's URL template tag
+                            var addPropertyStatusUrl = "{% url 'add_property_status' %}";
+                            window.location.href = addPropertyStatusUrl;
+                        }
+                    });
+                });
+            </script>
             <div class="col-md-2">
                 <div class="form-group">
                     {{ form.postal_code.label_tag }}
@@ -74,12 +106,70 @@
                     {{ form.property_type|add_class:"form-control" }}
                 </div>
             </div>
+            <script>
+                // Assuming you have included jQuery
+                $(document).ready(function() {
+                    // Retrieve property statuses from Django template variable
+                    
+                    // Populate select element with property statuses
+                    var typeSelect = $('#id_property_type');
+            
+                    // Create the "Add Property Status" option
+                    var addPropertyTypeOption = $('<option>', {
+                        value: 'add_property_type',
+                        text: 'Add Property Type'
+                    });
+                    addPropertyTypeOption.css('color', 'grey');
+            
+                    // Append the option to the select element
+                    typeSelect.append(addPropertyTypeOption);
+            
+                    // Handle change event
+                    typeSelect.change(function() {
+                        var selectedValue = $(this).val();
+                        if (selectedValue === 'add_property_type') {
+                            // Get the URL for 'add_property_status' using Django's URL template tag
+                            var addPropertyTypeUrl = "{% url 'add_property_type' %}";
+                            window.location.href = addPropertyTypeUrl;
+                        }
+                    });
+                });
+            </script>
             <div class="col-md-2">
                 <div class="form-group">
                     {{ form.deal_type.label_tag }}
                     {{ form.deal_type|add_class:"form-control" }}
                 </div>
             </div>
+            <script>
+                // Assuming you have included jQuery
+                $(document).ready(function() {
+                    // Retrieve property statuses from Django template variable
+                    
+                    // Populate select element with property statuses
+                    var typeSelect = $('#id_deal_type');
+            
+                    // Create the "Add Property Status" option
+                    var addPropertyTypeOption = $('<option>', {
+                        value: 'add_property_deal_type',
+                        text: 'Add Property Deal Type'
+                    });
+                    addPropertyTypeOption.css('color', 'grey');
+            
+                    // Append the option to the select element
+                    typeSelect.append(addPropertyTypeOption);
+            
+                    // Handle change event
+                    typeSelect.change(function() {
+                        var selectedValue = $(this).val();
+                        if (selectedValue === 'add_property_deal_type') {
+                            // Get the URL for 'add_property_status' using Django's URL template tag
+                            var addPropertyTypeUrl = "{% url 'add_property_deal_type' %}";
+                            window.location.href = addPropertyTypeUrl;
+                        }
+                    });
+                });
+            </script>
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="conditoin">Payment condition</label>

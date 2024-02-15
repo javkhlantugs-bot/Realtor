@@ -1,0 +1,18 @@
+{% extends 'base_event.html' %}
+
+{% block title %}Delete Property Type{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>Delete Property Deal Type</h2>
+
+    <p>Are you sure you want to delete the deal type "{{ deal_type.deal_type }}"?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-danger">Delete</button>
+    </form>
+
+    <a href="{% url 'property_status_list' %}" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+{% endblock %}

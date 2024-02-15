@@ -8,8 +8,28 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+<style>
+    .no-properties {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center horizontally */
+        justify-content: center; /* Center vertically */
+        height: 100%; /* Ensure the div takes up the entire height of its container */
+        background: linear-gradient(45deg, var(--color-stripe-rgba) 25%, transparent 25%, transparent 50%, var(--color-stripe-rgba) 50%, var(--color-stripe-rgba) 75%, transparent 75%, transparent);
+        background-size: 20px 20px; /* Adjust the size of the stripes */
+        border-radius: 10px;
+    }
+    .no-properties h5{
+        margin-bottom: 20px;
+        background-color: transparent;
+    }
+    .no-properties button{
+        margin-bottom: 10px;
+    }
+</style>
+
 <div class="row container-header" style="margin-bottom: 10px;">
-    <h2 class="col-md-4">Clients List</h2>
+    <h2 class="col-md-4">Contacts List</h2>
     <div class="col-md-8 d-flex justify-content-end" >
         <!-- <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center"  data-toggle="modal" data-target="#contactModal">
             <i class="material-icons mr-2">add</i> <span class="d-none d-md-inline"> Add Contact</span>
@@ -22,45 +42,62 @@
     </div>
 </div>
 <div class="container-content">
-    <table id="clientsTable" class="display">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Phone number</th>
-                <th>Email</th>
-                <th>Interested</th>
-                <th>Events</th>
-                <th>Details</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            {% for client in clients %}
+    {% if clients %}
+        <table id="clientsTable" class="display">
+            <thead>
                 <tr>
-                    <td><h6>{{ client.client_name }}</h6></td>
-                    <td>
-                        <a href="tel:{{ client.phone_number }}" id="callButton">{{ client.phone_number }}</a>
-                    </td>
-                    <td>{{ client.email }}</td>
-                    <td>
-                        <div class="progress" style="position: relative; height: 30px;">
-                            <div class="progress-bar" role="progressbar" style="width: {{ client.suggest_percent }}%; height: 100% !important" aria-valuenow="{{ client.interested_count }}" aria-valuemin="0" aria-valuemax="client.suggested_count"></div>
-                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--color-text-rgba) !important;">{{ client.interested_count }} / {{ client.suggested_count }}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="progress" style="position: relative; height: 30px;">
-                            <div class="progress-bar" role="progressbar" style="width: {{ client.events_percent }}%;" aria-valuenow="{{ client.completed_events }}" aria-valuemin="0" aria-valuemax="client.events_total"></div>
-                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--color-text-rgba) !important;">{{ client.events_completed }} / {{ client.events_total }}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <a href="{% url 'client_events' client.id %}">Show more</a>
-                    </td>
+                    <th>Name</th>
+                    <th>Phone number</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Interested</th>
+                    <th>Events</th>
+                    <th>Details</th>
+
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                    <tr>
+                        <td><h6>{{ client.client_name }}</h6></td>
+                        <td>
+                            <a href="tel:{{ client.phone_number }}" id="callButton">{{ client.phone_number }}</a>
+                        </td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.status }}</td>
+                        <td>
+                            <div class="progress" style="position: relative; height: 30px;">
+                                <div class="progress-bar" role="progressbar" style="width: {{ client.suggest_percent }}%; height: 100% !important" aria-valuenow="{{ client.interested_count }}" aria-valuemin="0" aria-valuemax="client.suggested_count"></div>
+                                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">{{ client.interested_count }} / {{ client.suggested_count }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress" style="position: relative; height: 30px;">
+                                <div class="progress-bar" role="progressbar" style="width: {{ client.events_percent }}%;" aria-valuenow="{{ client.completed_events }}" aria-valuemin="0" aria-valuemax="client.events_total"></div>
+                                <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">{{ client.events_completed }} / {{ client.events_total }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'client_events' client.id %}">Show more</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="col-md-12 mb-12 no-properties">
+            <h3>There is no Contacts</h3>
+            <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"  
+                    data-toggle="modal" data-target="#contactModal">
+                    <i class="fas fa-plus"></i>
+                    <span class="d-none d-md-inline"  style="padding-left: 10px;">Add a new Contact</span>  
+            </button>
+            <button id="settingsButton" class="btn btn-outline-primary d-flex align-items-center justify-content-center" onclick="location.href='{% url 'settings' %}'">
+                <i class="fa-brands fa-google"></i>
+                <span class="d-none d-md-inline" style="padding-left: 10px;">Import Contacts from Google</span>
+            </button>
+        </div>
+    {% endif %}
     <script>
         // JavaScript to prevent the default behavior on non-mobile devices
         document.getElementById('callButton').addEventListener('click', function (event) {
@@ -145,6 +182,29 @@
                     <button type="submit" class="btn btn-outline-primary" style="width: 100%;margin-top: 10px; ">Add contact</button>
                 </form>
             </div>  
+            <script>
+                // Assuming you have included jQuery
+                $(document).ready(function() {
+                    // Create the "Add Event Type" option
+                    var addEventTypeOption = $('<option>', {
+                        value: 'add_client_status',
+                        text: 'Add Client Status'
+                    });
+                    addEventTypeOption.css('color', 'grey');
+                    // Append the option to the select element
+                    $('#id_status').append(addEventTypeOption);
+            
+                    // Handle change event
+                    $('#id_status').change(function() {
+                        var selectedValue = $(this).val();
+                        if (selectedValue === 'add_client_status') {
+                            // Get the URL for 'add_event_type' using Django's URL template tag
+                            var addEventTypeUrl = "{% url 'add_client_status' %}";
+                            window.location.href = addEventTypeUrl;
+                        }
+                    });
+                });
+            </script>
         </div>
     </div>  
 </div>

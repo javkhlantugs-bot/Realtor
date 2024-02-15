@@ -1,0 +1,44 @@
+
+{% extends 'base_event.html' %}
+
+{% block title %}Property Type List{% endblock %}
+
+{% block content %}
+<style>
+  .list-group-item{
+    background-color: transparent !important;
+    color: var(--color-text-rgba);
+    border-color: var(--border-color-rgba);
+  }
+</style>
+<div class="row container-header">
+  <h2>Property Type List
+      <a href="{% url 'add_property_type' %}" class="btn btn-outline-primary" type="button">
+          <i class="material-icons">add</i> 
+      </a>
+  </h2>
+</div>  
+<div class="container-content">
+    <div class="col-md-6 mx-auto">
+      <ul class="list-group">
+        {% for property_type in property_types %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ property_type.type }}
+            <div>
+              <a href="{% url 'edit_property_type' property_type.id %}" class="btn btn-outline-primary btn-sm"><i class="material-icons">edit</i> </a>
+              <a href="{% url 'delete_property_type' property_type.id %}" class="btn btn-outline-danger btn-sm"><i class="material-icons">delete</i> </a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="mt-auto" style="justify-content: center; align-items: center; margin-top: 20px !important;">
+        <a href="#" class="btn btn-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
+      </div>
+    </div>  
+</div>
+<script>
+  function goBack() {
+  window.history.back();
+}
+</script>
+{% endblock %}

@@ -26,6 +26,7 @@ urlpatterns = [
     path('clients/', views.client_list, name='client_list'),
     path('clients/<int:client_id>/', views.client_events, name='client_events'),
     path('clients/edit/<int:client_id>/', views.edit_client, name='edit_client'),
+    path('clients/delete/<int:client_id>/', views.delete_client, name='delete_client'),
     path('clients/add_notes/<int:client_id>/', views.add_client_notes, name='add_client_notes'),
     path('clients/update_suggestion/', views.suggest_property, name='update_suggestion'),
     path('events/delete_notes/<int:note_id>/<int:client_id>/', views.delete_client_note, name='delete_notes'),
@@ -43,9 +44,26 @@ urlpatterns = [
     path('settings/event_types_list/', views.event_types_list, name='event_types_list'),
     path('settings/edit_event_type/<int:event_type_id>/', views.edit_event_type, name='edit_event_type'),
     path('settings/delete_event_type/<int:event_type_id>/', views.delete_event_type, name='delete_event_type'),
+
     path('settings/client_status_list/', views.client_status_list, name='client_status_list'),
     path('settings/edit_client_status/<int:client_status_id>/', views.edit_client_status, name='edit_client_status'),
     path('settings/add_client_status/', views.add_client_status, name='add_client_status'),
     path('settings/delete_client_status/<int:client_status_id>/', views.delete_client_status, name='delete_client_status'),
+    
+    path('settings/property_status_list/', views.property_status_list, name='property_status_list'),
+    path('settings/edit_property_status/<int:property_status_id>/', views.edit_property_status, name='edit_property_status'),
+    path('settings/add_property_status/', views.add_property_status, name='add_property_status'),
+    path('settings/delete_property_status/<int:property_status_id>/', views.delete_property_status, name='delete_property_status'),
+    
+    path('settings/property_type_list/', views.property_type_list, name='property_type_list'),
+    path('settings/edit_property_type/<int:property_type_id>/', views.edit_property_type, name='edit_property_type'),
+    path('settings/add_property_type/', views.add_property_type, name='add_property_type'),
+    path('settings/delete_property_type/<int:property_type_id>/', views.delete_property_type, name='delete_property_type'),
+    
+    path('settings/property_deal_type_list/', views.property_deal_type_list, name='property_deal_type_list'),
+    path('settings/edit_property_deal_type/<int:property_deal_type_id>/', views.edit_property_deal_type, name='edit_property_deal_type'),
+    path('settings/add_property_deal_type/', views.add_property_deal_type, name='add_property_deal_type'),
+    path('settings/delete_property_deal_type/<int:property_deal_type_id>/', views.delete_property_deal_type, name='delete_property_deal_type'),
+    
     path('settings/suggestions_link_settings/', views.suggestions_link_settings, name='suggestions_link_settings'),
 ]

@@ -1,7 +1,7 @@
 # forms.py
 from django import forms
 from .models import Event, Clent, Client_suggestion, ClientInterest, client_phone_numbers, client_relationships, event_type_model, suggestion_link_settings, client_status_types
-from Realtor.models import Property
+from Realtor.models import Property, property_status,property_type, deal_type
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.forms import modelformset_factory
@@ -51,6 +51,21 @@ class ClientStatusForm(forms.ModelForm):
     class Meta:
         model = client_status_types
         fields = ['status']
+
+class PropertyStatusForm(forms.ModelForm):
+    class Meta:
+        model = property_status
+        fields = ['status']
+
+class PropertyTypeForm(forms.ModelForm):
+    class Meta:
+        model = property_type
+        fields = ['type']
+
+class PropertyDealTypeForm(forms.ModelForm):
+    class Meta:
+        model = deal_type
+        fields = ['deal_type']
 
         
 
@@ -121,7 +136,6 @@ class PropertyForm(forms.ModelForm):
                     'address_lower',
                     'latitude',
                     'longitude',
-                    'listing_date',
                     'lot_size',
                     'monthly_fees',
                     'year_built',
@@ -154,17 +168,13 @@ class PropertyForm(forms.ModelForm):
                     'sub_district',]
         widgets = {
             'condition': forms.TextInput(attrs={'placeholder': 'Enter custom condition'}),
-
-
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
-        # Add the default choices to the condition field
-        self.fields['condition'].widget.choices = Property.CONDITION_CHOICES
         self.fields['condition'].required = False
-    
+
 
 class PropertyImageForm(forms.ModelForm):
     class Meta:
@@ -173,6 +183,7 @@ class PropertyImageForm(forms.ModelForm):
         widgets = {
             'image': forms.FileInput(attrs={'required': False,'multilpe':True}),
         }
+        
 
 PropertyImageFormSet = forms.inlineformset_factory(Property, PropertyImage, form=PropertyImageForm, extra=1, max_num=20, can_delete=False)
 

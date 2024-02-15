@@ -1,0 +1,30 @@
+<!-- add_event.html -->
+{% extends 'base_event.html' %}
+
+{% block title %}Add Property Status {% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="col-md-6 mx-auto">
+    <h2 class="mb-4">Add Property Status</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group">
+                {{ form.status.label_tag }}
+                {{ form.status|add_class:"form-control" }}
+            </div>
+        </div>
+        
+        <div class="mt-auto" style="justify-content: center; align-items: center;">
+            <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px;">Save</button>
+            <a href="#" class="btn btn-outline-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function goBack() {
+    window.history.back();
+}
+</script>
+{% endblock %}

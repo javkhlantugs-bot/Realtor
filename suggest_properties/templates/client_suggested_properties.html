@@ -11,7 +11,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <title>Suggested Properties for {{ client.client_name }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+        
         html{
             overflow: hidden;
         }
@@ -24,7 +25,7 @@
         }
 
         body {
-            font-family: "Montserrat Alternates", sans-serif;
+            font-family: 'Open Sans', sans-serif;
         }
         .row {
             display: flex;
@@ -229,6 +230,17 @@
                                         </div>
                                         <div class="card-body" style="text-align: center;">
                                             <h2 class="card-text">{{ suggest.property.address }}</h2>
+                                            {% if suggest.property.total_price %}
+                                                <div class="col-md-12 col-sm-6">
+                                                    <h5><i class="material-icons">sell</i><strong>{{ suggest.property.total_price }}</strong></h5>
+                                                </div>
+                                            {% endif %}
+                                            {% if suggest.property.price_month %}
+                                                <div class="col-md-12 col-sm-6">
+                                                    <h5><i class="material-icons">key</i><strong>{{ suggest.property.price_month }}</strong></h5>
+                                                </div>
+                                            {% endif %}
+                                           
                                             <div class="row">
                                                 {% if suggest.property.total_rooms %}
                                                     <div class="col-md-6 col-sm-6">
@@ -255,11 +267,7 @@
                                                         <p><i class="material-icons">attach_money</i> Price: {{ suggest.property.price_sqrm }}</p>
                                                     </div>
                                                 {% endif %}
-                                                {% if suggest.property.total_price %}
-                                                    <div class="col-md-6 col-sm-6">
-                                                        <p><i class="material-icons">sell</i> Total Price: {{ suggest.property.total_price }}</p>
-                                                    </div>
-                                                {% endif %}
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -298,7 +306,14 @@
 
             locations.forEach(location => {
                 if (location.property__id) {
-                    var marker = L.marker([location.property__latitude, location.property__longitude]);
+                    var marker = L.circleMarker([location.property__latitude, location.property__longitude], {
+                                radius: 8, // Adjust radius as needed
+                                fillColor: "#1a1a1a", // Adjust color as needed
+                                fillOpacity: 0.5,
+                                weight: 1,
+                                opacity: 1
+                            });
+
                     var url = `/suggested_properties/show_properties/${user}/${location.property__id}/${location.property__address}/`;
                     var popupContent = "<b>Address:</b> " + location.property__address + "<br>";
 
@@ -323,7 +338,7 @@
                         }
                         popupContent += `<a href='${url}'>Show more</a>`;
 
-                    marker.bindPopup(popupContent);
+                    marker.bindPopup("<b>$" + location.property__total_price + "</b>").openPopup();
                     markers.push(marker);
                 }
             });

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load widget_tweaks %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <title>Properties of {{ user }}</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            font-family: "Montserrat Alternates", sans-serif;
+        }
+        :root{
+            --color-background-rgba: rgba(255, 255, 255, 1) ;      /* White background */
+            --color-text-rgba: rgba(26, 26, 26, 1) ;               /* Dark text */
+            --border-color-rgba: rgba(204, 204, 204, 1)  ;   
+            --header-color-rgba: rgba(250, 250, 250, 1);       /* Light border color */
+            --color-stripe-rgba: rgba(240, 240, 240, 1);
+        }
+        .dark-mode-variables{
+            --color-background-rgba: rgba(26, 26, 26, 1) ;
+            --color-text-rgba: rgba(255, 255, 255, 1) ;
+            --border-color-rgba: rgba(43, 43, 43, 1) ; 
+            --header-color-rgba: rgba(50, 50, 50, 1)    ;
+            --color-stripe-rgba: rgba(40, 40, 40, 1);
+        }
+        body, a{
+            color: var(--color-text-rgba);
+        }
+
+        .card-img-left{
+            border-radius: 10px;
+            max-width: 20vw;
+        }
+        .image-container{
+            width: 20vw;
+        }
+        .card-text-content{
+            width: 20vw;
+        }
+        .card{
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            margin: 1px;
+            border-radius: 10px;
+            margin-bottom: 1vh;
+        }
+        .properties-list{
+            height: 90vh;
+            width: 50vw;
+            overflow-y: auto;
+            margin-bottom: 1vh;
+        }
+        #main-map-container{
+            border-radius: 10px;
+            width: 49vw;
+            height: 90vh;
+            margin-left: 1vw;
+            border-radius: 10px;
+        }
+        #map {
+            border-radius: 10px;            
+        }
+        .properties-list::-webkit-scrollbar {
+                width: 12px; /* Adjust the width of the scrollbar */
+                margin-right: -12px; /* Move the scrollbar to the left by its width */
+        }
+    
+        /* Targeting the scrollbar handle or thumb */
+        .properties-list::-webkit-scrollbar-thumb {
+            background-color: var(--color-text-rgba); /* Color of the scrollbar thumb */
+            border-radius: 6px; /* Radius of the scrollbar thumb corners */
+        }
+    
+        /* Optional: Hover effect on the scrollbar handle */
+        .properties-list::-webkit-scrollbar-thumb:hover {
+            background-color: var(--color-text-rgba); /* Color when hovering over the scrollbar thumb */
+        }
+    
+        /* Targeting the scrollbar track when handle is being dragged */
+        .properties-list::-webkit-scrollbar-thumb:active {
+            background-color: var(--color-text-rgba); /* Color when scrollbar thumb is being dragged */
+        }
+        #main-map{
+            height: 100%;
+            width: 100%;
+        }
+        .container-content{
+            top: 5vh;
+            height: 88vh;
+        }
+        @media (max-width: 767px) {
+            .container-content{
+                margin: 0;
+            }
+            .contents{
+                width: 100vw !important;
+                padding: 0;
+                margin: 0;
+            }
+            
+            
+            .properties-list{
+                position: fixed;
+                width: 100vw !important;
+                height: 50vh !important;
+                overflow-x: hidden;
+                margin: 0;
+                top: 48vh;
+                border: var(--border-color-rgba);
+            }
+            .image-container{
+                width: 88vw !important;
+            }
+            .card-text-content{
+                width: 88vw !important;
+                padding-right: 20px;
+            }
+            .card-img-left{
+                max-width: 70vw !important;
+                margin-left: 20px;
+            }
+            #main-map-container{
+                width: 100vw !important;
+                height: 35vh !important;
+                margin-right: 0 !important;
+                margin-left: 0 !important;
+                margin-bottom: 5vh;
+                left: 0;
+                position: fixed;
+                top: 11vh;
+            }
+            #main-map{
+                position: fixed;
+                height: 34vh !important;
+                width: 100vw !important;
+                left: 0;
+                margin-left: 0;
+                padding-left: 0;
+                border-top-left-radius: 0px !important;
+                border-top-right-radius: 0px !;
+            }
+            .container-fluid{
+                padding-left: 0;
+            }
+            .container-fluid .row{
+                margin-right: 0;
+                padding-right: 0;
+            }
+            .container-content{
+                width: 100vw !important;
+            }
+            .card{
+                width: 90vw;
+                left: 0;
+            }
+            .card-body{
+                flex-direction: column;
+                width: 88vw;
+            }
+            .cards{
+                width: 100vw;
+                left: 0;
+            }
+    }
+    </style>
+    <div class="col-md-12 container-content">
+        <div class="row">
+            <div class="row properties-list">
+                {% for property in suggestions %}
+                    <div class="col-md-12 mb-12 cards" >
+                        <div class="card">
+                            <div class="card-body d-flex"> <!-- Add d-flex and align-items-stretch classes -->
+                                <a href="{% url 'show_property' user=property.user id=property.id address=property.address %}">
+                                    {% if property.images %}
+                                        <div class="image-container">
+                                            <img class="card-img-left flex-shrink-0" src="/media/{{ property.images }}" alt=""> <!-- Add flex-shrink-0 class -->
+                                        </div>
+                                    {% endif %}
+                                    <div style="padding-left: 20px;" class="card-text-content"> <!-- Create a div to hold the card content -->
+                                        <h5 class="card-title">{{ property.address }}</h5>
+                                        {% if property.total_price %}
+                                            <div class="card-text">
+                                                <strong>{{ property.total_price }}</strong></h5>
+                                            </div>
+                                        {% endif %}
+                                        {% if property.price_month %}
+                                            <div class="card-text">
+                                                <strong>{{ property.price_month }}</strong></h5>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if property.total_rooms %}
+                                            <div class="card-text">
+                                                <p>{{ property.total_rooms }} total rooms</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if property.bedrooms %}
+                                            <div class="card-text">
+                                                <p>{{ property.bedrooms }} bedrooms</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if property.toilets %}
+                                            <div class="card-text">
+                                                <p>{{ property.toilets }} toilets</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if property.sqr_meter %}
+                                            <div class="card-text">
+                                                <p>{{ property.sqr_meter }} sqr meter</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if property.price_sqrm %}
+                                            <div class="card-text">
+                                                <p>Price Square meter: {{ property.price_sqrm }}</p>
+                                            </div>
+                                        {% endif %}
+                                        {% if property.status %}
+                                            <div class="card-text">
+                                                <p>Status: {{ property.status }}</p>
+                                            </div>
+                                        {% endif %}
+                                        <a href="{% url 'show_property' user=property.user id=property.id address=property.address %}"  class="btn btn-outline-primary">Show more</a>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if properties %}
+                    <div style="height: 10vh;"></div>
+                {% endif %}
+                
+            </div>
+            <div id="main-map-container">
+                <div id="map" style="height: 100%;"></div>
+            </div>
+        </div>
+    
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    {{ locations|json_script:"locations"}}
+
+    <script>
+        var user = '{{ user }}'; 
+        var map = L.map('map');
+        var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        let locations = JSON.parse(document.getElementById('locations').textContent);
+
+        var markers = [];
+
+        locations.forEach(location => {
+            if (location.id) {
+                var marker = L.marker([location.latitude, location.longitude]).addTo(map);
+                var url = `/suggested_properties/show_properties/${user}/${location.id}/${location.address}/`;
+                var popupContent = "<b>Address:</b> " + location.address + "<br>";
+
+                    // Include additional property details if they exist
+                    if (location.total_rooms) {
+                        popupContent += "<b>Total rooms:</b> " + location.total_rooms + "<br>";
+                    }
+                    if (location.bedrooms) {
+                        popupContent += "<b>Bedrooms:</b> " + location.bedrooms + "<br>";
+                    }
+                    if (location.toilets) {
+                        popupContent += "<b>Toilets:</b> " + location.toilets + "<br>";
+                    }
+                    if (location.sqr_meter) {
+                        popupContent += "<b>Square Meter:</b> " + location.sqr_meter + "<br>";
+                    }
+                    if (location.price_sqrm) {
+                        popupContent += "<b>Price per Square Meter:</b> " + location.price_sqrm + "<br>";
+                    }
+                    if (location.total_price) {
+                        popupContent += "<b>Total Price:</b> " + location.total_price + "<br>";
+                    }
+                    popupContent += `<a href='${url}'>Show more</a>`;
+
+                marker.bindPopup("<b>$" + location.total_price + "</b>").openPopup();
+                markers.push(marker);
+            }
+        });
+
+        // Create a feature group from the markers and add it to the map
+        var markerGroup = L.featureGroup(markers).addTo(map);
+
+        // Fit the map view to the bounds of the marker group
+        map.fitBounds(markerGroup.getBounds());
+    </script>
+        
+    </body>
+
+</html>

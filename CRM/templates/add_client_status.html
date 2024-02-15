@@ -4,7 +4,7 @@
 {% block title %}Add Client Status {% endblock %}
 {% load widget_tweaks %}
 {% block content %}
-<div class="col-md-12">
+<div class="col-md-6 mx-auto">
     <h2 class="mb-4">Add Client Status</h2>
     <form method="post">
         {% csrf_token %}
@@ -16,7 +16,7 @@
         </div>
         
         <div class="mt-auto" style="justify-content: center; align-items: center;">
-            <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; ">Save</button>
+            <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px;">Save</button>
             <a href="#" class="btn btn-outline-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
         </div>
     </form>
@@ -24,9 +24,7 @@
 
 <script>
     function goBack() {
-        // Navigate to the 'events_list' URL
-        var eventsListUrl = "{% url 'client_status_list' %}";
-        window.location.href = eventsListUrl;
-    }
+    window.history.back();
+}
 </script>
 {% endblock %}

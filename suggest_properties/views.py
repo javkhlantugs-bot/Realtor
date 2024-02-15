@@ -16,7 +16,7 @@ class ClientSuggestedPropertiesView(View):
         userid = get_object_or_404(CustomUser,  username=user)
         setups = suggestion_link_settings.objects.get(user=userid.id)
         locations = list(suggestions.values('property__user','property__latitude', 'property__longitude', 'property__deal_type','property__property_type',
-                               'property__total_rooms', 'property__address', 'property__id'))
+                               'property__total_rooms', 'property__address', 'property__id','property__total_price'))
         return render(request, self.template_name, {'client': client, 'suggestions': suggestions,'locations':locations,'user':user,'setups':setups})
 
     def post(self, request, client_link,user):
@@ -46,6 +46,8 @@ def show_property(request, user, id, address):
     locations = list(Property.objects.values('latitude', 'longitude','id').filter(user=request.user.id, id = id))
     photos = PropertyImage.objects.filter(property=property)
     fields = Property._meta.fields
+    property.views_count += 1
+    property.save()
     return render(request, 'show_property.html', {
         'properties': property,
         'photos': photos,
@@ -54,3 +56,18 @@ def show_property(request, user, id, address):
         'locations':locations,
         'suggestions':suggestions
     })
+
+
+
+class TotalListView(View):
+    template_name = 'total_list.html'
+
+    def get(self, request, user):
+        userid = get_object_or_404(CustomUser,  username=user)
+        suggestions = Property.objects.filter(user=userid.id)
+        setups = suggestion_link_settings.objects.get(user=userid.id)
+        locations = list(suggestions.values('user','latitude', 'longitude', 'deal_type','property_type',
+                               'total_rooms', 'address', 'id','total_price'))
+        return render(request, self.template_name, {'locations':locations,'user':user,'setups':setups,'suggestions':suggestions})
+
+    

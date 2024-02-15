@@ -3,42 +3,48 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
+<div class="container-header">
+    <h1>Settings</h1>
+</div>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="text-center">Import Google Contacts</h1>
-                </div>
-                <div class="card-body">
-                    <form method="post" action="{% url 'import_google_contacts' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-primary btn-block" id="importContactsBtn">Import or Update Google Contacts</button>
-                    </form>
 
-                    <div class="text-center mt-3" id="loadingIndicator" style="display: none;">
-                        Importing contacts... Please wait.
-                    </div>
+<div class="container-content">
+    <div class="col-md-6">
+        <div class="card-body">
+            <form method="post" action="{% url 'import_google_contacts' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-secondary btn-block" id="importContactsBtn">Import or Update Google Contacts</button>
+            </form>
 
-                    {% if messages %}
-                        <ul class="messages mt-3">
-                            {% for message in messages %}
-                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
-                <div class="card-body">
-                    <a href="{% url 'event_types_list' %}" class="btn btn-outline-primary">Go to Event Type List</a>
-                </div>
-                <div class="card-body">
-                    <a href="{% url 'client_status_list' %}" class="btn btn-outline-primary">Go to Client Status List</a>
-                </div>
-                <div class="card-body">
-                    <a href="{% url 'suggestions_link_settings' %}" class="btn btn-outline-primary">Setup Suggestions headers</a>
-                </div>
+            <div class="text-center mt-3" id="loadingIndicator" style="display: none;">
+                Importing contacts... Please wait.
             </div>
+
+            {% if messages %}
+                <ul class="messages mt-3">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <a href="{% url 'event_types_list' %}" class="btn btn-outline-secondary">Go to Event Type List</a>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'client_status_list' %}" class="btn btn-outline-secondary">Go to Client Status List</a>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'property_status_list' %}" class="btn btn-outline-secondary">Go to Property Status List</a>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'property_type_list' %}" class="btn btn-outline-secondary">Go to Property Type List</a>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'property_deal_type_list' %}" class="btn btn-outline-secondary">Go to Property Deal Type List</a>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'suggestions_link_settings' %}" class="btn btn-outline-secondary">Setup Suggestions headers</a>
         </div>
     </div>
 </div>
