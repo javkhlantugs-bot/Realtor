@@ -573,6 +573,7 @@ def properties_list(request):
             print(form.errors)
     else:
         form = PropertyForm1()
+        form.fields['property_type'].queryset = property_type.objects.filter(user=request.user)
 
     return render(request, 'properties_list.html', {'properties': properties, 'locations': locations, 'properties_form': form})
 
