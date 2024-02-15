@@ -730,15 +730,7 @@ def import_google_contacts(request):
     )
     # Make utcnow aware of the UTC timezone
     utc_now = datetime.utcnow().replace(tzinfo=timezone.utc)
-    
-    # If the credentials are expired, refresh them
-    if credentials_info[expiry_key] < utc_now:
-        credentials.refresh(Request())
-        # Update the expiry and refresh token in the credentials_info dictionary
-        credentials_info[expiry_key] = credentials.expiry
-        credentials_info['refresh_token'] = credentials.refresh_token
-        # credentials.expiry = datetime.strptime(credentials.expiry, "%Y-%m-%dT%H:%M:%S.%fZ")
-
+ 
     # Build the Google Contacts API service
     service = build('people', 'v1', credentials=credentials)
 
