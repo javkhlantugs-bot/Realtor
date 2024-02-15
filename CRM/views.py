@@ -400,6 +400,7 @@ def client_list(request):
             print(form.errors)
     else:
         form = ClientForm1()
+        form.fields['status'].queryset = client_status_types.objects.filter(user=request.user)
     return render(request, 'client_list.html', {'clients': clients,'form':form})
 
 def client_events(request, client_id):
@@ -484,6 +485,7 @@ def edit_client(request, client_id):
         phone_numbers = ClientPhoneNumbers(request.POST)
         relationships = ClientRelationships(request.POST)
         form = ClientForm(request.POST, instance=client)
+        form.fields['status'].queryset = client_status_types.objects.filter(user=request.user)
         if form.is_valid():
             form = form.save(commit=False)
             form.save()
@@ -507,6 +509,7 @@ def edit_client(request, client_id):
 
     else:
         form = ClientForm(instance=client)
+        form.fields['status'].queryset = client_status_types.objects.filter(user=request.user)
         phone_numbers = ClientPhoneNumbers(instance=client)
         relationships = ClientRelationships(instance=client)
 
