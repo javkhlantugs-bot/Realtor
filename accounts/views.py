@@ -22,14 +22,19 @@ def register(request):
             client_status_types.objects.create(user=user_instance, status="Active")
             client_status_types.objects.create(user=user_instance, status="Inactive")
 
-            login(request, user_instance)
-            return redirect('accounts:login') 
+            # Authenticate the user using django-allauth's authentication backend
+            user = authenticate(request, username=user_instance.username, password=request.POST.get('password1'), backend='allauth.account.auth_backends.AuthenticationBackend')
+            if user is not None:
+                login(request, user)
+                return redirect('accounts:login') 
+            else:
+                # Handle authentication failure
+                pass
         else: 
             print(form.errors)
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
-
 
 def user_login(request):
     if request.method == 'POST':
