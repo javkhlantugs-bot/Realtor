@@ -81,6 +81,8 @@ class Property(models.Model):
     added_date = models.DateTimeField(auto_now_add=True, blank= True,null=True)
     views_count = models.IntegerField(default=0)
     def save(self, *args, **kwargs):
+        if self.address:
+            self.address = self.address.replace("/", "")
         # Save the lowercase version of the address
         self.address_lower = self.address.lower()
         super().save(*args, **kwargs)
