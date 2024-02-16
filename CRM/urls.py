@@ -65,5 +65,5 @@ urlpatterns = [
     path('settings/add_property_deal_type/', views.add_property_deal_type, name='add_property_deal_type'),
     path('settings/delete_property_deal_type/<int:property_deal_type_id>/', views.delete_property_deal_type, name='delete_property_deal_type'),
     
-    path('settings/suggestions_link_settings/', views.suggestions_link_settings, name='suggestions_link_settings'),
+    path('settings/suggestions_link_settings/', views.suggestions_link_settings_page, name='suggestions_link_settings'),
 ]

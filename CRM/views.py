@@ -1051,7 +1051,7 @@ def delete_property_deal_type(request, property_deal_type_id):
 
     return render(request, 'delete_property_deal_type.html', {'deal_type': deal_types})
 
-def suggestions_link_settings(request):
+def suggestions_link_settings_page(request):
     
     setups = get_object_or_404(suggestion_link_settings, user=request.user)
 
