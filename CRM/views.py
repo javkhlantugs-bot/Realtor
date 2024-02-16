@@ -543,7 +543,7 @@ def properties_list(request):
         cursor.execute(sql_query, [request.user.id])
         bef_properties = cursor.fetchall()
 
-    properties = []
+    propertiess = []
     for property_data in bef_properties:
         serialized_property = {
             'id': property_data[0],
@@ -558,7 +558,7 @@ def properties_list(request):
             'property_type': property_data[9],
             'views_count': property_data[10],
         }
-        properties.append(serialized_property)
+        propertiess.append(serialized_property)
     
     locations = list(Property.objects.values('latitude', 'longitude', 'address', 'deal_type', 'property_type', 'total_rooms', 'id','total_price','price_month').filter(user=request.user.id))
     if request.method == 'POST':
@@ -574,7 +574,7 @@ def properties_list(request):
         form = PropertyForm1()
         form.fields['property_type'].queryset = property_type.objects.filter(user=request.user)
 
-    return render(request, 'properties_list.html', {'properties': properties, 'locations': locations, 'properties_form': form})
+    return render(request, 'properties_list.html', {'properties': propertiess, 'locations': locations, 'properties_form': form})
 
 def property_events(request, property_id):
     property = get_object_or_404(Property, id=property_id)
