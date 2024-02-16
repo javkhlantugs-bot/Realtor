@@ -93,6 +93,7 @@
             <tr>
                 <th>Client</th>
                 <th>Phone</th>
+                <th>Email</th>
                 <th>Suggestion</th>
                 <th>Interested</th>
             </tr>
@@ -108,6 +109,9 @@
                     <td>
                         <a href="tel:{{ suggest.client.phone_number }}">{{ suggest.client.phone_number }}</a>
                         
+                    </td>
+                    <td>
+                        <a href="mailto:{{ suggest.client.email }}?subject={{property.address}}" title="Send mail to {{ suggest.client.email }}" > {{ suggest.client.email }} </a>
                     </td>
                     <td>
                         <form method="post" action="{% url 'property_events' property_id=property.id %}">

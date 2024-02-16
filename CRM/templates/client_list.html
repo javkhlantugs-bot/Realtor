@@ -63,7 +63,11 @@
                         <td>
                             <a href="tel:{{ client.phone_number }}" id="callButton">{{ client.phone_number }}</a>
                         </td>
-                        <td>{{ client.email }}</td>
+                        <td>
+                            <a href="mailto:{{ client.email }}" title="Send mail to {{ client.email }}"> {{ client.email }} </a>
+
+                            
+                        </td>
                         <td>{{ client.status }}</td>
                         <td>
                             <div class="progress" style="position: relative; height: 30px;">
