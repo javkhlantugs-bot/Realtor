@@ -186,7 +186,6 @@ class EventsListView(View):
             'events': serialized_events,
             'form': form,
         }
-        print(context)
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
