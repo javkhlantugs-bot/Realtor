@@ -543,20 +543,22 @@ def properties_list(request):
         cursor.execute(sql_query, [request.user.id])
         bef_properties = cursor.fetchall()
 
-    # Serialize the query result into a list of dictionaries
-    properties = [{
-        'id': property_data[0],
-        'address': property_data[1],
-        'images': property_data[2],
-        'total_price': property_data[3],
-        'interested_count': property_data[4],
-        'events_completed': property_data[5],
-        'events_incompleted': property_data[6],
-        'suggested_count': property_data[7],
-        'listing_date': property_data[8],
-        'property_type': property_data[9],
-        'views_count': property_data[10],
-        } for property_data in bef_properties]
+    properties = []
+    for property_data in bef_properties:
+        serialized_property = {
+            'id': property_data[0],
+            'address': property_data[1],
+            'images': property_data[2],
+            'total_price': property_data[3],
+            'interested_count': property_data[4],
+            'events_completed': property_data[5],
+            'events_incompleted': property_data[6],
+            'suggested_count': property_data[7],
+            'listing_date': property_data[8],
+            'property_type': property_data[9],
+            'views_count': property_data[10],
+        }
+        properties.append(serialized_property)
     
     locations = list(Property.objects.values('latitude', 'longitude', 'address', 'deal_type', 'property_type', 'total_rooms', 'id','total_price','price_month').filter(user=request.user.id))
     if request.method == 'POST':
