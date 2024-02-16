@@ -84,6 +84,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        
     </div>
     <hr style="margin-top: 10px; margin-bottom: 10px;">
     <!-- client_events.html -->
@@ -111,7 +112,10 @@
                         
                     </td>
                     <td>
-                        <a href="mailto:{{ suggest.client.email }}?subject={{property.address}}" title="Send mail to {{ suggest.client.email }}" > {{ suggest.client.email }} </a>
+                        <a onclick="sendEmail('{{ suggest.client.email }}');" title="Send mail to {{ suggest.client.email }}" style="cursor: pointer;">
+                            &#x1F4E7; <!-- Email icon -->
+                            {{ suggest.client.email }}
+                        </a>
                     </td>
                     <td>
                         <form method="post" action="{% url 'property_events' property_id=property.id %}">
@@ -134,6 +138,15 @@
             {% endfor %}
         </tbody>
     </table>
+    <script>
+        function sendEmail(email) {
+            var subject = '{{ property.address }}';
+            var template = `Check out this property:\n[Link to Property]("https://estates.solutions/suggested_properties/show_properties/{{ user.username }}/{{ property.id }}/{{ property.address }}")\n\nClick the link above to view more details and photos.\n\nRegards,\nThe Estates Team`;
+            var encodedBody = encodeURIComponent(template);
+            var mailtoLink = 'mailto:' + email + '?subject=' + subject + '&body=' + encodedBody;
+            window.open(mailtoLink, '_blank');
+            }
+    </script>
 </div>
 
 

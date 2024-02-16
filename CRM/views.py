@@ -289,7 +289,6 @@ def get_events(request):
             ]
         })
 
-    print(event_list)  # Add this line to print the data
     return JsonResponse(event_list, safe=False)
 
 @login_required
@@ -544,7 +543,6 @@ def properties_list(request):
     with connection.cursor() as cursor:
         cursor.execute(sql_query, [request.user.id])
         bef_properties = cursor.fetchall()
-    print(bef_properties)
     # Serialize the query result into a list of dictionaries
     properties = []
     for property_data in bef_properties:
@@ -701,7 +699,6 @@ def google_authenticate_callback(request):
 def import_google_contacts(request):
     # Fetch contacts using saved credentials
     credentials_json = request.session.get('credentials', None)
-    print("Session credentials:", credentials_json)
     
     if credentials_json is None:
         # Redirect the user to authenticate if credentials are not present
@@ -1106,9 +1103,6 @@ import django.utils.timezone
 def calculate_timesince(timestamp):
     now = django.utils.timezone.now()
     diff = now - timestamp
-    print(now)
-    print(timestamp)
-    print(diff)
     minutes = diff.total_seconds() / 60
 
     if minutes < 1:
