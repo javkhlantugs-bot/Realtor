@@ -114,7 +114,7 @@ def edit_property(request, property_id):
             # Redirect to the referrer URL or a default URL
             return redirect(property_events_url)
         else:
-            print(form.errors)
+            pass
     else:
         form = PropertyForm(instance=property)
         form.fields['status'].queryset = property_status.objects.filter(user=request.user)
@@ -202,7 +202,7 @@ class EventsListView(View):
                 if form.is_valid():
                     form.save()
                 else :
-                    print(form.errors)
+                    pass
             else:  # Creating new event
                 event.save()
 
@@ -249,7 +249,6 @@ class GetEventTypes(View):
             .values('id', 'event_type')
             .filter(user=request.user.id, id=event_type_id)
         )
-        print(event_types)
         return JsonResponse({'event_types': event_types})
 
 class GetProperties(View):
@@ -301,7 +300,7 @@ def add_event(request):
             event.save()
             return redirect('add_event')
         else:
-            print(form.errors)
+            pass
     else:
         form = EventForm(user = request.user.id)
     return render(request, 'add_event.html', {'form': form})
@@ -320,7 +319,7 @@ def edit_event(request, event_id):
             # Redirect to the referrer URL or a default URL
             return redirect('events_list')
         else:
-            print(event_form.errors)
+            pass
     else:
         event_form = EventForm(instance=event, user = request.user.id)
 
@@ -395,7 +394,7 @@ def client_list(request):
             client.save()
             return redirect('client_list')
         else:
-            print(form.errors)
+            pass
     else:
         form = ClientForm1()
         form.fields['status'].queryset = client_status_types.objects.filter(user=request.user)
@@ -460,7 +459,7 @@ def add_client_notes(request, client_id):
             interest.save()
             return redirect('client_events', client_id=client_id)
         else:
-            print(form.errors)
+            pass
     else:
         client = get_object_or_404(Clent, id=client_id)
         form = ClientInterestForm()
@@ -491,7 +490,7 @@ def edit_client(request, client_id):
             # Redirect to the referrer URL or a default URL
             return redirect(client_events_url)
         else:
-            print(form.errors)
+            pass
         if phone_numbers.is_valid():
             phone_numbers.instance.user = request.user
             phone_numbers.save()
@@ -543,23 +542,21 @@ def properties_list(request):
     with connection.cursor() as cursor:
         cursor.execute(sql_query, [request.user.id])
         bef_properties = cursor.fetchall()
+
     # Serialize the query result into a list of dictionaries
-    properties = []
-    for property_data in bef_properties:
-        serialized_property = {
-            'id': property_data[0],
-            'address': property_data[1],
-            'images': property_data[2],
-            'total_price': property_data[3],
-            'interested_count': property_data[4],
-            'events_completed': property_data[5],
-            'events_incompleted': property_data[6],
-            'suggested_count': property_data[7],
-            'listing_date': property_data[8],
-            'property_type': property_data[9],
-            'views_count': property_data[10],
-        }
-        properties.append(serialized_property)
+    properties = [{
+        'id': property_data[0],
+        'address': property_data[1],
+        'images': property_data[2],
+        'total_price': property_data[3],
+        'interested_count': property_data[4],
+        'events_completed': property_data[5],
+        'events_incompleted': property_data[6],
+        'suggested_count': property_data[7],
+        'listing_date': property_data[8],
+        'property_type': property_data[9],
+        'views_count': property_data[10],
+        } for property_data in bef_properties]
     
     locations = list(Property.objects.values('latitude', 'longitude', 'address', 'deal_type', 'property_type', 'total_rooms', 'id','total_price','price_month').filter(user=request.user.id))
     if request.method == 'POST':
@@ -570,7 +567,7 @@ def properties_list(request):
             property.save()
             return redirect('properties_list')
         else:
-            print(form.errors)
+            pass
     else:
         form = PropertyForm1()
         form.fields['property_type'].queryset = property_type.objects.filter(user=request.user)
@@ -779,11 +776,9 @@ def import_google_contacts(request):
                 try:
                     birthday = datetime(year, month, day).date()
                 except ValueError:
-                    print(f"Invalid date components for birthday: {year}-{month}-{day}")
                     continue
             else:
                 # Handle the case where some components are missing
-                print("Incomplete date components in birthday dictionary")
                 continue
         else:
             # Handle the case where 'birthdays' is not a list or is an empty list
@@ -852,7 +847,7 @@ def add_event_type(request):
             event.save()
             return redirect('event_types_list')
         else:
-            print(form.errors)
+            pass
     else:
         form = EventTypeForm()
     return render(request, 'add_event_type.html', {'form': form})
@@ -895,7 +890,7 @@ def add_client_status(request):
             stats.save()
             return redirect('client_status_list')
         else:
-            print(form.errors)
+            pass
     else:
         form = ClientStatusForm()
     return render(request, 'add_client_status.html', {'form': form})
@@ -937,7 +932,7 @@ def add_property_status(request):
             stats.save()
             return redirect('property_status_list')
         else:
-            print(form.errors)
+            pass
     else:
         form = PropertyStatusForm()
     return render(request, 'add_property_status.html', {'form': form})
@@ -980,7 +975,7 @@ def add_property_type(request):
             forms.save()
             return redirect('property_type_list')
         else:
-            print(form.errors)
+            pass
     else:
         form = PropertyTypeForm()
     return render(request, 'add_property_type.html', {'form': form})
@@ -1023,7 +1018,7 @@ def add_property_deal_type(request):
             stats.save()
             return redirect('property_deal_type_list')
         else:
-            print(form.errors)
+            pass
     else:
         form = PropertyDealTypeForm()
     return render(request, 'add_property_deal_type.html', {'form': form})
