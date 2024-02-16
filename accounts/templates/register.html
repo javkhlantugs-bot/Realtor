@@ -7,8 +7,15 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+<style>
+    @media (max-width: 767px) {
+        form{
+            width: 70vw;
+        }
+    }
+</style>
 <h2 style="text-align: center;">Register</h2>
-    <form method="post">
+    <form method="post" >
         {% csrf_token %}
 
         <div class="form-group">
@@ -82,7 +89,7 @@
         <input type="checkbox" id="accept_policies" name="accept_policies">
         <label for="accept_policies">I accept the <a href="{% url 'accounts:privacy_policy' %}">Privacy Policy</a> and <a href="{% url 'accounts:terms_of_service' %}">Terms of Service</a></label><br>
         {% if request.method == "POST" and not form.accept_policies.value %}
-            <p style="width: 100%;">Please accept our Privacy Policy and Terms of Service to proceed with registration.</p>
+            <p style="width: 100%; max-width: 350px;" class="text-danger" >Please accept our Privacy Policy and Terms of Service to proceed with registration.</p>
         {% endif %}
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Register</button>
         <a href="{% url 'accounts:login' %}" style="width: 100%; ">

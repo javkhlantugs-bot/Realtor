@@ -28,14 +28,17 @@
         align-items: center;
     }
 
+    @media (max-width: 767px) {
+        .page-actions{
+            top: 8vh;
+        }
+    }
 </style>
 <div class="row mb-3 container-header">
     <div class="col-md-4">
-        <h2>Client: {{ client.client_name }}</h2>
+        <h2>{{ client.client_name }}</h2>
     </div>
-    <div class="col-md-4">
-        <h2>Status: {{ client.status}}</h2>
-    </div>
+    
     <div class="col-md-4 d-flex justify-content-end page-actions">
         <button class="btn btn-outline-primary mr-2"
                 style="margin: 5px;"
@@ -68,7 +71,7 @@
         <div class="col-md-4" style="text-align: center;">
             <h5>Client Info</h5>
             <p>Name: {{ client.client_name }}</p>
-            <p>Status: {{ client.get_status_display }}</p>
+            <p>Status: {{ client.status }}</p>
             <p>Phone number: <a href="tel:{{ client.phone_number }}" id="callButton">{{ client.phone_number }}</a></p>
             <p> 
                 {% if client.email %}

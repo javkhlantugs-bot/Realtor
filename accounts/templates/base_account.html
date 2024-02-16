@@ -104,13 +104,26 @@
         .toggle-button .dark-mode-variables .material-icons {
             color: #656565; /* Dark mode color for Material Icons */
         }
+        @media (max-width: 767px) {
+            #title h1{
+                font-size: 1.5rem;
+                line-height: 0;
+            }
+            #title h2{
+                font-size: 1.2rem;
+            }
+            .toggle-button{
+                right: 10px;
+                top: 20px;
+            }
+        }
         
     </style>
 </head>
 <body class="{% if isDarkMode %}dark-mode-variables{% endif %}">
 
 <div class="container mt-5">
-    <div style="top: 30px; left: 30px; position: absolute;">
+    <div style="top: 30px; left: 30px; position: absolute;" id="title">
         <h1>Estates.</h1>
         <h2>Solutions</h2>
     </div>

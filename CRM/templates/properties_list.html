@@ -31,15 +31,6 @@
             display: none;
         }
         
-        .properties-list{
-            position: fixed;
-            width: 100vw !important;
-            height: 50vh !important;
-            overflow-x: hidden;
-            margin: 0;
-            top: 48vh;
-            border: var(--border-color-rgba);
-        }
         .image-container{
             width: 88vw !important;
         }
@@ -51,25 +42,20 @@
             max-width: 70vw !important;
             margin-left: 20px;
         }
-        #main-map-container{
-            width: 100vw !important;
-            height: 30vh !important;
-            margin-right: 0 !important;
-            margin-left: 0 !important;
-            margin-bottom: 5vh;
-            left: 0;
-            position: fixed;
-            top: 11vh;
+        #main-map-container {
+            display: none;
         }
-        #main-map{
-            position: fixed;
-            height: 34vh !important;
+        #main-map {
+            display: none;
+        }
+        .properties-list {
             width: 100vw !important;
-            left: 0;
-            margin-left: 0;
-            padding-left: 0;
-            border-top-left-radius: 0px !important;
-            border-top-right-radius: 0px !;
+            height: 80vh !important;
+            overflow-y: auto !important; /* Make it scrollable */
+            position: fixed !important;
+            top: 11vh !important;
+            border: var(--border-color-rgba) !important;
+            overflow-x: hidden;
         }
         .container-fluid{
             padding-left: 0;
@@ -92,6 +78,9 @@
         .cards{
             width: 100vw;
             left: 0;
+        }
+        .page-actions{
+            top: 6vh;
         }
     }
 </style>
@@ -553,15 +542,11 @@ function goBack() {
     const propertiesList = document.querySelector('.properties-list');
     const mainMapContainer = document.querySelector('#main-map-container');
 
-    // Add click event listener to .properties-list
     propertiesList.addEventListener('click', function() {
-        // Scroll to the top of the content element
         propertiesList.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    // Add click event listener to .main-map-container
     mainMapContainer.addEventListener('click', function() {
-        // Scroll to the bottom of the content element
         mainMapContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
     });
 </script>
@@ -569,26 +554,7 @@ function goBack() {
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
-<script>
-    jQuery.noConflict();
-    jQuery(document).ready(function($) {
-        // Your DataTables initialization code here
-        $('#propertiesTable').DataTable({
-            responsive: {
-                details: {
-                    type: 'column',
-                    target: 'td:not(:last-child)'
-                }
-            },
-            columnDefs: [
-                {
-                    className: 'd-none d-sm-table-cell', // Hide on small screens
-                    targets: [1, 2, 3] // Adjust column indices based on your table structure
-                }
-            ]
-        });
-    });
-</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         fetch('/crm/google-maps-script/')  // Replace with the actual path defined in your urls.py
