@@ -144,7 +144,7 @@
 <div class="row container-header" >
     <h2 class="col-md-4" id="schedule-title">Schedule</h2>
     <div class="col-md-4" id="selected-date" style="font-weight: 900; font-size: 2rem;"></div>
-    <div class="col-md-4 d-flex justify-content-end" >
+    <div class="col-md-4 d-flex justify-content-end page-actions" >
         <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"  
                 data-toggle="modal" data-target="#taskModal">
                 <i class="fas fa-plus"></i>
@@ -575,7 +575,7 @@
     }
     @media (max-width: 500px) {
         .fc-daygrid-day-frame .fc-daygrid-day-top a{
-            font-size: 1rem;
+            font-size: 0.8rem;
             width: 100%;
             height: 100%;
             padding: 0;
@@ -647,8 +647,13 @@
             if (locations.length === 0) {
                     // Optionally, you can handle the case where there are no locations
                     // For example, you might want to display a message or perform some other action.
-                    markers.clearLayers();
-                    
+                    const defaultMarker = L.marker([0, 0]); // Default marker position
+                    const defaultPopupContent = "No locations available"; // Default message
+                    defaultMarker.bindPopup(defaultPopupContent);
+                    markers.addLayer(defaultMarker);
+
+                    map.addLayer(markers); // Add the default marker to the map
+                    map.setView([0, 0], 2); // Set the map view to a default location and zoom level
                     return; // Stop further execution
                 }
             // Create new markers for filtered locations and add them to the map

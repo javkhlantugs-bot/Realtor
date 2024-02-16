@@ -15,7 +15,7 @@
     <div class="col-md-8">
         <h2 >{{ property.address }}</h2>
     </div>
-    <div class="col-md-4 d-flex justify-content-end" >
+    <div class="col-md-4 d-flex justify-content-end page-actions" >
         <button class="btn btn-outline-primary mr-2"
                 style="margin-right: 5px;"
                 onclick="deleteProperty({{ property.id }})">
@@ -112,10 +112,14 @@
                         
                     </td>
                     <td>
-                        <a onclick="sendEmail('{{ suggest.client.email }}');" title="Send mail to {{ suggest.client.email }}" style="cursor: pointer;">
-                            &#x1F4E7; <!-- Email icon -->
+                        {% if suggest.client.email %}
+                            <a onclick="sendEmail('{{ suggest.client.email }}');" title="Send mail to {{ suggest.client.email }}" style="cursor: pointer;">
+                                &#x1F4E7; <!-- Email icon -->
+                                {{ suggest.client.email }}
+                            </a>
+                        {% else %}
                             {{ suggest.client.email }}
-                        </a>
+                        {% endif %}
                     </td>
                     <td>
                         <form method="post" action="{% url 'property_events' property_id=property.id %}">

@@ -30,7 +30,7 @@
 
 <div class="row container-header" style="margin-bottom: 10px;">
     <h2 class="col-md-4">Contacts List</h2>
-    <div class="col-md-8 d-flex justify-content-end" >
+    <div class="col-md-8 d-flex justify-content-end page-actions" >
         <!-- <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center"  data-toggle="modal" data-target="#contactModal">
             <i class="material-icons mr-2">add</i> <span class="d-none d-md-inline"> Add Contact</span>
         </a> -->
@@ -64,9 +64,14 @@
                             <a href="tel:{{ client.phone_number }}" id="callButton">{{ client.phone_number }}</a>
                         </td>
                         <td>
-                            <a href="mailto:{{ client.email }}" title="Send mail to {{ client.email }}"> {{ client.email }} </a>
-
-                            
+                            {% if client.email %}
+                                <a onclick="sendEmail('{{ client.email }}');" title="Send mail to {{ suggest.client.email }}" style="cursor: pointer;">
+                                    &#x1F4E7; <!-- Email icon -->
+                                    {{ client.email }}
+                                </a>
+                            {% else %}
+                                {{ client.email }}
+                            {% endif %}
                         </td>
                         <td>{{ client.status }}</td>
                         <td>
@@ -113,6 +118,12 @@
                 alert("This feature is available on mobile devices only.");
             }
         });
+    </script>
+    <script>
+        function sendEmail(email) {
+            var mailtoLink = 'mailto:' + email ;
+            window.open(mailtoLink, '_blank');
+            }
     </script>
 </div>
 

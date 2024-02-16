@@ -7,62 +7,116 @@
     <title>{% block title %}Account{% endblock %}</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <!-- Add your custom styles if needed -->
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
+        :root{
+            --color-background-rgba: rgba(255, 255, 255, 1) ;      /* White background */
+            --color-text-rgba: rgba(26, 26, 26, 1) ;               /* Dark text */
+            --border-color-rgba: rgba(204, 204, 204, 1)  ;   
+            --header-color-rgba: rgba(250, 250, 250, 1);       /* Light border color */
+            --color-stripe-rgba: rgba(240, 240, 240, 1);
+        }
+        .dark-mode-variables{
+            --color-background-rgba: rgba(26, 26, 26, 1) ;
+            --color-text-rgba: rgba(255, 255, 255, 1) ;
+            --border-color-rgba: rgba(43, 43, 43, 1) ; 
+            --header-color-rgba: rgba(50, 50, 50, 1)    ;
+            --color-stripe-rgba: rgba(40, 40, 40, 1);
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--color-background-rgba) !important;
+            color: var(--color-text-rgba);
+            border: 1px solid var(--border-color-rgba);
+        }
         /* Add your custom styles here */
         body {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #1a1a1a;
+            background-color: var(--color-background-rgba);
         }
         h1, h2, label{
-            color: #CCc;
+            color: var(--color-text-rgba);
         }
         input{
-            background-color: #1a1a1a !important;
+            background-color: var(--color-background-rgba) !important;
         }
         input{
-            color: #ccc !important;
+            color: var(--color-text-rgba) !important;
         }
         input:focus{
-            color: #CCc !important;
+            color: var(--color-text-rgba) !important;
         }
         .btn-primary{
-            background-color: #fff;
-            color: #1a1a1a;
-            border:  #fff solid 1px;
+            background-color: var(--color-text-rgba);
+            color: var(--color-background-rgba);
+            border:  var(--color-text-rgba) solid 1px;
         }
         .btn-primary{
-            background-color: #fff;
-            color: #1a1a1a;
-            border:  #fff solid 1px;
+            background-color: var(--color-text-rgba);
+            color: var(--color-background-rgba);
+            border:  var(--color-text-rgba) solid 1px;
         }
         .btn-outline-primary{
             background-color: transparent;
-            color: #fff;
-            border:  #fff solid 1px;
+            color: var(--color-text-rgba);
+            border:  var(--color-text-rgba) solid 1px;
         }
         .btn-outline-info{
             background-color: transparent;
-            color: #fff;
-            border:  #fff solid 1px;
+            color: var(--color-text-rgba);
+            border:  var(--color-text-rgba) solid 1px;
         }
 
         .container {
             width: 100%;
         }
+        .toggle-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            font-size: 24px; /* Adjust the font size as needed */
+            width: 50px;
+            right: 60px;
+            position: fixed;
+            top: 12px;
+        }
+
+        .toggle-button .material-icons {
+            color: var(--color-text-rgba);
+        }
+
+        .toggle-button .material-icons:hover {
+            color: #656565;
+        }
+
+        .toggle-button .dark-mode-variables .material-icons {
+            color: #656565; /* Dark mode color for Material Icons */
+        }
         
     </style>
 </head>
-<body>
+<body class="{% if isDarkMode %}dark-mode-variables{% endif %}">
 
 <div class="container mt-5">
     <div style="top: 30px; left: 30px; position: absolute;">
         <h1>Estates.</h1>
         <h2>Solutions</h2>
     </div>
+    <button class="toggle-button" onclick="toggleDarkMode()">
+        <i id="modeIcon" class="material-icons">brightness_4</i> <!-- Google Material Icon sun icon -->
+    </button>
     <div class="row justify-content-center">
         <div>
             {% block content %}
@@ -74,6 +128,35 @@
 <!-- Include Bootstrap JS and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // JavaScript to toggle dark mode and remember user preference
+    function toggleDarkMode() {
+        const rootElement = document.documentElement;
+        const isDarkMode = rootElement.classList.toggle('dark-mode-variables');
 
+        // Update the icon based on the dark mode state
+        const modeIcon = document.getElementById('modeIcon');
+        modeIcon.textContent = isDarkMode ? 'brightness_7' : 'brightness_4';
+
+        // Store user preference in localStorage as a string
+        localStorage.setItem('darkMode', isDarkMode.toString());
+    }
+
+    // Check if the user had a dark mode preference and apply it on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const storedMode = localStorage.getItem('darkMode');
+        const isDarkMode = storedMode === 'true';
+
+        // Apply dark mode and update the icon
+        const rootElement = document.documentElement;
+        const modeIcon = document.getElementById('modeIcon');
+
+        if (isDarkMode) {
+            rootElement.classList.add('dark-mode-variables');
+            modeIcon.textContent = 'brightness_7';
+        }
+    });
+    
+</script>
 </body>
 </html>

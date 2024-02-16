@@ -264,6 +264,9 @@
             padding-right: 10px;
         }
 
+        .modal-body button {
+                margin-top: 1vh;
+            }
         /* Media query for mobile screens (max-width: 767px) */
         @media (max-width: 767px) {
             .navbar-container {
@@ -279,6 +282,13 @@
             .logo{
                 display: none;
             }
+            .modal-body{
+                max-height: 60vh;
+            }
+            .modal{
+                max-height: 80vh;
+            }
+            
             html, body{
                 overflow: hidden !important;
                 height: 100vh;
@@ -399,6 +409,16 @@
             }
             .progress span{
                 color: #1a1a1a !important;
+            }
+            .user-link{
+                display: none;
+            }
+            .page-actions{
+                position: fixed;
+                padding-right: 5px;
+                padding-bottom: 5px;
+                top: 80px;
+                background-color: var(--color-background-rgba);
             }
         }
 
@@ -727,7 +747,10 @@
                     <span class="material-icons">menu</span>    
                 </div>
                 <div class="user-link">
-                    <a href="{% url 'total_list_view' user=request.user.username %}">My link</a>
+                    <a href="{% url 'total_list_view' user=request.user.username %}">
+                        <i class="fas fa-file"></i> <!-- Assuming you're using Font Awesome for icons -->
+                        My Page
+                    </a>
                 </div>
                 
                 <button class="toggle-button" onclick="toggleDarkMode()">
@@ -760,10 +783,20 @@
                     }
                     .user-link{
                         position: fixed;
-                        top: 20px;
-                        right: 20vw;
+                        top: 16px;
+                        right: 120px;
                         width: 100px;
                         z-index: 1000;
+                        background-color: var(--color-text-rgba);
+                        color: var(--color-background-rgba);
+                        border-radius: 10px;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .user-link a{
+                        text-decoration: none;
+                        color: var(--color-background-rgba);
+                        text-align: center;
                     }
                 </style>
 

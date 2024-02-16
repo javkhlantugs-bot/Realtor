@@ -36,7 +36,7 @@
     <div class="col-md-4">
         <h2>Status: {{ client.status}}</h2>
     </div>
-    <div class="col-md-4 d-flex justify-content-end">
+    <div class="col-md-4 d-flex justify-content-end page-actions">
         <button class="btn btn-outline-primary mr-2"
                 style="margin: 5px;"
                 onclick="deleteClient({{ client.id }})">
@@ -70,8 +70,21 @@
             <p>Name: {{ client.client_name }}</p>
             <p>Status: {{ client.get_status_display }}</p>
             <p>Phone number: <a href="tel:{{ client.phone_number }}" id="callButton">{{ client.phone_number }}</a></p>
-            <p> Email: <a href="mailto:{{ client.email }}" title="Send mail to {{ client.email }}">{{ client.email }} </a></p>
+            <p> 
+                {% if client.email %}
+                    <a onclick="sendEmail('{{ client.email }}');" title="Send mail to {{ suggest.client.email }}" style="cursor: pointer;">
+                        Send Email:  &#x1F4E7; <!-- Email icon -->
+                        {{ client.email }}
+                    </a>
+                {% endif %}
+            </p>
         </div>
+        <script>
+            function sendEmail(email) {
+                var mailtoLink = 'mailto:' + email ;
+                window.open(mailtoLink, '_blank');
+                }
+        </script>
         <div class="col-md-4" style="text-align: center;">
             <h5>Significant life events</h5>
             <p>Born: {{ client.birthday }}</p>

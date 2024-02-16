@@ -9,6 +9,14 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<style>
+    @media (max-width: 767px) {
+        .back-btn{
+            margin-bottom: 5vh;
+        }
+    }
+</style>
+
 <div class="container-header">
     <h2 class="mb-4">Add Event</h2>
 </div>
@@ -116,7 +124,7 @@
                     {% endfor %}
                 </div>
                 <button type="submit" class="btn btn-outline-primary" style="width : 100%; margin-top: 10px ">Add task</button>
-                <button onclick="goBack()" class="btn btn-outline-secondary" style="width : 100%; margin-top: 10px ">Back</button>
+                <button onclick="goBack()" class="btn btn-outline-secondary back-btn" style="width : 100%; margin-top: 10px ">Back</button>
             </div>
             
         </div>

@@ -64,7 +64,6 @@
             </div>
         </div>
         
-
         <div class="form-group">
             {{ form.password2.label_tag }}
             <div class="input-group">
@@ -75,7 +74,16 @@
                     </button>
                 </div>
             </div>
+            {% for error in form.password2.errors %}
+                <div class="invalid-feedback" style="display: block;">{{ error }}</div>
+            {% endfor %}
         </div>
+        
+        <input type="checkbox" id="accept_policies" name="accept_policies">
+        <label for="accept_policies">I accept the <a href="{% url 'accounts:privacy_policy' %}">Privacy Policy</a> and <a href="{% url 'accounts:terms_of_service' %}">Terms of Service</a></label><br>
+        {% if request.method == "POST" and not form.accept_policies.value %}
+            <p style="width: 100%;">Please accept our Privacy Policy and Terms of Service to proceed with registration.</p>
+        {% endif %}
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Register</button>
         <a href="{% url 'accounts:login' %}" style="width: 100%; ">
             <button type="button" class="btn btn-outline-primary" style="width: 100%; margin-bottom: 10px;" >Login</button>

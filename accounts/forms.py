@@ -6,7 +6,7 @@ from phonenumber_field.formfields import PhoneNumberField
 
 class CustomUserCreationForm(UserCreationForm):
     phone_number = PhoneNumberField(widget=forms.TextInput(attrs={'class': 'form-control','placeholder':'Phone Number'}))
-
+    accept_policies = forms.BooleanField(label='I accept the Privacy Policy and Terms of Service', required=True)
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'phone_number', 'password1', 'password2']
