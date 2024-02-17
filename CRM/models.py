@@ -264,6 +264,11 @@ class ClientInterest(models.Model):
     # Add other necessary fields such as ForeignKey to link to a Client model
     client = models.ForeignKey(Clent, on_delete=models.CASCADE, null=True, blank=True)
     note = models.TextField(blank=True, null=True)
+    added_date = models.DateTimeField(blank= True,null=True)
+    def save(self, *args, **kwargs):
+        if not self.added_date:
+            self.added_date = timezone.localtime(timezone.now())
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"User: {self.user}, Client: {self.client}"

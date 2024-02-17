@@ -35,7 +35,7 @@
     }
 </style>
 <div class="row mb-3 container-header">
-    <div class="col-md-4">
+    <div class="col-md-8">
         <h2>{{ client.client_name }}</h2>
     </div>
     
@@ -64,7 +64,47 @@
         }
     </script>
 </div>
+
+<style>
+    .eventsTable-mobile{
+        display: none;
+    }
+   
+    #eventsTable-mobile_wrapper{
+        display: none;
+    }
+    #suggestionsTable-mobile{
+        display: none;
+    }
     
+    @media (max-width: 767px) {
+        .eventsTable-mobile{
+            display: block;
+        }  
+        .eventsTable-desktop{
+            display: none;
+        }
+       
+        #eventsTable_wrapper{
+            display: none;
+        }
+       
+        #eventsTable-mobile_wrapper{
+            display: block;
+        }
+        #suggestionsTable-mobile{
+            display: block;
+        }
+        #suggestionsTable_wrapper{
+            display: none;
+        }
+        .task-header{
+            display: none;
+        }
+        
+    }
+</style>
+
 <div class="container-content">
     <div style="height: 5vh;"></div>
     <div class="row mb-12">
@@ -138,11 +178,14 @@
         <div class="card-columns">
             {% for note in wishes %}
                 <div class="card">
-                    <div class="card-body">
-                        <p class="card-text">{{ note.note }}</p>
-                        <a href="#" class="btn btn-outline-primary" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="position: absolute; top: 5px; right: 5px;">
-                            <i class="material-icons">delete</i>
-                        </a>
+                    <div class="card-body" style="display: flex; flex-direction: row; width: 100%;">
+                        <p class="card-text" style="flex: 1; margin-right: 10px;">{{ note.note }}</p>
+                        <div class="card-end" style="width: 10%; display: flex; flex-direction: column; justify-content: space-between;">
+                            <a href="#" class="btn btn-outline-primary" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="align-self: flex-end;">
+                                <i class="material-icons">delete</i>
+                            </a>
+                            <p class="card-text" style="font-size: 0.7rem; align-self: flex-end; margin-top: 10px;">{{ note.added_date|date:"Y-m-d" }}</p>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -151,33 +194,71 @@
     <hr>
     <div style="border-radius: 10px;padding: 10px;">
         
-        <h5 style="text-align: center;">Tasks List</h5>
-        <table id="eventsTable" class="display">
+        <h5 style="text-align: center;" class="task-header">Tasks List</h5>
+        <table id="eventsTable" class="display eventsTable-desktop">
             <thead>
                 <tr>
-                    <th>Event Type</th>
-                    <th>Event Date</th>
-                    <th>Event Description</th>
-                    <th>Completed</th>
-                    <th>Actions</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th style="width: 60%;">Description</th>
+                    <th>Action</th>
+
                 </tr>
             </thead>
             <tbody>
                 {% for event in events %}
-                    <tr>
-                        <td>{{ event.event_type }}</td>
+                    <tr {% if event.is_completed %} class="completed-row" {% endif %}>
+                        <td >
+                            {% if event.is_completed %}
+                                <i class="material-icons">check</i> 
+                            {% endif %}
+                            {{ event.event_type }}
+                        </td>
                         <td>{{ event.event_date }}</td>
-                        <td>{{ event.event_description }}</td>
-                        <td>{{ event.is_completed }}</td>
+                        <td style="width: 60%;">{{ event.event_description }}</td>
                         <td>
-                            
                             <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">
                                 <i class="material-icons">edit</i> 
                             </a>
                             <a href="#" class="btn btn-outline-danger" onclick="confirmDelete('{{ event.id }}')">
                                 <i class="material-icons">delete</i> 
                             </a>
-                            
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <style>
+                .completed-row td{
+                    color: grey;
+                }
+            </style>
+        </table>
+        
+        <table id="eventsTable-mobile" class="display eventsTable-mobile">
+            <thead>
+                <tr>
+                    <th style="width: 80%;">Tasks</th>
+                    <th style="width: 20%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                    <tr {% if event.is_completed %} class="completed-row" {% endif %}>
+                        <td style="width: 80%;">
+                            {% if event.is_completed %}
+                                <i class="material-icons">check</i> 
+                            {% endif %}
+                            <strong>Type:</strong> {{ event.event_type }}<br>
+                            <strong>Date:</strong> {{ event.event_date }}<br>
+                            <strong>Description:</strong> {{ event.event_description }}
+                        </td>
+                        <td style="width: 30%; display: flex; flex-direction: row;">
+                            <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit"></i> 
+                            </a>
+                            <a href="#" class="btn btn-outline-danger" onclick="confirmDelete('{{ event.id }}')">
+                                <i class="fas fa-trash-alt"></i> 
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -235,6 +316,61 @@
                 {% endfor %}
             </tbody>
         </table>
+        <table id="suggestionsTable-mobile" class="display">
+            <thead>
+                <tr>
+                    <th class="text-center">Address</th>
+                    <th class="text-center">Suggest</th>
+                    <th class="fas fa-heart" style="color: red;"></th>
+                </tr>
+            </thead>
+           
+            <tbody>
+                {% for suggest in suggestions %}
+                    <tr>
+                        <td class="text-center">
+                            <div>
+                                <a href="{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}">
+                                    <strong>{{ suggest.property.address }}</strong>
+                                </a>
+                            </div>
+                            {% if suggest.property.deal_type %}
+                                <div>
+                                    <p class="text-center">{{ suggest.property.deal_type }}</p>
+                                </div>
+                            {% endif %}
+                        </td>
+                        
+                        <td>
+                            <div>
+                                <form method="post" action="{% url 'client_events' client_id=client.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-outline-secondary {% if suggest.is_suggested == 'suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('suggested', {{ suggest.id }})">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        
+                                        <button type="button" class="btn btn-outline-secondary {% if suggest.is_suggested == 'not_suggested' %}active{% endif %} not-selected" onclick="updateSuggestion('not_suggested', {{ suggest.id }})">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                        
+                        <td>
+                            {% if suggest.is_interested == 'interested' %}
+                                <i class="fas fa-heart" style="color: red;"></i>
+                            {% else %}
+                                <i class="far fa-heart" style="color: grey;"></i>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
         
         <div class="input-group mb-3" style="margin-top: 20px;">
             <span class="input-group-text">Suggestion Link</span>
@@ -363,34 +499,30 @@
         // Your DataTables initialization code here
         $('#suggestionsTable').DataTable({
             autoWidth:true,
-            initComplete: function () {
-                this.api().columns().every(function () {
-                    var that = this;
-
-                    $('input', this.footer()).on('keyup change clear', function () {
-                        if (that.search() !== this.value) { that.search(this.value).draw(); }
-                    });
-                });
-            },
             responsive: {
                 details: {
                     type: 'none',
                     target: 'td:not(:last-child)'
                 }
             },
-            columnDefs: [
-                {
-                    className: 'd-none d-sm-table-cell', // Hide on small screens
-                    targets: [1, 2, 3, 4,5,7] // Adjust column indices based on your table structure
+            
+        });
+        
+    });
+</script>
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code here
+        $('#suggestionsTable-mobile').DataTable({
+            autoWidth:true,
+            responsive: {
+                details: {
+                    type: 'none',
+                    target: 'td:not(:last-child)'
                 }
-            ],
-            initComplete: function () {
-                // Wrap the length selector and filter input in a container
-                $('.dataTables_length, .dataTables_filter').wrapAll('<div class="datatable-controls"></div>');
-                
-                // Add the title element and position it in the center
-                $('.datatable-controls').after('<div class="datatable-title"><h5 style="text-align: center; padding-top: 10px">Properties List</h5></div>');
-            }
+            },
+            
         });
         
     });
@@ -407,13 +539,21 @@
                     target: 'td:not(:last-child)'
                 }
             },
-            columnDefs: [
-                {
-                    className: 'd-none d-sm-table-cell', // Hide on small screens
-                    targets: [0, 2] // Adjust column indices based on your table structure
+        });
+    });
+</script>
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code with the responsive option and column visibility control
+        $('#eventsTable-mobile').DataTable({
+            autoWidth:true,
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 'td:not(:last-child)'
                 }
-            ]
-            
+            },
         });
     });
 </script>
@@ -442,27 +582,24 @@
 <script>
     // Use jQuery.noConflict() to avoid conflicts with other libraries
     function confirmDelete(eventId) {
-    const isConfirmed = window.confirm('Are you sure you want to delete this event?');
+        const isConfirmed = window.confirm('Are you sure you want to delete this event?');
 
-    if (isConfirmed) {
-        fetch(`/crm/events/delete/${eventId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            // Additional options like body for POST requests can be added here
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            location.reload();
-        })
-        .catch(error => {
-            alert('Error deleting event.');
-        });
+        if (isConfirmed) {
+            fetch(`/crm/events/delete/${eventId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                // Additional options like body for POST requests can be added here
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+        }
     }
-}
 </script>
 <script>
     function confirmDeleteNote(note_id, client_id) {

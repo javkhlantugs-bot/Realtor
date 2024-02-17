@@ -26,9 +26,18 @@
     .no-properties button{
         margin-bottom: 10px;
     }
+    #clientsTable-mobile_wrapper{
+        display: none;
+    }
     @media (max-width: 767px) {
         .page-actions{
             top: 6vh;
+        }
+        #clientsTable-mobile_wrapper{
+            display: block;
+        }
+        #clientsTable_wrapper{
+            display: none;
         }
     }
 </style>
@@ -90,6 +99,65 @@
                                 <div class="progress-bar" role="progressbar" style="width: {{ client.events_percent }}%;" aria-valuenow="{{ client.completed_events }}" aria-valuemin="0" aria-valuemax="client.events_total"></div>
                                 <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">{{ client.events_completed }} / {{ client.events_total }}</span>
                             </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'client_events' client.id %}">Show more</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table id="clientsTable-mobile" class="display">
+            <thead>
+                <tr>
+                    <th>Contact</th>
+                    <th>Details</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                    <tr>
+                        
+                        <td>
+                            <div>
+                                <i class="fas fa-user"></i> 
+                                <a href="{% url 'client_events' client_id=client.id %}">
+                                    {{ client.client_name }}
+                                </a>
+                            </div>
+                            <div>
+                                <i class="fas fa-phone"></i>
+                                <a href="tel:{{ client.phone_number }}">
+                                    {{ client.phone_number }}
+                                </a>
+                            </div>
+                            <div>
+                                {% if client.email %}
+                                    <a onclick="sendEmail('{{ client.email }}');" title="Send mail to {{ client.email }}" style="cursor: pointer;">
+                                        <span>&#x1F4E7;</span> <!-- Email icon -->
+                                        {{ client.email }}
+                                    </a>
+                                {% else %}
+                                    <span></span>
+                                {% endif %}
+                            </div>
+                            {% if client.suggested_count != 0 %}
+                                <div class="progress" style="position: relative; height: 30px;">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ client.suggest_percent }}%; height: 100% !important" aria-valuenow="{{ client.interested_count }}" aria-valuemin="0" aria-valuemax="client.suggested_count"></div>
+                                    <span style="position: absolute; top: 50%; left: 40%; transform: translate(-50%, -50%);">Interested in: {{ client.interested_count }} / {{ client.suggested_count }}</span>
+                                </div>
+                            {% else %}
+                                <span></span>
+                            {% endif %}
+                            {% if client.events_total != 0 %}
+                                <div class="progress" style="position: relative; height: 30px;">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ client.events_percent }}%;" aria-valuenow="{{ client.completed_events }}" aria-valuemin="0" aria-valuemax="client.events_total"></div>
+                                    <span style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%);">Tasks: {{ client.events_completed }} / {{ client.events_total }}</span>
+                                </div>
+                            {% else %}
+                                <span></span>
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'client_events' client.id %}">Show more</a>
@@ -248,12 +316,24 @@ function goBack() {
                     target: 'td:not(:last-child)'
                 }
             },
-            columnDefs: [
-                {
-                    className: 'd-none d-sm-table-cell', // Hide on small screens
-                    targets: [1, 2, 3] // Adjust column indices based on your table structure
+            
+            pageLength: 14,
+            
+        });
+    });
+</script>
+<script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($) {
+        // Your DataTables initialization code with the responsive option and column visibility control
+        $('#clientsTable-mobile').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 'td:not(:last-child)'
                 }
-            ],
+            },
+            
             pageLength: 14,
             
         });

@@ -292,17 +292,18 @@ def get_events(request):
 
 @login_required
 def add_event(request):
+    initial_date = date.today()
     if request.method == 'POST':
-        form = EventForm(request.POST,user = request.user.id)
+        form = EventForm(request.POST,user = request.user.id, initial={'event_date': initial_date})
         if form.is_valid():
             event = form.save(commit=False)
             event.user = request.user
             event.save()
-            return redirect('add_event')
+            return redirect('client_list')
         else:
             pass
     else:
-        form = EventForm(user = request.user.id)
+        form = EventForm(user = request.user.id, initial={'event_date': initial_date})
     return render(request, 'add_event.html', {'form': form})
 
 @login_required
@@ -330,7 +331,7 @@ def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
         event.delete()
-        return redirect('events_list')
+        return JsonResponse({'message': 'Task deleted successfully'})
     
     return render(request, 'delete_event.html', {'event': event})
 
@@ -402,8 +403,15 @@ def client_list(request):
 
 def client_events(request, client_id):
     client = get_object_or_404(Clent, id=client_id)
-    events = Event.objects.filter(Q(participant_buyer=client) | Q(participant_owner=client), user=request.user.id)
+    events = Event.objects.filter(
+            Q(participant_buyer=client) | Q(participant_owner=client),
+            user=request.user.id
+        )
+    events = list(events)
+    events.reverse()
     wishes = ClientInterest.objects.filter(client = client, user = request.user.id)
+    wishes = list(wishes)
+    wishes.reverse()
     # Retrieve all suggestions for the client
     suggestions = Client_suggestion.objects.filter(client=client_id, user = request.user.id)
     interested_list = Client_suggestion.objects.filter(client=client_id, is_interested = 'interested', user = request.user.id)
@@ -579,6 +587,8 @@ def properties_list(request):
 def property_events(request, property_id):
     property = get_object_or_404(Property, id=property_id)
     events = Event.objects.filter(participant_property=property, user = request.user.id)
+    events = list(events)
+    events.reverse()
     suggestions = Client_suggestion.objects.filter(property=property_id)
 
     form = ClientSuggestionForm()

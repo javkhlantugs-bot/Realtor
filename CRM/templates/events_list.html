@@ -16,6 +16,25 @@
     .container-content {
         position: relative;
     }
+    .fc-today-button:not([disabled]) {
+        background-color: transparent !important;
+        color: var(--color-text-rgba) !important;
+        border: none;
+        /* Add any other styles for the enabled state */
+    }
+
+    /* Styles for the disabled button */
+    .fc-today-button[disabled] {
+        background-color: transparent !important;
+        color: var(--border-color-rgba) !important;
+        border: none;
+        /* Add any other styles for the disabled state */
+    }
+    .fc .fc-button-primary{
+        background-color: transparent !important; 
+        border-color: var(--border-color-rgba);
+        color: var(--color-text-rgba) !important;
+    }
 
     #calendar {
         position: absolute;
@@ -77,14 +96,15 @@
             display: inline-block; /* Ensure it's an inline-block element */
         }
         .task_list #task_list_header{
-            top: 35vh;
-            width: 100%;
+            display: none;
         }
         #events-list {
-            top: 38vh;
-            height: 40vh;
+            top: 33vh;
+            height: 70vh;
             overflow-y: auto;
             padding: 0 !important;
+            margin-bottom: 10vh;
+            padding-bottom: 10vh;
         }
         .event{
             padding-right: 0 !important;
@@ -92,8 +112,7 @@
         }
 
         #main-map-container {
-            top: 85vh;
-            padding-bottom: 10vh;
+            display: none;
         }
         #schedule-title{
             display: none;
@@ -204,7 +223,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="id_participant_buyer">Type:</label>
+                                <label for="id_event_type">Type:</label>
                                 {{ form.event_type|add_class:"form-control" }}
                                 {% for error in form.event_type.errors %}
                                     <span class="text-danger">{{ error }}</span>
