@@ -4,8 +4,8 @@
 {% block title %}Estates Solutions | Delete Property{% endblock %}
 
 {% block content %}
-<div class="col-md-6">
-    <h2 class="mb-4">Delete Property</h2>
+<h2 class="mb-4 container-header">Delete Property</h2>
+<div class="col-md-6 container-content">
     <p>Are you sure you want to delete the property "{{ property }}"?</p>
     <form method="post">
         {% csrf_token %}

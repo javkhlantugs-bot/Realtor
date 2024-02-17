@@ -235,7 +235,7 @@
             <tr>
                 <th>Contact</th>
                 <th>Suggest</th>
-                <th><i class="fas fa-heart" style="color: red;"></i></th>
+                <th style="width: 15%;">Like</th>
             </tr>
         </thead>
         <tbody>
@@ -343,7 +343,9 @@
     jQuery.noConflict();
     jQuery(document).ready(function($) {
         // Your DataTables initialization code here
-        $('.eventsTable-mobile').DataTable();
+        $('.eventsTable-mobile').DataTable(
+            {lengthChange: false}
+        );
     });
 </script>
 
@@ -374,6 +376,7 @@
                     target: 'td:not(:last-child)'
                 }
             },
+            lengthChange: false
         });
     });
 </script>

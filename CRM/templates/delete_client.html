@@ -4,8 +4,8 @@
 {% block title %}Estates Solutions | Delete Contact{% endblock %}
 
 {% block content %}
-<div class="col-md-6">
-    <h2 class="mb-4">Delete Contact</h2>
+<h2 class="mb-4 container-header">Delete Contact</h2>
+<div class="col-md-6 container-content">
     <p>Are you sure you want to delete the contact "{{ client }}"?</p>
     <form method="post">
         {% csrf_token %}
