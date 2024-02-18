@@ -23,7 +23,7 @@ from accounts.views import user_login
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('crm/',include('CRM.urls')),
-    path('suggested_properties/', include('suggest_properties.urls')),
+    path('realtorCRM/', include('suggest_properties.urls')),
     path('', include('accounts.urls', namespace='accounts')),
     path('', include('allauth.urls')),
     path('login/', user_login, name='user_login'),

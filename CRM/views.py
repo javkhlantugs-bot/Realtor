@@ -1155,3 +1155,31 @@ def mark_all_notifications_as_read(request):
         return JsonResponse({'status': 'success'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+from accounts.forms import CustomUserChangeForm, CustomUserPasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
+@login_required
+
+def profile(request):
+    user_form = CustomUserChangeForm(instance=request.user)
+    if request.method == 'POST':
+        user_form = CustomUserChangeForm(request.POST, instance=request.user)
+        if user_form.is_valid():
+            user_form.save()
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('settings')
+
+    return render(request, 'user_profile.html', {'user_form': user_form})
+
+def change_password(request):
+    password_change_form = CustomUserPasswordChangeForm(request.user)
+    if request.method == 'POST':
+        password_change_form = CustomUserPasswordChangeForm(request.user, request.POST)
+        if password_change_form.is_valid():
+            user = password_change_form.save()
+            update_session_auth_hash(request, user)  # Update session to prevent logging out
+            messages.success(request, 'Your password has been changed successfully.')
+            return redirect('profile')
+
+    return render(request, 'change_password.html', {'password_change_form': password_change_form})

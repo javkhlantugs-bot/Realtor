@@ -28,7 +28,14 @@ SECRET_KEY = '6~*~Xdyl-?;olY*T2~)oWxviJ56fybpki{V<%RgGjkTGtJ;4Bz<R-i&Ts:1Sq<)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-EMAIL_BACKEND = 'crm.email_backend.GmailOAuth2EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'crm.email_backend.GmailOAuth2EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 't.javkhlantugs1@gmail.com'
+EMAIL_HOST_PASSWORD = 'Um98112218@'
+
 GMAIL_CLIENT_ID = '526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com'
 GMAIL_CLIENT_SECRET = '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'
 GMAIL_REFRESH_TOKEN = 'user_refresh_token'

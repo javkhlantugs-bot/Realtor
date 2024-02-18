@@ -1,6 +1,6 @@
 # accounts/forms.py
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
 from .models import CustomUser
 from phonenumber_field.formfields import PhoneNumberField
 
@@ -26,3 +26,19 @@ class CustomAuthenticationForm(AuthenticationForm):
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
         }
+
+class CustomUserChangeForm(UserChangeForm):
+    phone_number = PhoneNumberField(widget=forms.TextInput(attrs={'class': 'form-control','placeholder':'Phone Number'}))
+    class Meta(UserChangeForm.Meta):
+        model = CustomUser
+        fields = ['username', 'email', 'phone_number']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+        }
+
+class CustomUserPasswordChangeForm(PasswordChangeForm):
+    class Meta:
+        model = CustomUser
+

@@ -58,251 +58,281 @@
             width: 50vw;
             overflow-y: auto;
             margin-bottom: 1vh;
+            scrollbar-width: thin; /* Adjust the width of the scrollbar */
         }
         #main-map-container{
             border-radius: 10px;
-            width: 49vw;
+            width: 31vw;
             height: 90vh;
             margin-left: 1vw;
             border-radius: 10px;
         }
-        #map {
+        #main-map {
             border-radius: 10px;            
         }
         .properties-list::-webkit-scrollbar {
-                width: 12px; /* Adjust the width of the scrollbar */
-                margin-right: -12px; /* Move the scrollbar to the left by its width */
+            width: 12px; /* Adjust the width of the scrollbar */
         }
-    
+
         /* Targeting the scrollbar handle or thumb */
         .properties-list::-webkit-scrollbar-thumb {
             background-color: var(--color-text-rgba); /* Color of the scrollbar thumb */
             border-radius: 6px; /* Radius of the scrollbar thumb corners */
         }
-    
+
         /* Optional: Hover effect on the scrollbar handle */
         .properties-list::-webkit-scrollbar-thumb:hover {
             background-color: var(--color-text-rgba); /* Color when hovering over the scrollbar thumb */
         }
-    
+
         /* Targeting the scrollbar track when handle is being dragged */
         .properties-list::-webkit-scrollbar-thumb:active {
             background-color: var(--color-text-rgba); /* Color when scrollbar thumb is being dragged */
         }
+        
         #main-map{
             height: 100%;
             width: 100%;
         }
         .container-content{
-            top: 5vh;
-            height: 88vh;
+            margin-top: 1vh;
+            height: 90vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: row;
+        }
+        .container-content-sub{
+            width: 80vw;
+            display: flex;
+            flex-direction: row;
+        }
+        .container-fluid{
+            padding: 0;
+            margin: 0;
+        }
+        .header-container {
+            padding-top: 10px;
+            background-color: transparent; /* Add your desired background color */
+            box-shadow: 0 1px 5px rgba(26, 26, 26, 1);
+        }
+        .void-section-left{
+            background: linear-gradient(45deg, var(--color-stripe-rgba) 25%, transparent 25%, transparent 50%, var(--color-stripe-rgba) 50%, var(--color-stripe-rgba) 75%, transparent 75%, transparent);
+            width: 10vw;
+            height: 90vh;
+            background-size: 50px 50px; /* Adjust the size of the stripes */
+        }
+        
+        .void-section-right{
+            background: linear-gradient(45deg, var(--color-stripe-rgba) 25%, transparent 25%, transparent 50%, var(--color-stripe-rgba) 50%, var(--color-stripe-rgba) 75%, transparent 75%, transparent);
+            width: 10vw;
+            height: 90vh;
+            background-size: 50px 50px; /* Adjust the size of the stripes */
         }
         @media (max-width: 767px) {
-            .container-content{
-                margin: 0;
+            .header-container-sub{
+                flex-direction: column !important;
             }
-            .contents{
-                width: 100vw !important;
-                padding: 0;
-                margin: 0;
-            }
-            
-            
-            .properties-list{
-                position: fixed;
-                width: 100vw !important;
-                height: 50vh !important;
-                overflow-x: hidden;
-                margin: 0;
-                top: 48vh;
-                border: var(--border-color-rgba);
-            }
-            .image-container{
-                width: 88vw !important;
-            }
-            .card-text-content{
-                width: 88vw !important;
-                padding-right: 20px;
-            }
-            .card-img-left{
-                max-width: 70vw !important;
-                margin-left: 20px;
+            .header-content{
+                width: 80vw !important;
+                text-align: left !important;
             }
             #main-map-container{
-                width: 100vw !important;
-                height: 35vh !important;
-                margin-right: 0 !important;
-                margin-left: 0 !important;
-                margin-bottom: 5vh;
-                left: 0;
-                position: fixed;
-                top: 11vh;
-            }
-            #main-map{
-                position: fixed;
-                height: 34vh !important;
-                width: 100vw !important;
-                left: 0;
-                margin-left: 0;
-                padding-left: 0;
-                border-top-left-radius: 0px !important;
-                border-top-right-radius: 0px !;
-            }
-            .container-fluid{
-                padding-left: 0;
-            }
-            .container-fluid .row{
-                margin-right: 0;
-                padding-right: 0;
+                display: none;
             }
             .container-content{
+                width: 100vw !important; 
+                margin-left: 0 !important; 
+                margin-right: 0 !important;
+            }
+            .container-content-sub{
+                margin-left: 0 !important; 
+                margin-right: 0 !important;
                 width: 100vw !important;
+                height: 90vh !important;
             }
-            .card{
-                width: 90vw;
-                left: 0;
+            .properties-list{
+                width: 95vw;
+                height: 85vh;
             }
-            .card-body{
-                flex-direction: column;
-                width: 88vw;
+            .card-body p{
+                font-size: 0.8rem;
             }
-            .cards{
-                width: 100vw;
-                left: 0;
+            .card-text-content{
+                width: 60vw !important;
             }
-    }
+            .cont-list{
+                height: 85vh;
+            }
+            
+        }
     </style>
-    <div class="col-md-12 container-content">
-        <div class="row">
-            <div class="row properties-list">
-                {% for property in suggestions %}
-                    <div class="col-md-12 mb-12 cards" >
-                        <div class="card">
-                            <div class="card-body d-flex"> <!-- Add d-flex and align-items-stretch classes -->
-                                <a href="{% url 'show_property' user=property.user id=property.id address=property.address %}">
-                                    {% if property.images %}
-                                        <div class="image-container">
-                                            <img class="card-img-left flex-shrink-0" src="/media/{{ property.images }}" alt=""> <!-- Add flex-shrink-0 class -->
+    <body>
+        
+        <div class="container-fluid">
+            
+            <div class="header-container" style="width: 100vw;">
+                <div style="width : 80vw; margin-left: 10vw; margin-right:10vw; display: flex; flex-direction: row;" class="header-container-sub">
+                    <div class="header-content" style="width: 70vw;">
+                        <h5 class="h5 h-md-auto h-lg-auto" >{{ setups.welcome_message }}</h5>
+                    </div>
+                    <div class="header-content" style="width: 10vw; text-align: right;">
+                        <h5 class="h5 h-md-auto h-lg-auto" >
+                            <a id= 'callButton' href="tel:{{ setups.contacts }}">Call: {{ setups.contacts }}</a>
+                        </h5>
+                    </div>
+                </div>
+                <script>
+                    // JavaScript to prevent the default behavior on non-mobile devices
+                    document.getElementById('callButton').addEventListener('click', function (event) {
+                        // Check if the device is not a mobile device
+                        if (!/Mobi|Android/i.test(navigator.userAgent)) {
+                            // Prevent the default behavior (e.g., following the link) on non-mobile devices
+                            event.preventDefault();
+                            // You can add additional logic or provide a message for non-mobile users if needed
+                            alert("This feature is available on mobile devices only.");
+                        }
+                    });
+                </script>
+            </div>
+            <div class="container-content">
+                <div class="void-section-left">
+                </div>
+                <div class="container-content-sub" >
+                    <div class="row properties-list">
+                        {% for property in suggestions %}
+                        <div class="col-md-12 mb-12 cards">
+                            <div class="card">
+                                <div class="card-body d-flex align-items-stretch"> <!-- Added d-flex and align-items-stretch classes -->
+                                    <a href="{% url 'show_property' user=property.user id=property.id address=property.address %}">
+                                        {% if property.images %}
+                                            <div class="image-container">
+                                                <img class="card-img-left flex-shrink-0" src="/media/{{ property.images }}" alt=""> <!-- Added flex-shrink-0 class -->
+                                            </div>
+                                        {% endif %}
+                                        <div class="card-text-content ml-3"> <!-- Added ml-3 class for left margin -->
+                                            <h5 class="card-title">{{ property.address }}</h5>
+                                            {% if property.total_price %}
+                                                <div class="card-text">
+                                                    <strong>{{ property.total_price }}</strong>
+                                                </div>
+                                            {% endif %}
+                                            {% if property.price_month %}
+                                                <div class="card-text">
+                                                    <strong>{{ property.price_month }}</strong>
+                                                </div>
+                                            {% endif %}
+                                            {% if property.total_rooms %}
+                                                <div class="card-text">
+                                                    <p>{{ property.total_rooms }} total rooms</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if property.bedrooms %}
+                                                <div class="card-text">
+                                                    <p>{{ property.bedrooms }} bedrooms</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if property.toilets %}
+                                                <div class="card-text">
+                                                    <p>{{ property.toilets }} toilets</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if property.sqr_meter %}
+                                                <div class="card-text">
+                                                    <p>{{ property.sqr_meter }} sqr meter</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if property.price_sqrm %}
+                                                <div class="card-text">
+                                                    <p>Price Square meter: {{ property.price_sqrm }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if property.status %}
+                                                <div class="card-text">
+                                                    <p>Status: {{ property.status }}</p>
+                                                </div>
+                                            {% endif %}
+                                            <a href="{% url 'show_property' user=property.user id=property.id address=property.address %}" class="btn btn-outline-primary mt-3">Show more</a> <!-- Added mt-3 class for top margin -->
                                         </div>
-                                    {% endif %}
-                                    <div style="padding-left: 20px;" class="card-text-content"> <!-- Create a div to hold the card content -->
-                                        <h5 class="card-title">{{ property.address }}</h5>
-                                        {% if property.total_price %}
-                                            <div class="card-text">
-                                                <strong>{{ property.total_price }}</strong></h5>
-                                            </div>
-                                        {% endif %}
-                                        {% if property.price_month %}
-                                            <div class="card-text">
-                                                <strong>{{ property.price_month }}</strong></h5>
-                                            </div>
-                                        {% endif %}
-                                        
-                                        {% if property.total_rooms %}
-                                            <div class="card-text">
-                                                <p>{{ property.total_rooms }} total rooms</p>
-                                            </div>
-                                        {% endif %}
-                                        {% if property.bedrooms %}
-                                            <div class="card-text">
-                                                <p>{{ property.bedrooms }} bedrooms</p>
-                                            </div>
-                                        {% endif %}
-                                        {% if property.toilets %}
-                                            <div class="card-text">
-                                                <p>{{ property.toilets }} toilets</p>
-                                            </div>
-                                        {% endif %}
-                                        {% if property.sqr_meter %}
-                                            <div class="card-text">
-                                                <p>{{ property.sqr_meter }} sqr meter</p>
-                                            </div>
-                                        {% endif %}
-                                        {% if property.price_sqrm %}
-                                            <div class="card-text">
-                                                <p>Price Square meter: {{ property.price_sqrm }}</p>
-                                            </div>
-                                        {% endif %}
-                                        {% if property.status %}
-                                            <div class="card-text">
-                                                <p>Status: {{ property.status }}</p>
-                                            </div>
-                                        {% endif %}
-                                        <a href="{% url 'show_property' user=property.user id=property.id address=property.address %}"  class="btn btn-outline-primary">Show more</a>
                                     </a>
                                 </div>
                             </div>
                         </div>
+                        
+                        {% endfor %}
+                        {% if properties %}
+                            <div style="height: 10vh;"></div>
+                        {% endif %}
+                        
                     </div>
-                {% endfor %}
-                {% if properties %}
-                    <div style="height: 10vh;"></div>
-                {% endif %}
-                
+                    <div id="main-map-container">
+                        <div id="main-map" style="height: 100%;"></div>
+                    </div>
+                </div>
+                <div class="void-section-right">
+                </div>
             </div>
-            <div id="main-map-container">
-                <div id="map" style="height: 100%;"></div>
-            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            
+            {{ locations|json_script:"locations"}}
+
+            <script>
+                var user = '{{ user }}'; 
+                var map = L.map('main-map');
+                var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+
+                let locations = JSON.parse(document.getElementById('locations').textContent);
+
+                var markers = [];
+
+                locations.forEach(location => {
+                    if (location.id) {
+                        var marker = L.marker([location.latitude, location.longitude]).addTo(map);
+                        var url = `/suggested_properties/show_properties/${user}/${location.id}/${location.address}/`;
+                        var popupContent = "<b>Address:</b> " + location.address + "<br>";
+
+                            // Include additional property details if they exist
+                            if (location.total_rooms) {
+                                popupContent += "<b>Total rooms:</b> " + location.total_rooms + "<br>";
+                            }
+                            if (location.bedrooms) {
+                                popupContent += "<b>Bedrooms:</b> " + location.bedrooms + "<br>";
+                            }
+                            if (location.toilets) {
+                                popupContent += "<b>Toilets:</b> " + location.toilets + "<br>";
+                            }
+                            if (location.sqr_meter) {
+                                popupContent += "<b>Square Meter:</b> " + location.sqr_meter + "<br>";
+                            }
+                            if (location.price_sqrm) {
+                                popupContent += "<b>Price per Square Meter:</b> " + location.price_sqrm + "<br>";
+                            }
+                            if (location.total_price) {
+                                popupContent += "<b>Total Price:</b> " + location.total_price + "<br>";
+                            }
+                            popupContent += `<a href='${url}'>Show more</a>`;
+
+                        marker.bindPopup("<b>$" + location.total_price + "</b>").openPopup();
+                        markers.push(marker);
+                    }
+                });
+
+                // Create a feature group from the markers and add it to the map
+                var markerGroup = L.featureGroup(markers).addTo(map);
+
+                // Fit the map view to the bounds of the marker group
+                map.fitBounds(markerGroup.getBounds());
+            </script>
         </div>
-    
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-    {{ locations|json_script:"locations"}}
-
-    <script>
-        var user = '{{ user }}'; 
-        var map = L.map('map');
-        var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
-
-        let locations = JSON.parse(document.getElementById('locations').textContent);
-
-        var markers = [];
-
-        locations.forEach(location => {
-            if (location.id) {
-                var marker = L.marker([location.latitude, location.longitude]).addTo(map);
-                var url = `/suggested_properties/show_properties/${user}/${location.id}/${location.address}/`;
-                var popupContent = "<b>Address:</b> " + location.address + "<br>";
-
-                    // Include additional property details if they exist
-                    if (location.total_rooms) {
-                        popupContent += "<b>Total rooms:</b> " + location.total_rooms + "<br>";
-                    }
-                    if (location.bedrooms) {
-                        popupContent += "<b>Bedrooms:</b> " + location.bedrooms + "<br>";
-                    }
-                    if (location.toilets) {
-                        popupContent += "<b>Toilets:</b> " + location.toilets + "<br>";
-                    }
-                    if (location.sqr_meter) {
-                        popupContent += "<b>Square Meter:</b> " + location.sqr_meter + "<br>";
-                    }
-                    if (location.price_sqrm) {
-                        popupContent += "<b>Price per Square Meter:</b> " + location.price_sqrm + "<br>";
-                    }
-                    if (location.total_price) {
-                        popupContent += "<b>Total Price:</b> " + location.total_price + "<br>";
-                    }
-                    popupContent += `<a href='${url}'>Show more</a>`;
-
-                marker.bindPopup("<b>$" + location.total_price + "</b>").openPopup();
-                markers.push(marker);
-            }
-        });
-
-        // Create a feature group from the markers and add it to the map
-        var markerGroup = L.featureGroup(markers).addTo(map);
-
-        // Fit the map view to the bounds of the marker group
-        map.fitBounds(markerGroup.getBounds());
-    </script>
-        
     </body>
+    <footer>
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <h6>Realtor CRM system <strong><a href="https://estates.solutions">Estates.Solutions</a></strong></h6>
+        </div>    
+    </footer>
 
 </html>

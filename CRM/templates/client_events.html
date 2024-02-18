@@ -180,7 +180,7 @@
                 <div class="card">
                     <div class="card-body" style="display: flex; flex-direction: row; width: 100%;">
                         <p class="card-text" style="flex: 1; margin-right: 10px;">{{ note.note }}</p>
-                        <div class="card-end" style="width: 10%; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div class="card-end" style="width: 6%; display: flex; flex-direction: column; justify-content: space-between;">
                             <a href="#" class="btn btn-outline-primary" onclick="confirmDeleteNote('{{ note.id }}', '{{ client.id }}')" style="align-self: flex-end;">
                                 <i class="material-icons">delete</i>
                             </a>
@@ -190,6 +190,13 @@
                 </div>
             {% endfor %}
         </div>
+        <style>
+            @media  (max-width: 767px) {
+                .card-end{
+                    width: 20% !important;
+                }
+            }
+        </style>
     </div>
     <hr>
     <div style="border-radius: 10px;padding: 10px;">

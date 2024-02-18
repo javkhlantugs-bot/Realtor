@@ -358,61 +358,13 @@
     <form method="post" id="csrf-form">
         {% csrf_token %}
     </form>
-    <div id="scroll-buttons">
-        <button id="go-to-down" onclick="toggleScrollDirection()">
-            <i class="fas fa-chevron-down"></i> <!-- Initially set to down icon -->
-        </button>
-    </div>
+    
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
-<script>
-    // Function to scroll to the bottom of the content container
-    function scrollToBottom() {
-        const contentContainer = document.querySelector('.container-content');
-        if (contentContainer) {
-            contentContainer.scrollTop = contentContainer.scrollHeight;
-        }
-    }
 
-    // Function to scroll to the top of the content container
-    function scrollToTop() {
-        const contentContainer = document.querySelector('.container-content');
-        if (contentContainer) {
-            contentContainer.scrollTop = 0;
-        }
-    }
-
-    // Function to toggle scroll direction based on scroll position
-    function toggleScrollDirection() {
-        const contentContainer = document.querySelector('.container-content');
-        const goToDownButton = document.getElementById('go-to-down');
-
-        if (contentContainer && goToDownButton) {
-            // Calculate 50% of the container's height
-            const halfHeight = contentContainer.clientHeight / 2;
-
-            // Toggle button functionality based on scroll position
-            if (contentContainer.scrollTop < halfHeight) {
-                // Scroll position is above 50%, set button to scroll down
-                goToDownButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
-                goToDownButton.onclick = scrollToBottom;
-            } else {
-                // Scroll position is below 50%, set button to scroll up
-                goToDownButton.innerHTML = '<i class="fas fa-chevron-up"></i>';
-                goToDownButton.onclick = scrollToTop;
-            }
-        }
-    }
-
-    // Event listener for scroll events
-    document.querySelector('.container-content').addEventListener('scroll', toggleScrollDirection);
-
-    // Initial call to set button functionality based on the initial scroll position
-    toggleScrollDirection();
-</script>
 <style>
     #events-list {
         padding: 10px;

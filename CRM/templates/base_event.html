@@ -27,9 +27,18 @@
             // Your other scripts and logic go here...
         });
     </script>
+    <link rel="shortcut icon" href="{% static 'image/logo.ico' %}" type="image/x-icon">
     
     <title>{% block title %}Estates Solutions CRM{% endblock %}</title>
+    <!-- <link rel="icon" href="{% static 'image/logo2.png' %}"/> -->
     
+    <style>
+        /* Make the favicon larger */
+        link[rel="icon"] {
+            width: 64px;
+            height: 64px;
+        }
+    </style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
@@ -302,19 +311,6 @@
                 margin-bottom: 0 !important;
             }
 
-            .menu{
-                display: block !important;
-                position: absolute;
-                top: 2vh;
-                left: 1vh;
-                z-index: 100000000;
-                width: 1vh;
-                height: 1vh;
-                color: var(--color-text-rgba);
-            }
-            .menu span{
-                color: var(--color-text-rgba) !important;
-            }
             .toggle-button{
                 display: none;
             }
@@ -644,9 +640,7 @@
             position: absolute;
             top: 80vh;
         }
-        .menu{
-            display: none;
-        }
+        
         .dataTables_wrapper{
             border-radius: 10px;
             background-color: var(--header-color-rgba);
@@ -795,7 +789,7 @@
     <header>
             <div class="row" id="dynamicHeightRow" style="height: 6vh;">
                 <div  class="logo">
-                    <span>ES</span>
+                    <span>Es</span>
                 </div>
                 
                 <div class="search-container">
@@ -807,13 +801,11 @@
                     </div>
                     <div id="search-results-container" class="search-results-container"></div>
                 </div>
-                <div class="menu"> 
-                    <span class="material-icons">menu</span>    
-                </div>
+                
                 <div class="user-link">
                     <a href="{% url 'total_list_view' user=request.user.username %}">
                         <i class="fas fa-file"></i> <!-- Assuming you're using Font Awesome for icons -->
-                        My Page
+                        {{ request.user.username }}
                     </a>
                 </div>
                 
@@ -849,8 +841,8 @@
                         position: fixed;
                         top: 16px;
                         right: 120px;
-                        width: 100px;
                         z-index: 1000;
+                        width: 10vw;
                         background-color: var(--color-text-rgba);
                         color: var(--color-background-rgba);
                         border-radius: 10px;
@@ -1101,43 +1093,232 @@
                         background-color: var(--color-text-rgba)CCC; /* Color when scrollbar thumb is being dragged */
                     }
                 </style>
-                <div class="menu" onclick="toggleMenu()">
-                    <span class="material-icons">menu</span>
-                    <!-- Menu content -->
-                    <div class="menu-content" id="menuContent">
-                        <a href="{% url 'total_list_view' user=request.user.username %}">My Page</a>
-                        <a href="#" onclick="toggleDarkMode()">Dark Mode</a>
-                        <a href="{% url 'settings' %}">Settings</a>
-                        <a href="{% url 'accounts:logout' %}">Logout</a>
+                    <div class="menu-overlay" id="menuOverlay"></div>
+                    <div class="menu" onclick="toggleMenu()">
+                        <span class="material-icons menu-button">menu</span>
+                        <!-- Menu content -->
+                        <div class="menu-content" id="menuContent">
+                            <div class="menu-content-inside">
+                                <button class="close-btn" onclick="toggleMenu()">
+                                    <span class="material-icons">close</span> <!-- Material icon for close -->
+                                </button>
+                                <a href="{% url 'total_list_view' user=request.user.username %}">
+                                    <span class="menu-item">
+                                        <span class="material-icons">person</span> <!-- Material icon for "person" -->
+                                        <span class="menuItemText"> {{ request.user.username }}</span>
+                                    </span>
+                                </a>
+                                <a href="#" onclick="toggleModeMenu()">
+                                    <span class="menu-item">
+                                        <span id="modeIconMenu" class="material-icons">brightness_4</span>
+                                        <span class="menuItemText" id="modeTextMenu">Dark Mode</span>
+                                    </span>
+                                </a>
+                                <a class="settings-menu" href="{% url 'settings' %}">
+                                    <span class="menu-item">
+                                        <span class="material-icons">settings</span> <!-- Material icon for "settings" -->
+                                        <span class="menuItemText">Settings</span>
+                                    </span>
+                                </a>
+                                <a class="logout-menu" href="{% url 'accounts:logout' %}">
+                                    <span class="menu-item">
+                                        <span class="material-icons">exit_to_app</span> <!-- Material icon for "exit_to_app" -->
+                                        <span class="menuItemText">Logout</span>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <style>
-                    .menu-content {
-                        display: none;
-                        position: absolute;
-                        background-color: var(--color-background-rgba);
-                        min-width: 160px;
-                        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-                        z-index: 1;
-                    }
-                    .menu-content a {
-                        color: var(--color-text-rgba);
-                        padding: 12px 16px;
-                        text-decoration: none;
-                        display: block;
-                    }
-                </style>
-                <script>
-                    function toggleMenu() {
-                        var menuContent = document.getElementById("menuContent");
-                        if (menuContent.style.display === "block") {
-                            menuContent.style.display = "none";
-                        } else {
-                            menuContent.style.display = "block";
+                    <script>
+                        function toggleModeMenu() {
+                            const modeIcon = document.getElementById("modeIconMenu");
+                            const modeText = document.getElementById("modeTextMenu");
+
+                            // Toggle dark mode class on the body element
+                            const rootElement = document.documentElement;
+                            const isDarkMode = rootElement.classList.toggle('dark-mode-variables');
+
+                            // Update the icon and text based on the dark mode state
+                            modeIcon.textContent = isDarkMode ? 'brightness_5' : 'brightness_4';
+                            modeText.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+
+                            // Store user preference in localStorage as a string
+                            localStorage.setItem('darkMode', isDarkMode.toString());
                         }
-                    }
-                   
-                </script>
+
+                        // Check if the user had a dark mode preference and apply it on page load
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const storedMode = localStorage.getItem('darkMode');
+                            const isDarkMode = storedMode === 'true';
+
+                            // Apply dark mode and update the icon and text
+                            const rootElement = document.documentElement;
+                            const modeIcon = document.getElementById('modeIconMenu');
+                            const modeText = document.getElementById('modeTextMenu');
+
+                            if (isDarkMode) {
+                                rootElement.classList.add('dark-mode-variables');
+                                modeIcon.textContent = 'brightness_5';
+                                modeText.textContent = 'Light Mode';
+                            }
+                        });
+                        
+                    </script>
+                    <style>
+                        .menu-overlay {
+                            display: none;
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+                            z-index: 999; /* Ensure it appears above other content */
+                        }
+                        .toggle-button-menu {
+                            background: none;
+                            border: none;
+                            cursor: pointer;
+                            padding: 0;
+                            font-size: 24px; /* Adjust the font size as needed */
+                        }
+
+                        .toggle-button-menu .material-icons {
+                            color: var(--color-text-rgba);
+                        }
+
+                        .toggle-button-menu .material-icons:hover {
+                            color: #656565;
+                        }
+
+                        .toggle-button-menu .dark-mode-variables .material-icons {
+                            color: #656565; /* Dark mode color for Material Icons */
+                        }
+                        
+                        .menu {
+                            position: relative;
+                            display: none;
+                            cursor: pointer;
+                        }
+                        .menu-button {
+                            position: relative;
+                            top: 15px;
+                            left: 10px;
+                        }
+                        .menu-content-inside{
+                            margin-top: 20vh;
+                            margin-left: 5vw;
+                        }
+                        .menu-item {
+                            display: flex;
+                            align-items: center;
+                        }
+                        .menu-content-inside a {
+                            border-bottom: 1px solid var(--border-color-rgba);
+                            color: var(--color-text-rgba) !important;
+                            font-size: 1rem;
+                        }
+                        .menu-content-inside a span {
+                            color: var(--color-text-rgba) !important;
+                        }
+                        
+                        .menuItemText{
+                            padding-left: 5px;
+                        }
+                        
+                        .menu-content-inside .logout-menu {
+                            top: 60vh;
+                        }
+                    
+                        .menu-content {
+                            display: none;
+                            position: absolute;
+                            background-color: var(--color-background-rgba);
+                            width: 60%; /* 60% width */
+                            max-width: 300px; /* Set maximum width if needed */
+                            height: 100vh; /* Full height */
+                            top: 0;
+                            left: 0;
+                            z-index: 1000; /* Ensure it appears above other content */
+                            overflow-y: auto; /* Add scrollbar if content exceeds height */
+                        }
+                    
+                        /* Show the menu content when the menu is clicked */
+                        .menu.active .menu-content .menu-overlay {
+                            display: block;
+                        }
+                    
+                        /* Style the links inside the menu */
+                        .menu-content a {
+                            display: block;
+                            padding: 10px;
+                            text-decoration: none;
+                        }
+                    
+                        .menu-content a:hover {
+                            background-color: #ddd;
+                        }
+                        /* Media query for mobile screens */
+                        @media only screen and (max-width: 768px) {
+                            .menu-content {
+                                width: 100%; /* Full width on mobile screens */
+                            }
+                            .menu{
+                                display: inline-block;
+                            }
+                            .menu-button{
+                                color: var(--color-text-rgba) !important;
+                            }
+                        }
+                        .close-btn {
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background-color: transparent;
+                            border: none;
+                            cursor: pointer;
+                            font-size: 16px;
+                            color: var(--color-text-rgba) !important;
+                        }
+                        
+                    </style>
+                    
+                    <script>
+                       function toggleMenu() {
+                            var menuContent = document.getElementById("menuContent");
+                            var menuOverlay = document.getElementById("menuOverlay");
+                            if (menuContent.style.display === "block") {
+                                menuContent.style.display = "none";
+                                menuContent.parentElement.classList.remove("active");
+                                menuOverlay.style.display = "none";
+                            } else {
+                                menuContent.style.display = "block";
+                                menuContent.parentElement.classList.add("active");
+                                menuOverlay.style.display = "block";
+                            }
+                        }
+
+                        document.addEventListener("DOMContentLoaded", function() {
+                            // Add event listener to the close button
+                            var closeButton = document.querySelector(".close-btn");
+                            if (closeButton) {
+                                closeButton.addEventListener("click", function() {
+                                    toggleMenu(); // Call the toggleMenu function to close the menu
+                                });
+                            }
+
+                            // Add event listener to the document body to close menu when clicking outside of it
+                            document.body.addEventListener("click", function(event) {
+                                var menuContent = document.getElementById("menuContent");
+                                var menuButton = document.querySelector(".menu");
+                                if (!menuContent.contains(event.target) && !menuButton.contains(event.target)) {
+                                    menuContent.style.display = "none";
+                                    menuButton.classList.remove("active");
+                                    document.getElementById("menuOverlay").style.display = "none";
+                                }
+                            });
+                        });
+                    </script>
             </div>
     </header>
     <script>

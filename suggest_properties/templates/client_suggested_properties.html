@@ -17,6 +17,20 @@
             overflow: hidden;
             
         }
+        :root{
+            --color-background-rgba: rgba(255, 255, 255, 1) ;      /* White background */
+            --color-text-rgba: rgba(26, 26, 26, 1) ;               /* Dark text */
+            --border-color-rgba: rgba(204, 204, 204, 1)  ;   
+            --header-color-rgba: rgba(250, 250, 250, 1);       /* Light border color */
+            --color-stripe-rgba: rgba(240, 240, 240, 1);
+        }
+        .dark-mode-variables{
+            --color-background-rgba: rgba(26, 26, 26, 1) ;
+            --color-text-rgba: rgba(255, 255, 255, 1) ;
+            --border-color-rgba: rgba(43, 43, 43, 1) ; 
+            --header-color-rgba: rgba(50, 50, 50, 1)    ;
+            --color-stripe-rgba: rgba(40, 40, 40, 1);
+        }
         .not-selected {
             color: #6c757d; /* Grey text color */
             border-color: #6c757d; /* Grey border color */
@@ -35,25 +49,13 @@
         }
 
         #map-container{
-                height: 80vh;
+                height: 90vh;
                 border-radius: 5px;
             }
         #map{
             border-radius: 10px;
         }
-        /* Media query for smaller screens */
-        @media (max-width: 767px) {
-            .card-body p{
-                font-size: 0.2rem;
-            }
-            .cont-list{
-                max-height: 55vh;
-                margin-bottom: 20px;
-            }
-            #map-container{
-                height: 27vh;
-            }
-        }
+       
 
         .card {
             border: 1px solid #ddd;
@@ -112,15 +114,14 @@
         .cont-list {
             display: flex;
             flex: 1;
-            height: 80vh;
+            height: 90vh;
             scroll-behavior: smooth;
             overflow-y: auto; /* Add this line to enable vertical scrollbar */
             overflow-x: hidden;
-            width: 100%;
+            width: 49vw; 
+            margin-right: 1vw;
         }
-        @media (max-width: 767px) {
-            
-        }
+       
 
         /* Targeting the scrollbar track */
         .cont-list::-webkit-scrollbar {
@@ -144,12 +145,9 @@
             background-color: #333; /* Color when scrollbar thumb is being dragged */
         }
         .header-container {
+            padding-top: 10px;
             background-color: transparent; /* Add your desired background color */
-            margin-top: 5px; /* Add padding for better spacing */
-        }
-
-        .header-container h2 {
-            padding-top: 5px; /* Add padding to content */
+            box-shadow: 0 1px 5px rgba(26, 26, 26, 1);
         }
 
         .header-content{
@@ -163,31 +161,82 @@
 
 
         @media (max-width: 767px) {
-            .header-container h2 {
-                font-size: 1rem; /* Adjust the font size for small screens */
-            }
-
-            .header-container h3 {
-                font-size: 0.8rem; /* Adjust the font size for small screens */
+            .header-container-sub{
+                flex-direction: column !important;
             }
             .header-content{
-                padding: 1px;
-                margin: 0px;
+                width: 80vw !important;
+                text-align: left !important;
             }
+            #map-container{
+                display: none;
+            }
+            .content-container{
+                width: 100vw !important; 
+                margin-left: 0 !important; 
+                margin-right: 0 !important;
+            }
+            .content-container-sub{
+                margin-left: 0 !important; 
+                margin-right: 0 !important;
+                width: 95vw !important;
+                height: 90vh !important;
+            }
+            .card-body p{
+                font-size: 0.8rem;
+            }
+            .cont-list{
+                height: 85vh;
+            }
+            .void-section-left{
+                width: 5vw !important;
+            }
+            .void-section-right{
+                width: 5vw !important;
+            }
+            
+        }
+        .container-fluid{
+            padding: 0;
+            margin: 0;
+            width: 100vw;
+        }
+        .content-container{
+            margin-top: 1vh;
         }
 
+        .content-container-sub{
+            width: 80vw; 
+            display: flex; 
+            flex-direction: row;
+        }
+        .void-section-left{
+            background: linear-gradient(45deg, var(--color-stripe-rgba) 25%, transparent 25%, transparent 50%, var(--color-stripe-rgba) 50%, var(--color-stripe-rgba) 75%, transparent 75%, transparent);
+            width: 10vw;
+            height: 90vh;
+            background-size: 50px 50px; /* Adjust the size of the stripes */
+        }
+        
+        .void-section-right{
+            background: linear-gradient(45deg, var(--color-stripe-rgba) 25%, transparent 25%, transparent 50%, var(--color-stripe-rgba) 50%, var(--color-stripe-rgba) 75%, transparent 75%, transparent);
+            width: 10vw;
+            height: 90vh;
+            background-size: 50px 50px; /* Adjust the size of the stripes */
+        }
     </style>
     <body>
         
         <div class="container-fluid">
-            <div class="row justify-content-left align-items-center header-container">
-                <div class="col-md-6 col-sm-12 text-left header-content">
-                    <h2 class="h2 h-md-auto h-lg-auto"  style="padding-left: 15px;">{{ setups.welcome_message }}</h2>
-                </div>
-                <div class="col-md-4 col-sm-12 text-right header-content">
-                    <h2 class="h2 h-md-auto h-lg-auto" style="padding-right: 15px;">
-                        <a id= 'callButton' href="tel:{{ setups.contacts }}">Call: {{ setups.contacts }}</a>
-                    </h2>
+            <div class="header-container" style="width: 100vw;">
+                <div style="width : 80vw; margin-left: 10vw; margin-right:10vw; display: flex; flex-direction: row;" class="header-container-sub">
+                    <div class="header-content" style="width: 70vw;">
+                        <h5 class="h5 h-md-auto h-lg-auto" >{{ setups.welcome_message }}</h5>
+                    </div>
+                    <div class="header-content" style="width: 10vw; text-align: right;">
+                        <h5 class="h5 h-md-auto h-lg-auto" >
+                            <a id= 'callButton' href="tel:{{ setups.contacts }}">Call: {{ setups.contacts }}</a>
+                        </h5>
+                    </div>
                 </div>
                 <script>
                     // JavaScript to prevent the default behavior on non-mobile devices
@@ -202,89 +251,91 @@
                     });
                 </script>
             </div>
-            <hr>
-            <div class="row">
-                <div class="col-md-8 cont-list">
-                    <div class="row row-cols-1 row-cols-lg-2">
-                        {% for suggest in suggestions %}
-                            <div class="col mb-4">
-                                <a href="{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}" class="card-link">
-                                    <div class="card" onclick="window.location='{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}';" style="cursor: pointer;">
-                                        <div class="view overlay">
-                                            {% if suggest.property.images %}
-                                                <img class="card-img-top" src="{{ suggest.property.images.url }}" alt="">
-                                            {% endif %}
-                                            <a href="#!">
-                                                <div class="mask rgba-white-slight"></div>
-                                            </a>
-                                            <form method="post" id="likeForm" data-url="{% url 'client_suggested_properties' client_link=client.link user=user %}" style="top: 0; right: 0; position: absolute; padding-top: 5px; padding-right: 5px;">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-outline-primary not-selected {% if suggest.is_interested == 'interested' %}active{% endif %}" onclick="submitForm('interested', {{ suggest.id }})">
-                                                        <i class="material-icons">thumb_up</i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-secondary not-selected {% if suggest.is_interested == 'not_interested' %}active{% endif %}" onclick="submitForm('not_interested', {{ suggest.id }})">
-                                                        <i class="material-icons">thumb_down</i>
-                                                    </button>
+            <div class="content-container" style="display: flex; flex-direction: row; width: 100vw;" >
+                <div class="void-section-left">
+                </div>
+                <div class="content-container-sub" style="width: 80vw;">
+                    <div class="cont-list">
+                        <div class="row row-cols-1 row-cols-lg-2">
+                            {% for suggest in suggestions %}
+                                <div class="col mb-4">
+                                    <a href="{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}" class="card-link">
+                                        <div class="card" onclick="window.location='{% url 'show_property' user=suggest.property.user id=suggest.property.id address=suggest.property.address %}';" style="cursor: pointer;">
+                                            <div class="view overlay">
+                                                {% if suggest.property.images %}
+                                                    <img class="card-img-top" src="{{ suggest.property.images.url }}" alt="">
+                                                {% endif %}
+                                                <a href="#!">
+                                                    <div class="mask rgba-white-slight"></div>
+                                                </a>
+                                                <form method="post" id="likeForm" data-url="{% url 'client_suggested_properties' client_link=client.link user=user %}" style="top: 0; right: 0; position: absolute; padding-top: 5px; padding-right: 5px;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-outline-primary not-selected {% if suggest.is_interested == 'interested' %}active{% endif %}" onclick="submitForm('interested', {{ suggest.id }})">
+                                                            <i class="material-icons">thumb_up</i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-secondary not-selected {% if suggest.is_interested == 'not_interested' %}active{% endif %}" onclick="submitForm('not_interested', {{ suggest.id }})">
+                                                            <i class="material-icons">thumb_down</i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="card-body" style="text-align: center;">
+                                                <h2 class="card-text">{{ suggest.property.address }}</h2>
+                                                {% if suggest.property.total_price %}
+                                                    <div class="col-md-12 col-sm-6">
+                                                        <h5><i class="material-icons">sell</i><strong>{{ suggest.property.total_price }}</strong></h5>
+                                                    </div>
+                                                {% endif %}
+                                                {% if suggest.property.price_month %}
+                                                    <div class="col-md-12 col-sm-6">
+                                                        <h5><i class="material-icons">key</i><strong>{{ suggest.property.price_month }}</strong></h5>
+                                                    </div>
+                                                {% endif %}
+                                            
+                                                <div class="row">
+                                                    {% if suggest.property.total_rooms %}
+                                                        <div class="col-md-6 col-sm-6">
+                                                            <p><i class="material-icons">sensor_door</i> {{ suggest.property.total_rooms }} total rooms</p>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if suggest.property.bedrooms %}
+                                                        <div class="col-md-6 col-sm-6">
+                                                            <p><i class="material-icons">king_bed</i> {{ suggest.property.bedrooms }} bedrooms</p>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if suggest.property.toilets %}
+                                                        <div class="col-md-6 col-sm-6">
+                                                            <p><i class="material-icons">bathtub</i> {{ suggest.property.toilets }} toilets</p>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if suggest.property.sqr_meter %}
+                                                        <div class="col-md-6 col-sm-6">
+                                                            <p><i class="material-icons">home</i> {{ suggest.property.sqr_meter }} sqr meter</p>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if suggest.property.price_sqrm %}
+                                                        <div class="col-md-6 col-sm-6">
+                                                            <p><i class="material-icons">attach_money</i> Price: {{ suggest.property.price_sqrm }}</p>
+                                                        </div>
+                                                    {% endif %}
+                                                    
                                                 </div>
-                                            </form>
-                                        </div>
-                                        <div class="card-body" style="text-align: center;">
-                                            <h2 class="card-text">{{ suggest.property.address }}</h2>
-                                            {% if suggest.property.total_price %}
-                                                <div class="col-md-12 col-sm-6">
-                                                    <h5><i class="material-icons">sell</i><strong>{{ suggest.property.total_price }}</strong></h5>
-                                                </div>
-                                            {% endif %}
-                                            {% if suggest.property.price_month %}
-                                                <div class="col-md-12 col-sm-6">
-                                                    <h5><i class="material-icons">key</i><strong>{{ suggest.property.price_month }}</strong></h5>
-                                                </div>
-                                            {% endif %}
-                                           
-                                            <div class="row">
-                                                {% if suggest.property.total_rooms %}
-                                                    <div class="col-md-6 col-sm-6">
-                                                        <p><i class="material-icons">sensor_door</i> {{ suggest.property.total_rooms }} total rooms</p>
-                                                    </div>
-                                                {% endif %}
-                                                {% if suggest.property.bedrooms %}
-                                                    <div class="col-md-6 col-sm-6">
-                                                        <p><i class="material-icons">king_bed</i> {{ suggest.property.bedrooms }} bedrooms</p>
-                                                    </div>
-                                                {% endif %}
-                                                {% if suggest.property.toilets %}
-                                                    <div class="col-md-6 col-sm-6">
-                                                        <p><i class="material-icons">bathtub</i> {{ suggest.property.toilets }} toilets</p>
-                                                    </div>
-                                                {% endif %}
-                                                {% if suggest.property.sqr_meter %}
-                                                    <div class="col-md-6 col-sm-6">
-                                                        <p><i class="material-icons">home</i> {{ suggest.property.sqr_meter }} sqr meter</p>
-                                                    </div>
-                                                {% endif %}
-                                                {% if suggest.property.price_sqrm %}
-                                                    <div class="col-md-6 col-sm-6">
-                                                        <p><i class="material-icons">attach_money</i> Price: {{ suggest.property.price_sqrm }}</p>
-                                                    </div>
-                                                {% endif %}
-                                                
                                             </div>
                                         </div>
-                                    </div>
-                                </a>
+                                    </a>
+                                    
+                                </div>
                                 
-                            </div>
-                            
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-                <hr>
-                <div class="col-md-4">
-                    <div id="map-container" >
+                    <div id="map-container" style="width: 30vw">
                         <div id="map" style="height: 100%;"></div>
                     </div>
+                </div>
+                <div class="void-section-right">
                 </div>
             </div> 
         </div>
@@ -308,13 +359,7 @@
 
             locations.forEach(location => {
                 if (location.property__id) {
-                    var marker = L.circleMarker([location.property__latitude, location.property__longitude], {
-                                radius: 8, // Adjust radius as needed
-                                fillColor: "#1a1a1a", // Adjust color as needed
-                                fillOpacity: 0.5,
-                                weight: 1,
-                                opacity: 1
-                            });
+                    var marker = L.marker([location.property__latitude, location.property__longitude]);
 
                     var url = `/suggested_properties/show_properties/${user}/${location.property__id}/${location.property__address}/`;
                     var popupContent = "<b>Address:</b> " + location.property__address + "<br>";
@@ -378,5 +423,11 @@
             }
         </script>
     </body>
+    <footer>
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <h6>Realtor CRM system <strong><a href="https://estates.solutions">Estates.Solutions</a></strong></h6>
+        </div>    
+    </footer>
 
 </html>
+
