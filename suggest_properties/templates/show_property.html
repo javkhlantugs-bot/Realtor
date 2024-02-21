@@ -13,273 +13,364 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 
 </head>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
-* {
-    box-sizing: border-box;
-    font-family: 'Open Sans', sans-serif;
-}
-
-body {
-    font-family: "Montserrat Alternates", sans-serif;
-}
-
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.navbar.active {
-    background-color: #fff;
-}
-
-.navbar-head {
-    color: #fff;
-    padding: 10px;
-    flex: 1;
-}
-
-.navbar-head.active {
-    color: grey;
-}
-
-.phone-number {
-    font-size: 16px;
-    color: #fff;
-    padding: 10px;
-    font-weight: 700;
-    text-decoration: none;
-    text-align: right;
-}
-
-.navbar.active .phone-number {
-    color: grey;
-}
-
-.menu {
-    width: 40px;
-    height: 40px;
-    margin: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.menu span {
-    background: #fff;
-    width: 100%;
-    height: 3px;
-    border-radius: 5px;
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: transform 0.5s, width 0.5s;
-}
-
-.menu .line-1 {
-    transform: translate(-50%, -10px);
-}
-
-.menu .line-3 {
-    transform: translate(-50%, 10px);
-}
-
-.openmenu span {
-    background-color: grey;
-}
-
-.openmenu .line-1 {
-    transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.openmenu .line-3 {
-    transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.openmenu .line-2 {
-    width: 0;
-}
-
-.navigation-expand {
-    display: none;
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #fff;
-    z-index: 999;
-    overflow-y: auto;
-}
-
-.navigation-expand.active {
-    display: flex;
-    flex-direction: column;
-}
-
-.navbarItem {
-    margin: 0;
-    border-bottom: 1px solid #ddd;
-    color: grey;
-    padding: 10px;
-    text-decoration: none;
-}
-
-.navbarItem a {
-    color: black;
-    text-decoration: none;
-    font-weight: 300;
-}
-
-.carousel {
-    overflow: hidden;
-    width: 100%;
-    position: relative;
-    top: 60px;
-}
-
-.carousel img {
-    width: 100%;
-    max-height: 80vh;
-    object-fit: cover;
-    margin: 0 auto;
-}
-
-.container {
-    margin-top: 80px;
-}
-
-.card {
-    margin-bottom: 20px;
-}
-
-.properties_description {
-    white-space: pre-line;
-}
-
-.floating-button {
-    width: 60px;
-    height: 40px;
-    background-color: #007bff;
-    color: #ffffff;
-    display: flex;
-    font-size: 24px;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
-    position: fixed;
-    top: 15px;
-    left: 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.3s ease-in-out;
-    z-index: 1000;
-}
-
-.btn-group{
-    position: fixed;
-    z-index: 1000;
-    top: 15px;
-    right: 20px;
-}
-
-.floating-button:hover {
-    background-color: #0056b3;
-    color: #fff;
-    text-decoration: none;
-}
-
-.header-row {
-    top: 0;
-    width: 100vw;
-    height: 70px;
-    position: fixed;
-    z-index: 1000;
-    background-color: #fff;
-    box-shadow: 0 1px 5px rgba(26, 26, 26, 1);
-}
-
-@media screen and (max-width: 768px) {
-    .phone-number {
-        display: none;
+    * {
+        box-sizing: border-box;
+        font-family: 'Open Sans', sans-serif;
     }
 
-    .menu {
-        margin: 10px;
+    body {
+        font-family: "Montserrat Alternates", sans-serif;
+    }
+    :root{
+    --color-background-rgba: rgba(255, 255, 255, 1) ;      /* White background */
+    --color-text-rgba: rgba(26, 26, 26, 1) ;               /* Dark text */
+    --border-color-rgba: rgba(204, 204, 204, 1)  ;   
+    --header-color-rgba: rgba(250, 250, 250, 1);       /* Light border color */
+    --color-stripe-rgba: rgba(240, 240, 240, 1);
+    }
+    .dark-mode-variables{
+    --color-background-rgba: rgba(26, 26, 26, 1) ;
+    --color-text-rgba: rgba(255, 255, 255, 1) ;
+    --border-color-rgba: rgba(43, 43, 43, 1) ; 
+    --header-color-rgba: rgba(50, 50, 50, 1)    ;
+    --color-stripe-rgba: rgba(40, 40, 40, 1);
+    }
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .navbar.active {
+        background-color: #fff;
     }
 
     .navbar-head {
+        color: #fff;
         padding: 10px;
+        flex: 1;
     }
 
-    .navbarItem {
+    .navbar-head.active {
+        color: grey;
+    }
+
+    .phone-number {
+        font-size: 16px;
+        color: #fff;
         padding: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        text-align: right;
+    }
+
+    .navbar.active .phone-number {
+        color: grey;
+    }
+
+    .menu {
+        width: 40px;
+        height: 40px;
+        margin: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .menu span {
+        background: #fff;
+        width: 100%;
+        height: 3px;
+        border-radius: 5px;
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: transform 0.5s, width 0.5s;
+    }
+
+    .menu .line-1 {
+        transform: translate(-50%, -10px);
+    }
+
+    .menu .line-3 {
+        transform: translate(-50%, 10px);
+    }
+
+    .openmenu span {
+        background-color: grey;
+    }
+
+    .openmenu .line-1 {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .openmenu .line-3 {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .openmenu .line-2 {
+        width: 0;
     }
 
     .navigation-expand {
-        top: 40px;
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #fff;
+        z-index: 999;
+        overflow-y: auto;
     }
-    .card-title{
-        font-size: 1rem;
+
+    .navigation-expand.active {
+        display: flex;
+        flex-direction: column;
     }
-    .container{
-        padding-top: 50px;
+
+    .navbarItem {
+        margin: 0;
+        border-bottom: 1px solid #ddd;
+        color: grey;
+        padding: 10px;
+        text-decoration: none;
     }
-}
+
+    .navbarItem a {
+        color: black;
+        text-decoration: none;
+        font-weight: 300;
+    }
+
+    .carousel {
+        overflow: hidden;
+        width: 100%;
+        position: relative;
+        top: 60px;
+    }
+
+    .carousel img {
+        width: 100%;
+        max-height: 80vh;
+        object-fit: cover;
+        margin: 0 auto;
+    }
+
+    .container {
+        margin-top: 80px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .properties_description {
+        white-space: pre-line;
+    }
+
+    .floating-button {
+        width: 50px;
+        height: 30px;
+        color: var(--color-text-rgba);
+        display: flex;
+        font-size: 24px;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 5px;
+        left: 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease-in-out;
+        z-index: 1001;
+    }
+
+    .btn-group{
+        position: fixed;
+        z-index: 1000;
+        top: 15px;
+        right: 20px;
+    }
+
+    .floating-button:hover {
+        color: var(--color-text-rgba);
+        text-decoration: none;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
+    }
+
+    .header-row {
+        top: 0;
+        width: 100vw;
+        height: 70px;
+        position: fixed;
+        z-index: 1000;
+        background-color: #fff;
+        box-shadow: 0 1px 5px rgba(26, 26, 26, 1);
+    }
+    .header-container {
+        padding-top: 10px;
+        background-color: transparent; /* Add your desired background color */
+        box-shadow: 0 1px 5px rgba(26, 26, 26, 1);
+        position: fixed;
+        z-index: 10000;
+    }
+    body, a{
+                color: var(--color-text-rgba);
+            }
+
+    .header-content{
+        padding: 0px;
+        margin: 0px;
+        color: var(--color-text-rgba);
+    }
+    .header-content h2 a {
+        text-decoration: none;
+        color: #1a1a1a;
+    }
+
+
+    @media (max-width: 767px) {
+        .header-container-sub{
+            flex-direction: column !important;
+        }
+        .header-content{
+            width: 80vw !important;
+            text-align: left !important;
+        }
+        .header-container{
+            background-color: var(--color-background-rgba);
+        }
+        .socials{
+            width: 40vw !important;
+        }
+        .callButton{
+            width: 40vw !important;
+        }
+        #map-container{
+            display: none;
+        }
+        .content-container{
+            width: 100vw !important; 
+            margin-left: 0 !important; 
+            margin-right: 0 !important;
+        }
+        .floating-button{
+            left: 1vw;
+            width: 25px;
+        }
+        .content-container-sub{
+            margin-left: 0 !important; 
+            margin-right: 0 !important;
+            width: 95vw !important;
+            height: 90vh !important;
+        }
+        .card-body p{
+            font-size: 0.8rem;
+        }
+        .cont-list{
+            height: 85vh;
+        }
+        .void-section-left{
+            width: 5vw !important;
+        }
+        .void-section-right{
+            width: 5vw !important;
+        }
+        
+    }
+
+    @media screen and (max-width: 768px) {
+        .phone-number {
+            display: none;
+        }
+
+        .menu {
+            margin: 10px;
+        }
+
+        .navbar-head {
+            padding: 10px;
+        }
+
+        .navbarItem {
+            padding: 10px;
+        }
+
+        .navigation-expand {
+            top: 40px;
+        }
+        .card-title{
+            font-size: 1rem;
+        }
+        .container{
+            padding-top: 50px;
+        }
+    }
 </style>
 <body>
-    <div class="header-row" >
+    <div class="header-container" style="width: 100vw;">
         <a href="javascript:void(0)" class="floating-button" onclick="goBack()">
             <i class="material-icons">arrow_back</i>
         </a>
-        <form method="post" id="likeForm" >
-            {% csrf_token %}
-            <input type="hidden" name="suggestion_id" value="{{ suggest.id }}">
-            <div class="btn-group">
-                <button type="button" class="btn btn-outline-primary not-selected {% if suggest.is_interested == 'interested' %}active{% endif %}" onclick="submitForm('interested', {{ suggest.id }})">
-                    <i class="material-icons">thumb_up</i>
-                </button>
-                <button type="button" class="btn btn-outline-secondary not-selected {% if suggest.is_interested == 'not_interested' %}active{% endif %}" onclick="submitForm('not_interested', {{ suggest.id }})">
-                    <i class="material-icons">thumb_down</i>
-                </button>
+        <div style="width : 80vw; margin-left: 10vw; margin-right:10vw; display: flex; flex-direction: row;" class="header-container-sub">
+            <div class="header-content" style="width: 70vw;">
+                <h5 class="h5 h-md-auto h-lg-auto" >{{ setups.welcome_message }}</h5>
             </div>
-            
-        </form>
-        <script>
-            function submitForm(interest, suggestion_id) {
-                event.stopPropagation();
-                var form = $('#likeForm');
-                var url = form.data('url');
-                var opposite_interested = (interest === 'interested') ? 'not_interested' : 'interested';
+            <div class="header-content" style="width: 20vw; text-align: right; display: flex; flex-direction: row;">
+                <div class="socials" style="width: 5vw; text-align: left; display: flex; flex-direction: row; justify-content: space-evenly;">
+                    {% if userid.instagram_url %}
+                    <h5>
+                        <a href="{{ userid.instagram_url }}">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </h5>
+                    {% endif %}
+                    {% if userid.facebook_url %}
+                    <h5>
+                        <a href="{{ userid.facebook_url }}">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </h5>
+                    {% endif %}
+                    {% if userid.twitter_url %}
+                    <h5>
+                        <a href="{{ userid.twitter_url }}">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </h5>
+                    {% endif %}
+                    {% if userid.linkedin_url %}
+                    <h5>
+                        <a  href="{{ userid.linkedin_url }}">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </h5>
+                    {% endif %}
+                </div>
+                <div style="text-align: right; width: 15vw;" class="callButton">
+                    <h5 class="h5 h-md-auto h-lg-auto" >
+                        <a id= 'callButton' href="tel:{{ setups.contacts }}" style="text-decoration: none;">
+                            <i class="fas fa-phone"></i> {{ setups.contacts }}
+                        </a>
+                    </h5>
+                </div>
+            </div>
+        </div>
         
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        csrfmiddlewaretoken: form.find('[name=csrfmiddlewaretoken]').val(),
-                        suggestion_id: suggestion_id,
-                        is_interested: interest
-                    },
-                    success: function (data) {
-                        // Update the button states based on the received data
-                        var buttons = $('[onclick*="submitForm(\'' + opposite_interested + '\', ' + suggestion_id + ')"]');
-                        buttons.removeClass('active');  // Remove active class from all buttons
-        
-                        var button = $('[onclick*="submitForm(\'' + interest + '\', ' + suggestion_id + ')"]');
-                        button.addClass('active');  // Add active class to the clicked button
-                    },
-                });
-            }
-        </script>
     </div>
     
 

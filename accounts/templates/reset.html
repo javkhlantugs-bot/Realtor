@@ -1,0 +1,49 @@
+{% extends 'base_account.html' %}
+
+{% block title %}Password reset confirm{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div class="container" style="width: 80vw;">
+    <h3>Enter new password</h3>
+
+    <p>Please enter your new password twice so we can verify you typed it in correctly.</p>
+    <form class="form" method="POST">
+        {% csrf_token %}
+        <div class="form-group" style="width: 100%;">
+            {{ form.new_password1.label_tag }}
+            <div class="input-group" style="width: 100%;">
+                {{ form.new_password1|add_class:"form-control" }}
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('{{ form.new_password1.id_for_label }}')">
+                        <i class="fa fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            {{ form.new_password2.label_tag }}
+            <div class="input-group">
+                {{ form.new_password2|add_class:"form-control" }}
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('{{ form.new_password2.id_for_label }}')">
+                        <i class="fa fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            {% for error in form.new_password2.errors %}
+                <div class="invalid-feedback" style="display: block;">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px; ">Change my password</button>
+    </form>
+    <!-- JavaScript to toggle password visibility -->
+    <script>
+        function togglePassword(inputId) {
+            var passwordInput = document.getElementById(inputId);
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</div>
+{% endblock %}

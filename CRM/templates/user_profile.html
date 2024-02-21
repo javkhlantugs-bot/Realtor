@@ -1,7 +1,7 @@
 {% extends 'base_event.html' %}
 
 {% block title %}Estates Solutions | Profile{% endblock %}
-
+{% load widget_tweaks %}
 {% block content %}
 <div class="container-header">
     <h1>User Profile</h1>
@@ -10,10 +10,45 @@
     <div class="col-md-6 mx-auto">
         <form method="post">
             {% csrf_token %}
-            {{ user_form.as_p }}
-            <button type="submit">Update Profile</button>
+            <div class="form-group">
+                {{ user_form.username.label_tag }}
+                {{ user_form.username|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ user_form.phone_number.label_tag }}
+                {{ user_form.phone_number|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ user_form.email.label_tag }}
+                {{ user_form.email|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ user_form.instagram_url.label_tag }}
+                {{ user_form.instagram_url|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ user_form.facebook_url.label_tag }}
+                {{ user_form.facebook_url|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ user_form.twitter_url.label_tag }}
+                {{ user_form.twitter_url|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ user_form.linkedin_url.label_tag }}
+                {{ user_form.linkedin_url|add_class:"form-control" }}
+            </div>
+            <div class="mt-auto" style="justify-content: center; align-items: center;">
+                <button type="submit" class="btn btn-outline-primary" style="width: 100%; margin-top: 20px; margin-bottom: 10px;">Save</button>
+                <a href="#" class="btn btn-outline-secondary mt-md-0 mt-3" onclick="goBack()" style="width: 100%; margin-top: 20px; margin-bottom: 20px;">Back</a>
+            </div>
         </form>
         
     </div>
 </div>
+<script>
+    function goBack() {
+    window.history.back();
+}
+</script>
 {% endblock %}

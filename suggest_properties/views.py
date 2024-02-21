@@ -17,7 +17,7 @@ class ClientSuggestedPropertiesView(View):
         setups = suggestion_link_settings.objects.get(user=userid.id)
         locations = list(suggestions.values('property__user','property__latitude', 'property__longitude', 'property__deal_type','property__property_type',
                                'property__total_rooms', 'property__address', 'property__id','property__total_price'))
-        return render(request, self.template_name, {'client': client, 'suggestions': suggestions,'locations':locations,'user':user,'setups':setups})
+        return render(request, self.template_name, {'client': client, 'suggestions': suggestions,'locations':locations,'user':user,'setups':setups,'userid':userid})
 
     def post(self, request, client_link,user):
         client = get_object_or_404(Clent, link=client_link)
@@ -45,6 +45,8 @@ def show_property(request, user, id, address):
     suggestions = Client_suggestion.objects.filter(property=property, is_suggested='suggested')
     locations = list(Property.objects.values('latitude', 'longitude','id').filter(user=request.user.id, id = id))
     photos = PropertyImage.objects.filter(property=property)
+    userid = get_object_or_404(CustomUser,  username=user)
+    setups = suggestion_link_settings.objects.get(user=userid.id)
     fields = Property._meta.fields
     property.views_count += 1
     property.save()
@@ -54,7 +56,9 @@ def show_property(request, user, id, address):
         'address': address,
         'fields':fields,
         'locations':locations,
-        'suggestions':suggestions
+        'suggestions':suggestions,
+        'setups':setups,
+        'userid':userid
     })
 
 
@@ -68,6 +72,6 @@ class TotalListView(View):
         setups = suggestion_link_settings.objects.get(user=userid.id)
         locations = list(suggestions.values('user','latitude', 'longitude', 'deal_type','property_type',
                                'total_rooms', 'address', 'id','total_price'))
-        return render(request, self.template_name, {'locations':locations,'user':user,'setups':setups,'suggestions':suggestions})
+        return render(request, self.template_name, {'locations':locations,'user':user,'setups':setups,'suggestions':suggestions,'userid':userid})
 
     

@@ -824,7 +824,7 @@ def import_google_contacts(request):
     messages.success(request, 'Google contacts successfully imported!')
     return redirect('client_list')
 
-def settings(request):
+def settings_page(request):
     return render(request,'settings.html')
 
 from django.core.mail import send_mail
@@ -1183,3 +1183,150 @@ def change_password(request):
             return redirect('profile')
 
     return render(request, 'change_password.html', {'password_change_form': password_change_form})
+
+import stripe
+from django.conf import settings
+from accounts.models import UserPayment
+import time
+from django.views.decorators.csrf import csrf_exempt
+
+def products(request):
+    user_payment = get_object_or_404(UserPayment, app_user=request.user.id)
+    context = {
+        'stripe_public_key':settings.STRIPE_TEST_PUBLIC_KEY,
+        'end_date' : user_payment.subscription_end_date,
+        'payment_bool' : user_payment.payment_bool
+    }
+    return render(request,'subscriptions.html',context)
+
+@login_required(login_url='login')
+def checkout_monthly(request):
+    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    
+    line_items = [
+        {
+            'price': 'price_1OlkcpBIrM9ZDI85PBAylsX1',
+            'quantity': 1,
+        }
+    ]
+    
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
+        mode='subscription',
+        success_url=request.build_absolute_uri(reverse('payment_successful')) + '?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=request.build_absolute_uri(reverse('payment_cancelled'))
+    )
+    
+    return JsonResponse({'session_id': session.id})
+
+@login_required(login_url='login')
+def checkout_yearly(request):
+    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    
+    line_items = [
+        {
+            'price': 'price_1Om95eBIrM9ZDI856P8HDeBp',
+            'quantity': 1,
+        }
+    ]
+    
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
+        mode='subscription',
+        success_url=request.build_absolute_uri(reverse('payment_successful_yearly')) + '?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=request.build_absolute_uri(reverse('payment_cancelled'))
+    )
+    
+    return JsonResponse({'session_id': session.id})
+
+from dateutil.relativedelta import relativedelta
+import django.utils.timezone
+def payment_successful(request):
+    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    checkout_session_id = request.GET.get('session_id', None)
+    user_payment = get_object_or_404(UserPayment, app_user=request.user.id)
+    
+    # Update payment details
+    user_payment.stripe_checkout_id = checkout_session_id
+    user_payment.payment_bool = True
+
+    # Check if the user is an active subscriber
+    if user_payment.subscription_end_date > django.utils.timezone.now().date():
+        # Extend subscription by one month from the end date of current subscription
+        subscription_start_date = user_payment.subscription_start_date
+        subscription_end_date = user_payment.subscription_end_date + relativedelta(months=1)
+    else:
+        # Start a new subscription period
+        subscription_start_date = django.utils.timezone.now().date()
+        subscription_end_date = subscription_start_date + relativedelta(months=1)
+    
+    # Update subscription dates
+    user_payment.subscription_start_date = subscription_start_date
+    user_payment.subscription_end_date = subscription_end_date
+
+    # Save changes
+    user_payment.save()
+    context = {
+        'end_date' : user_payment.subscription_end_date
+    }
+
+    return render(request, 'subscriptions_succeeded.html', context)
+
+def payment_successful_yearly(request):
+    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    checkout_session_id = request.GET.get('session_id', None)
+    user_id = request.user.id
+    user_payment = get_object_or_404(UserPayment, app_user=request.user.id)
+    user_payment.stripe_checkout_id = checkout_session_id
+    user_payment.payment_bool = True
+    if user_payment.subscription_end_date > django.utils.timezone.now().date():
+        # Extend subscription by one month from the end date of current subscription
+        subscription_start_date = user_payment.subscription_start_date
+        subscription_end_date = user_payment.subscription_end_date + relativedelta(years=1)
+    else:
+        # Start a new subscription period
+        subscription_start_date = django.utils.timezone.now().date()
+        subscription_end_date = subscription_start_date + relativedelta(years=1)
+    user_payment.subscription_start_date = subscription_start_date
+    user_payment.subscription_end_date = subscription_end_date
+    user_payment.save()
+    context = {
+        'end_date' : user_payment.subscription_end_date
+    }
+    return render(request, 'subscriptions_succeeded_yearly.html',context)
+
+def payment_cancelled(request):
+    return render(request, 'subscriptions_cancelled.html')
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    time.sleep(10)
+    payload = request.body
+    signature_header = request.META['HTTPS_STRIPE_SIGNATURE']
+    event = None
+    try:
+        event = stripe.Webhook.construct_event(payload, signature_header, settings.STRIPE_WEBHOOK_SECRET_TEST)
+    except ValueError as e :
+        return HttpResponse(status = 400)
+    except stripe.error.SignatureVerificationError as e:
+        return HttpResponse(status = 400)
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        session_id = session.get('id',None)
+        time.sleep(15)
+        user_payment = UserPayment.objects.get(stripe_checkout_id=session_id)
+        line_items = stripe.checkout.Session.list_line_items(session_id , limit=1)
+        user_payment.payment_bool = True
+        user_payment.save()
+    return HttpResponse(status = 200)
+
+# Example usage when checking subscription status
+def check_subscription_status(user):
+    user_payment = UserPayment.objects.get(app_user=user)
+    if user_payment.subscription_end_date < timezone.now().date():
+        # Subscription has expired, take appropriate action
+        pass

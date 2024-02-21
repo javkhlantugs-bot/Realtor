@@ -28,10 +28,13 @@ class CustomAuthenticationForm(AuthenticationForm):
         }
 
 class CustomUserChangeForm(UserChangeForm):
-    phone_number = PhoneNumberField(widget=forms.TextInput(attrs={'class': 'form-control','placeholder':'Phone Number'}))
+    phone_number = PhoneNumberField(widget=forms.TextInput(attrs={'class': 'form-control','placeholder':'Phone Number'}), required=False)
     class Meta(UserChangeForm.Meta):
         model = CustomUser
-        fields = ['username', 'email', 'phone_number']
+        fields = ['username', 'email', 'phone_number','instagram_url'
+                    ,'facebook_url'
+                    ,'twitter_url'
+                    ,'linkedin_url']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),

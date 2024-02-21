@@ -1,0 +1,129 @@
+{% extends 'base_event.html' %}
+
+{% block title %}Estates Solutions | Settings{% endblock %}
+
+{% block content %}
+<style>
+    .card-body{
+        display: flex;
+        flex-direction: column;
+        border: var(--border-color-rgba) 1px solid;
+        border-radius: 10px;
+        margin: 20px;
+        height: 300px;
+        justify-content: center;
+        align-items: center;
+        width: 500px;
+    }
+    .cards{
+        display: flex;
+        flex-direction: row;
+    }
+    .buy{
+        margin-top: 2vh;
+        height: 5vh;
+        width: 200px;
+    }
+    
+    @media (max-width: 767px) {
+        .cards{
+            flex-direction: column;
+        }
+        .card-body{
+            justify-content: center;
+            align-items: center;
+            width: 90vw;
+        }
+        .container-fluid{
+            padding: 0;
+            margin: 0;
+        }
+    }
+</style>
+
+<div class="container-header">
+    <div style="display: flex; flex-direction: row; align-items: center;">
+        <h2>Subscribe</h2>
+        {% if payment_bool %}
+            <h5 style="margin-left: 30px;">Your subscription ends on <strong>{{ end_date }}</strong></h5>
+        {% else %}
+            <h5 style="margin-left: 30px;">Your free trial ends on <strong>{{ end_date }}</strong></h5>
+        {% endif %}
+    </div>
+</div>
+
+<div style="display: flex; flex-direction: row;" class="container-content">
+    <div class="cards">
+        <div class="card-body">
+            <h2><strong >$13 per month</strong></h2>
+            <button class="btn btn-outline-primary buy" id="buy_now_btn">
+                Buy now
+            </button>
+        </div>
+        <div class="card-body">
+            <p><strong style="color: red;">Save 2 months</strong></p>
+            <h2><strong>$130 per year</strong></h2>
+            <button class="btn btn-outline-primary buy" id="buy_now_btn_Y">
+                Buy now
+            </button>
+        </div>
+    </div>
+</div>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('{{ stripe_public_key }}');
+    var buyNowButton = document.getElementById('buy_now_btn');
+
+    buyNowButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        // Create a checkout session when the button is clicked
+        fetch('{% url 'checkout_monthly' %}')
+            .then(function(response) {
+                console.log(response)
+                return response.json();
+            })
+            .then(function(session) {
+                // Redirect to the checkout session
+                return stripe.redirectToCheckout({ sessionId: session.session_id });
+            })
+            .then(function(result) {
+                // Handle any errors during redirection
+                if (result.error) {
+                    console.error(result.error.message);
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+        });
+</script>
+<script>
+    var stripe = Stripe('{{ stripe_public_key }}');
+    var buyNowButton = document.getElementById('buy_now_btn_Y');
+
+    buyNowButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        // Create a checkout session when the button is clicked
+        fetch('{% url 'checkout_yearly' %}')
+            .then(function(response) {
+                console.log(response)
+                return response.json();
+            })
+            .then(function(session) {
+                // Redirect to the checkout session
+                return stripe.redirectToCheckout({ sessionId: session.session_id });
+            })
+            .then(function(result) {
+                // Handle any errors during redirection
+                if (result.error) {
+                    console.error(result.error.message);
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+        });
+</script>
+{% endblock %}

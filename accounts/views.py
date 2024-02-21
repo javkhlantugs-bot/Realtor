@@ -4,7 +4,10 @@ from django.shortcuts import render, redirect, HttpResponse
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
-from CRM.models import event_type_model, client_status_types
+from CRM.models import event_type_model, client_status_types, event_type_model
+from Realtor.models import property_status, property_type
+from django.core.mail import send_mail
+
 
 def register(request):
     if request.method == 'POST':
@@ -20,8 +23,19 @@ def register(request):
                 event_type_model.objects.create(user=user_instance, event_type="Show property")
 
                 # Create ClientStatusTypes records
-                client_status_types.objects.create(user=user_instance, status="Active")
-                client_status_types.objects.create(user=user_instance, status="Inactive")
+                client_status_types.objects.create(user=user_instance, status="Investor")
+                client_status_types.objects.create(user=user_instance, status="Tenant")
+                client_status_types.objects.create(user=user_instance, status="Relative")
+                client_status_types.objects.create(user=user_instance, status="Friend")
+                
+                property_status.objects.create(user=user_instance, status="Sold")
+                property_status.objects.create(user=user_instance, status="Cancelled")
+                property_status.objects.create(user=user_instance, status="Ongoing")
+                
+                property_type.objects.create(user=user_instance, type="Office")
+                property_type.objects.create(user=user_instance, type="Land")
+                property_type.objects.create(user=user_instance, type="Apartment")
+                
 
                 # Authenticate the user using django-allauth's authentication backend
                 user = authenticate(request, username=user_instance.username, password=request.POST.get('password1'), backend='allauth.account.auth_backends.AuthenticationBackend')
@@ -64,4 +78,6 @@ def privacy_policy(request):
     return render(request,'privacy_policy.html')
 
 def terms_of_service(request):
+
     return render(request,'terms_of_service.html')
+

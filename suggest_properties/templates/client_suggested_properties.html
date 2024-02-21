@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <title>Suggested Properties for {{ client.client_name }}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
@@ -182,6 +184,12 @@
                 width: 95vw !important;
                 height: 90vh !important;
             }
+            .socials{
+                width: 40vw !important;
+            }
+            .callButton{
+                width: 40vw !important;
+            }
             .card-body p{
                 font-size: 0.8rem;
             }
@@ -232,10 +240,47 @@
                     <div class="header-content" style="width: 70vw;">
                         <h5 class="h5 h-md-auto h-lg-auto" >{{ setups.welcome_message }}</h5>
                     </div>
-                    <div class="header-content" style="width: 10vw; text-align: right;">
-                        <h5 class="h5 h-md-auto h-lg-auto" >
-                            <a id= 'callButton' href="tel:{{ setups.contacts }}">Call: {{ setups.contacts }}</a>
-                        </h5>
+                    <div class="header-content" style="width: 70vw;">
+                        <h5 class="h5 h-md-auto h-lg-auto" >{{ setups.welcome_message }}</h5>
+                    </div>
+                    <div class="header-content" style="width: 20vw; text-align: right; display: flex; flex-direction: row;">
+                        <div class="socials" style="width: 5vw; text-align: left; display: flex; flex-direction: row; justify-content: space-evenly;">
+                            {% if userid.instagram_url %}
+                            <h5>
+                                <a href="{{ userid.instagram_url }}">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            </h5>
+                            {% endif %}
+                            {% if userid.facebook_url %}
+                            <h5>
+                                <a href="{{ userid.facebook_url }}">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                            </h5>
+                            {% endif %}
+                            {% if userid.twitter_url %}
+                            <h5>
+                                <a href="{{ userid.twitter_url }}">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </h5>
+                            {% endif %}
+                            {% if userid.linkedin_url %}
+                            <h5>
+                                <a  href="{{ userid.linkedin_url }}">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </h5>
+                            {% endif %}
+                        </div>
+                        <div style="text-align: right; width: 15vw;" class="callButton">
+                            <h5 class="h5 h-md-auto h-lg-auto" >
+                                <a id= 'callButton' href="tel:{{ setups.contacts }}" style="text-decoration: none;">
+                                    <i class="fas fa-phone"></i> {{ setups.contacts }}
+                                </a>
+                            </h5>
+                        </div>
                     </div>
                 </div>
                 <script>
@@ -425,7 +470,7 @@
     </body>
     <footer>
         <div style="padding-top: 10px; padding-left: 10px;">
-            <h6>Realtor CRM system <strong><a href="https://estates.solutions">Estates.Solutions</a></strong></h6>
+            <h6>The system for Realtor <strong><a href="https://estates.solutions">Estates.Solutions</a></strong></h6>
         </div>    
     </footer>
 

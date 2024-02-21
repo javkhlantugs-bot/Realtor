@@ -27,14 +27,15 @@ SECRET_KEY = '6~*~Xdyl-?;olY*T2~)oWxviJ56fybpki{V<%RgGjkTGtJ;4Bz<R-i&Ts:1Sq<)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# EMAIL_BACKEND = 'crm.email_backend.GmailOAuth2EmailBackend'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_BACKEND = 'crm.email_backend.GmailOAuth2EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 't.javkhlantugs1@gmail.com'
-EMAIL_HOST_PASSWORD = 'Um98112218@'
+DEFAULT_FROM_EMAIL = 'support@estates.solutions'
+EMAIL_HOST_PASSWORD = 'epdrtvfjbnkppphz'
 
 GMAIL_CLIENT_ID = '526155639435-ol30a40frn2bk3tmr60gmah7l55jbc33.apps.googleusercontent.com'
 GMAIL_CLIENT_SECRET = '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'
@@ -84,6 +85,14 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 ]
+
+
+STRIPE_LIVE_PUBLIC_KEY = 'pk_test_51OgfM8BIrM9ZDI85O6mfWKFXHOlNtZhP3osHJtaeRTjFBiCHIeZGqOoBHvpHpZ9yZyBrTnp00e0T9YgHGxYYo6cl00NziFi9ww'
+STRIPE_LIVE_SECRET_KEY = 'sk_test_51OgfM8BIrM9ZDI85iqjmY2m9KAesJ2EQSWno9oqSd3cSlfmnCEKvDePLTIoMQDXUbgyRnVsEY2pey4TqRdEg7H5P00Kx1ygJCN'
+STRIPE_TEST_PUBLIC_KEY = 'pk_test_51OgfM8BIrM9ZDI85O6mfWKFXHOlNtZhP3osHJtaeRTjFBiCHIeZGqOoBHvpHpZ9yZyBrTnp00e0T9YgHGxYYo6cl00NziFi9ww'
+STRIPE_TEST_SECRET_KEY = 'sk_test_51OgfM8BIrM9ZDI85iqjmY2m9KAesJ2EQSWno9oqSd3cSlfmnCEKvDePLTIoMQDXUbgyRnVsEY2pey4TqRdEg7H5P00Kx1ygJCN'
+STRIPE_LIVE_MODE = False  # Change to True in production
+REDIRECT_DOMAIN = 'localhost:8000'
 
 SITE_ID = 1
 SOCIALACCOUNT_LOGIN_ON_GET = True

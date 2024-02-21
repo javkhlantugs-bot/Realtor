@@ -1,12 +1,12 @@
 {% extends 'base_event.html' %}
 
-{% block title %}Estates Solutions | Delete Event Type{% endblock %}
+{% block title %}Estates Solutions | Delete Task Type{% endblock %}
 
 {% block content %}
-<h2 class="container-header">Delete Event Type</h2>
+<h2 class="container-header">Delete Task Type</h2>
   <div class="container container-content">
 
-    <p>Are you sure you want to delete the event type "{{ event_type.event_type }}"?</p>
+    <p>Are you sure you want to delete the task type "{{ event_type.event_type }}"?</p>
 
     <form method="post">
       {% csrf_token %}

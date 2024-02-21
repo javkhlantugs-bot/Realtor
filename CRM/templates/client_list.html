@@ -48,7 +48,7 @@
         <!-- <a class="col-md-2 btn btn-outline-primary d-flex align-items-center justify-content-center"  data-toggle="modal" data-target="#contactModal">
             <i class="material-icons mr-2">add</i> <span class="d-none d-md-inline"> Add Contact</span>
         </a> -->
-        <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"  
+        <button class="btn btn-outline-primary d-flex align-items-center justify-content-center add-new"  
                 data-toggle="modal" data-target="#contactModal">
                 <i class="fas fa-plus"></i>
                 <span class="d-none d-md-inline">Add</span> 
@@ -120,44 +120,51 @@
                     <tr>
                         
                         <td>
-                            <div>
-                                <i class="fas fa-user"></i> 
-                                <a href="{% url 'client_events' client_id=client.id %}">
-                                    {{ client.client_name }}
-                                </a>
-                            </div>
-                            <div>
-                                <i class="fas fa-phone"></i>
-                                <a href="tel:{{ client.phone_number }}">
-                                    {{ client.phone_number }}
-                                </a>
-                            </div>
-                            <div>
-                                {% if client.email %}
-                                    <a onclick="sendEmail('{{ client.email }}');" title="Send mail to {{ client.email }}" style="cursor: pointer;">
-                                        <span>&#x1F4E7;</span> <!-- Email icon -->
-                                        {{ client.email }}
+                            <div style="display: flex; flex-direction: row;">
+                                <div style="width: 80%; ">
+                                    <i class="fas fa-user"></i> 
+                                    <a href="{% url 'client_events' client_id=client.id %}" style="text-decoration: none;">
+                                        {{ client.client_name }}
                                     </a>
+                                </div>
+                                <div style="display: flex; flex-direction: row; width: 20%;">
+                                    <div>
+                                        
+                                        <a href="tel:{{ client.phone_number }}">
+                                            <i class="fas fa-phone"></i>
+                                            <!-- {{ client.phone_number }} -->
+                                        </a>
+                                    </div>
+                                    <div>
+                                        {% if client.email %}
+                                            <a onclick="sendEmail('{{ client.email }}');" title="Send mail to {{ client.email }}" style="cursor: pointer; margin-left: 5px;">
+                                                <span>&#x1F4E7;</span> <!-- Email icon -->
+                                                <!-- {{ client.email }} -->
+                                            </a>
+                                        {% else %}
+                                            <span></span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                {% if client.suggested_count != 0 %}
+                                    <div class="progress" style="position: relative; height: 20px; margin-top: 5px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ client.suggest_percent }}%; height: 100% !important" aria-valuenow="{{ client.interested_count }}" aria-valuemin="0" aria-valuemax="client.suggested_count"></div>
+                                        <span style="position: absolute; top: 50%; left: 40%; transform: translate(-50%, -50%);">Interested in: {{ client.interested_count }} / {{ client.suggested_count }}</span>
+                                    </div>
+                                {% else %}
+                                    <span></span>
+                                {% endif %}
+                                {% if client.events_total != 0 %}
+                                    <div class="progress" style="position: relative; height: 20px; margin-top: 5px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ client.events_percent }}%;" aria-valuenow="{{ client.completed_events }}" aria-valuemin="0" aria-valuemax="client.events_total"></div>
+                                        <span style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%);">Tasks: {{ client.events_completed }} / {{ client.events_total }}</span>
+                                    </div>
                                 {% else %}
                                     <span></span>
                                 {% endif %}
                             </div>
-                            {% if client.suggested_count != 0 %}
-                                <div class="progress" style="position: relative; height: 30px;">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ client.suggest_percent }}%; height: 100% !important" aria-valuenow="{{ client.interested_count }}" aria-valuemin="0" aria-valuemax="client.suggested_count"></div>
-                                    <span style="position: absolute; top: 50%; left: 40%; transform: translate(-50%, -50%);">Interested in: {{ client.interested_count }} / {{ client.suggested_count }}</span>
-                                </div>
-                            {% else %}
-                                <span></span>
-                            {% endif %}
-                            {% if client.events_total != 0 %}
-                                <div class="progress" style="position: relative; height: 30px;">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ client.events_percent }}%;" aria-valuenow="{{ client.completed_events }}" aria-valuemin="0" aria-valuemax="client.events_total"></div>
-                                    <span style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%);">Tasks: {{ client.events_completed }} / {{ client.events_total }}</span>
-                                </div>
-                            {% else %}
-                                <span></span>
-                            {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'client_events' client.id %}">Show more</a>

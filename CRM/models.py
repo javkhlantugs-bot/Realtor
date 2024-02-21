@@ -34,6 +34,7 @@ class Clent(models.Model):
     facebook_url = models.URLField(null=True, blank=True)
     instagram_url = models.URLField(null=True, blank=True)
     twitter_url = models.URLField(null=True, blank=True)
+    linkedin_url = models.URLField(null=True, blank=True)
     google_resource_id = models.CharField(null=True,blank = True, max_length= 255)
   
     status = models.ForeignKey(client_status_types, max_length=50, null=True, blank=True, on_delete=models.DO_NOTHING)
