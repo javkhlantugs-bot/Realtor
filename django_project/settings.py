@@ -87,12 +87,13 @@ INSTALLED_APPS = [
 ]
 
 
-STRIPE_LIVE_PUBLIC_KEY = 'pk_test_51OgfM8BIrM9ZDI85O6mfWKFXHOlNtZhP3osHJtaeRTjFBiCHIeZGqOoBHvpHpZ9yZyBrTnp00e0T9YgHGxYYo6cl00NziFi9ww'
-STRIPE_LIVE_SECRET_KEY = 'sk_test_51OgfM8BIrM9ZDI85iqjmY2m9KAesJ2EQSWno9oqSd3cSlfmnCEKvDePLTIoMQDXUbgyRnVsEY2pey4TqRdEg7H5P00Kx1ygJCN'
-STRIPE_TEST_PUBLIC_KEY = 'pk_test_51OgfM8BIrM9ZDI85O6mfWKFXHOlNtZhP3osHJtaeRTjFBiCHIeZGqOoBHvpHpZ9yZyBrTnp00e0T9YgHGxYYo6cl00NziFi9ww'
-STRIPE_TEST_SECRET_KEY = 'sk_test_51OgfM8BIrM9ZDI85iqjmY2m9KAesJ2EQSWno9oqSd3cSlfmnCEKvDePLTIoMQDXUbgyRnVsEY2pey4TqRdEg7H5P00Kx1ygJCN'
+STRIPE_LIVE_PUBLIC_KEY = os.environ.get('stripe_publishable_key')
+STRIPE_LIVE_SECRET_KEY = os.environ.get('stripe_secret_key')
 STRIPE_LIVE_MODE = False  # Change to True in production
-REDIRECT_DOMAIN = 'localhost:8000'
+REDIRECT_DOMAIN = ['localhost:8000','127.0.0.1',
+    'estates.solutions',
+    '206.189.130.94',
+    'www.estates.solutions']
 
 SITE_ID = 1
 SOCIALACCOUNT_LOGIN_ON_GET = True

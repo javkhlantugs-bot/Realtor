@@ -1193,7 +1193,7 @@ from django.views.decorators.csrf import csrf_exempt
 def products(request):
     user_payment = get_object_or_404(UserPayment, app_user=request.user.id)
     context = {
-        'stripe_public_key':settings.STRIPE_TEST_PUBLIC_KEY,
+        'stripe_public_key':settings.STRIPE_LIVE_PUBLIC_KEY,
         'end_date' : user_payment.subscription_end_date,
         'payment_bool' : user_payment.payment_bool
     }
@@ -1201,7 +1201,7 @@ def products(request):
 
 @login_required(login_url='login')
 def checkout_monthly(request):
-    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    stripe.api_key = settings.STRIPE_LIVE_SECRET_KEY
     
     line_items = [
         {
@@ -1222,7 +1222,7 @@ def checkout_monthly(request):
 
 @login_required(login_url='login')
 def checkout_yearly(request):
-    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    stripe.api_key = settings.STRIPE_LIVE_SECRET_KEY
     
     line_items = [
         {
@@ -1244,7 +1244,7 @@ def checkout_yearly(request):
 from dateutil.relativedelta import relativedelta
 import django.utils.timezone
 def payment_successful(request):
-    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    stripe.api_key = settings.STRIPE_LIVE_SECRET_KEY
     checkout_session_id = request.GET.get('session_id', None)
     user_payment = get_object_or_404(UserPayment, app_user=request.user.id)
     
@@ -1275,7 +1275,7 @@ def payment_successful(request):
     return render(request, 'subscriptions_succeeded.html', context)
 
 def payment_successful_yearly(request):
-    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+    stripe.api_key = settings.STRIPE_LIVE_SECRET_KEY
     checkout_session_id = request.GET.get('session_id', None)
     user_id = request.user.id
     user_payment = get_object_or_404(UserPayment, app_user=request.user.id)
@@ -1299,34 +1299,3 @@ def payment_successful_yearly(request):
 
 def payment_cancelled(request):
     return render(request, 'subscriptions_cancelled.html')
-
-
-@csrf_exempt
-def stripe_webhook(request):
-    stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
-    time.sleep(10)
-    payload = request.body
-    signature_header = request.META['HTTPS_STRIPE_SIGNATURE']
-    event = None
-    try:
-        event = stripe.Webhook.construct_event(payload, signature_header, settings.STRIPE_WEBHOOK_SECRET_TEST)
-    except ValueError as e :
-        return HttpResponse(status = 400)
-    except stripe.error.SignatureVerificationError as e:
-        return HttpResponse(status = 400)
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        session_id = session.get('id',None)
-        time.sleep(15)
-        user_payment = UserPayment.objects.get(stripe_checkout_id=session_id)
-        line_items = stripe.checkout.Session.list_line_items(session_id , limit=1)
-        user_payment.payment_bool = True
-        user_payment.save()
-    return HttpResponse(status = 200)
-
-# Example usage when checking subscription status
-def check_subscription_status(user):
-    user_payment = UserPayment.objects.get(app_user=user)
-    if user_payment.subscription_end_date < timezone.now().date():
-        # Subscription has expired, take appropriate action
-        pass
