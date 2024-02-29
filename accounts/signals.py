@@ -30,8 +30,8 @@ def create_user_objects(sender, instance, created, **kwargs):
         property_type.objects.create(user=instance, type="Land")
         property_type.objects.create(user=instance, type="Apartment")
         
-        deal_type.objects.create(user=instance, type="Rental")
-        deal_type.objects.create(user=instance, type="Sales")
+        deal_type.objects.create(user=instance, deal_type="Rental")
+        deal_type.objects.create(user=instance, deal_type="Sales")
 
         subscription_start_date = django.utils.timezone.now().date()
         subscription_end_date = subscription_start_date + relativedelta(days=14)

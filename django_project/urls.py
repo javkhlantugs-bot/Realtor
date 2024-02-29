@@ -30,7 +30,6 @@ urlpatterns = [
     path('', include('allauth.urls')),
     path('', include('django.contrib.auth.urls')),
     path('login/', user_login, name='user_login'),
-    # path('',include('Realtor.urls')),
     
     path('reset_password/', 
         auth_views.PasswordResetView.as_view(

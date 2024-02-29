@@ -10,6 +10,7 @@ from django.utils import timezone
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     phone_number = PhoneNumberField(null=True, blank=True, unique=False)
+    active = models.BooleanField(default = False)
     facebook_url = models.URLField(null=True, blank=True)
     instagram_url = models.URLField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True)
