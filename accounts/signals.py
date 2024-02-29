@@ -43,3 +43,37 @@ def update_user_subscription(sender, instance, created, **kwargs):
         # Assuming CustomUser has a ForeignKey to UserPayment
         instance.app_user.ending_date = instance.subscription_end_date
         instance.app_user.save()
+
+import qrcode
+import os 
+from django.conf import settings
+
+@receiver(post_save, sender=CustomUser)
+def generate_qr_code(sender, instance, created, **kwargs):
+    if created:
+        # Construct the URL for the user
+        user_url = f"estates.solutions/card/{instance.username}"
+
+        # Generate the QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(user_url)
+        qr.make(fit=True)
+
+        # Save the QR code image
+        qr_directory = os.path.join(settings.BASE_DIR, 'assets','static' ,'qr')
+        os.makedirs(qr_directory, exist_ok=True)
+
+        # Save the QR code image in the assets/qr directory
+        file_name = f"qrcode_{instance.username}.png"
+        file_path = os.path.join(qr_directory, file_name)
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save(file_path)
+
+        # You can optionally save the file path to the CustomUser model
+        instance.qr_code = file_path
+        instance.save()
