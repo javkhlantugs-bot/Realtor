@@ -65,7 +65,7 @@ def generate_qr_code(sender, instance, created, **kwargs):
         qr.make(fit=True)
 
         # Save the QR code image
-        qr_directory = os.path.join(settings.BASE_DIR, 'assets','static' ,'qr')
+        qr_directory = os.path.join(settings.BASE_DIR, 'assets','static' ,'media','qr')
         os.makedirs(qr_directory, exist_ok=True)
 
         # Save the QR code image in the assets/qr directory

@@ -80,13 +80,13 @@
         </div>
         <h5>My QR Code</h5>
         <div class="card-body">
-            <a href="{% static 'qr/qrcode_' %}{{ request.user.username }}.png" download="qrcode.png" class="btn btn-outline-secondary">
+            <a href="/media/qr/qrcode_{{ request.user.username }}.png" download="qrcode.png" class="btn btn-outline-secondary">
                 Download QR Code
             </a>
         </div>
         <div class="card-body" style="align-items: left;">
             <!-- Assuming 'instance' is the CustomUser instance being displayed -->
-            <img src="/static/qr/qrcode_{{ request.user.username }}.png" alt="QR Code">
+            <img src="/media/qr/qrcode_{{ request.user.username }}.png" alt="QR Code">
         </div>
 
     </div>
