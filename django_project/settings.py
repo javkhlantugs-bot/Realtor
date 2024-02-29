@@ -57,6 +57,8 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = 'user_login'  # Make sure this URL is the same as your login view name
 LOGIN_TEMPLATE = 'accounts/login.html'
 LOGIN_REDIRECT_URL = ('/crm/')
+LOGOUT_REDIRECT_URL = '/'
+
 # Application definition
 
 INSTALLED_APPS = [
