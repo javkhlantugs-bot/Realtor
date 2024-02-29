@@ -27,31 +27,24 @@
             // Your other scripts and logic go here...
         });
     </script>
-    <link rel="shortcut icon" href="{% static 'image/logo.ico' %}" type="image/x-icon">
     
     <title>{% block title %}Estates Solutions CRM{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'image/Picture5.png' %}" type="x-icon">
     <!-- <link rel="icon" href="{% static 'image/logo2.png' %}"/> -->
-    
-    <style>
-        /* Make the favicon larger */
-        link[rel="icon"] {
-            width: 64px;
-            height: 64px;
-        }
-    </style>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
         :root{
             --color-background-rgba: rgba(255, 255, 255, 1) ;      /* White background */
-            --color-text-rgba: rgba(26, 26, 26, 1) ;               /* Dark text */
+            --color-text-rgba: rgba(40, 40, 40, 1) ;               /* Dark text */
             --border-color-rgba: rgba(204, 204, 204, 1)  ;   
             --header-color-rgba: rgba(250, 250, 250, 1);       /* Light border color */
             --color-stripe-rgba: rgba(240, 240, 240, 1);
         }
         .dark-mode-variables{
-            --color-background-rgba: rgba(26, 26, 26, 1) ;
-            --color-text-rgba: rgba(255, 255, 255, 1) ;
+            --color-background-rgba: rgba(20, 20, 20, 1) ;
+            --color-text-rgba: rgba(200, 200, 200, 1) ;
             --border-color-rgba: rgba(43, 43, 43, 1) ; 
             --header-color-rgba: rgba(50, 50, 50, 1)    ;
             --color-stripe-rgba: rgba(40, 40, 40, 1);
@@ -98,23 +91,16 @@
         }
         
         .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-family: 'Exo 2', sans-serif;
-            font-size: 2rem;
-            background-color: var(--color-text-rgba);
-            width: 7vw;
+            font-size: 1.2rem;
+            padding-top: 2vh;
+            width: 9vw;
             height: 4vh;
-            margin: 10px;
             margin-left: 1vw;
-            margin-right: 1vw;
             border-radius: 20px;
+            line-height: 0;
         }
 
-        .logo span {
-            color: var(--color-background-rgba) !important;
-        }
         /* Loading spinner styles */
         #loading-indicator {
             display: none;
@@ -172,9 +158,9 @@
 
         .navbar-nav .nav-link {
             display: inline-flex; /* Make it a flex container */
-            /* margin-left: 20px; */
             transition: color 0.3s;
             text-align: center; /* Center-align the text within the link */
+            padding-left: 1vw;
         }
         .navbar-nav .active{
             background-color: var(--color-text-rgba);
@@ -186,11 +172,8 @@
         }
         .navbar-nav a, span{
             color: #444444 !important;
-
         }
-        .navbar-nav a{
-            padding-left: 1vw !important;
-        }
+        
         .navbar-nav span{
             padding-left: 5px;
         }
@@ -211,12 +194,11 @@
         .navbar-nav .nav-item.dropdown:hover .dropdown-item {
             opacity: 1;
         }
-
-        
         
         .navbar-container {
             flex: 0 0 250px; /* Set a fixed width for the navbar container */
             height: 90vh;
+            width: 9vw;
         }
 
         .modal-content{
@@ -246,24 +228,24 @@
             color: var(--color-background-rgba);
             background-color: var(--color-background-rgba);
             border: 1px solid var(--border-color-rgba); /* Optional: Adjust or remove the border as needed */
-            box-shadow: 0 0 0 2px var(--color-text-rgba);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .container-header {
-            top: 70px;
-            left: 9vw;
+            top: 7vh;
+            left: 11vw;
             position: fixed;
             padding-bottom: 10px;
             padding-top: 10px;
-            width: 90vw;
+            width: 88vw;
             background-color: transparent;
             z-index: 555;
+            height: 7vh;
             border-bottom: var(--border-color-rgba) 1px solid;
         }
 
         .container-content {
             margin-top: 10vh;
-            /* margin-right: 30px; */
             height: 80vh;
             display: block;
             flex-grow: 1;
@@ -277,6 +259,12 @@
         .modal-body button {
                 margin-top: 1vh;
             }
+        .add-new{
+            height: 5vh;
+        }
+        .contents{
+            width: 88vw;
+        }
         /* Media query for mobile screens (max-width: 767px) */
         @media (max-width: 767px) {
             .navbar-container {
@@ -354,8 +342,8 @@
                 justify-content: center;
                 text-align: center;
                 background-color: var(--color-background-rgba);
-                min-height: 5vh;
                 max-width: 80vw;
+                
                 justify-content: center;
                 border-bottom: 0px;
             }
@@ -372,10 +360,9 @@
                 width: 98vw;
             }
             
-            /* .search-container{
-                z-index: 1000;
-                margin-left: 10px;
-            } */
+            .user_sub{
+                display: none;
+            }
             .search-results-container{
                 width: 50vw;
             }
@@ -396,7 +383,7 @@
             .modal-backdrop{
                 display: none;
             }
-            .container-fluid{
+            .contrraror{
                 height: 80vh;
                 top: 12vh !important;
                 position: fixed;
@@ -408,7 +395,7 @@
                 color: #1a1a1a !important;
             }
             .user-link{
-                display: none;
+                display: none !important;
             }
             .page-actions{
                 position: fixed;
@@ -436,20 +423,16 @@
                 display: none;
             }
         }
-
-        @media (max-width: 1650px) {
-            .nav-link span {
-                display: none; /* Hide text on screens smaller than 1500px */
+        @media (max-width: 1200px) {
+            p, a{
+                font-size: 0.8rem;
             }
         }
-
-        @media (min-width: 767px) and (max-width: 1650px) {
-            .navbar-container{
-                width: 66px;
+        @media (max-width: 1000px) {
+            p, a{
+                font-size: 0.7rem;
             }
         }
-        
-        
 
         /* Targeting the scrollbar track */
         .container-content::-webkit-scrollbar {
@@ -609,13 +592,13 @@
         header .col-md-4{
             border-left: 1px solid var(--border-color-rgba);
         }
-        .container-fluid .navigations{
+        .contrraror .navigations{
             border-right: 1px solid var(--border-color-rgba);
             height: 100%;
+            margin-left: 1vw;
+            padding: 0;
         }
-        .container-fluid{
-            padding-right: 0;
-        }
+        
         .card{
             background-color: transparent;
             width: 100%;
@@ -801,8 +784,9 @@
 <body class="{% if isDarkMode %}dark-mode-variables{% endif %}">
     <header>
             <div class="row" id="dynamicHeightRow" style="height: 6vh;">
-                <div  class="logo">
-                    <span>Es</span>
+                <div class="logo" >
+                    <p>Estates</p>
+                    <p>Solutions</p>
                 </div>
                 
                 <div class="search-container">
@@ -814,11 +798,74 @@
                     </div>
                     <div id="search-results-container" class="search-results-container"></div>
                 </div>
+                <div class="user_sub">
+                    <a href="{% url 'subscriptions' %}">
+                        <p>Your subscription ends on {{ request.user.ending_date }}</p>
+                    </a>
+                </div>
                 
+                <!-- Add a modal with an overlay -->
+                <div id="subscriptionEnded" class="subscriptionEnded">
+                    <div class="modal-content">
+                        <a href="{% url 'subscriptions' %}">
+                            <i class="fas fa-sad-tear"></i>
+                            <h3>Sorry, your subscription has ended.</h3>
+                        </a>
+                    </div>
+                </div>
+                <style>
+                    .subscriptionEnded{
+                        z-index: 100000000000;
+                        width: 100vw;
+                        height: 100vh;
+                        margin-top: -3vh;
+                    }
+
+                    .subscriptionEnded .modal-content{
+                        width: 100vw;
+                        height: 100vh;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .subscriptionEnded .modal-content a{
+                        text-decoration: none;
+                        color: var(--color-text-rgba);
+                        
+                    }
+                </style>
+                <script>
+                    // Get the modal
+                    var modal = document.getElementById("subscriptionEnded");
+                    
+                    // Get the close button element
+                    var closeBtn = modal.getElementsByClassName("close")[0];
+                    
+                    // Check if ending_date is greater than today's date
+                    var endingDate = new Date("{{ request.user.ending_date }}");
+                    var today = new Date();
+                    if (endingDate < today) {
+                        console.log('it should display');
+                        modal.style.display = "block";
+                    }
+                    else if (endingDate > today) {
+                        console.log(endingDate);
+                        console.log(today);
+                        console.log('no it should not display');
+                        modal.style.display = 'none';
+                    }
+                    
+                    // When the user clicks anywhere outside of the modal, hide the modal
+                    window.onclick = function(event) {
+                      if (event.target == modal) {
+                        modal.style.display = "none";
+                      }
+                    }
+                    </script>
                 <div class="user-link">
+                    <i class="fas fa-globe"></i> 
                     <a href="{% url 'total_list_view' user=request.user.username %}">
-                        <i class="fas fa-file"></i> <!-- Assuming you're using Font Awesome for icons -->
-                        {{ request.user.username }}
+                        <p>Estates.Solutions/{{ request.user.username }}</p>
                     </a>
                 </div>
                 
@@ -850,22 +897,45 @@
                     .toggle-button .dark-mode-variables .material-icons {
                         color: #656565; /* Dark mode color for Material Icons */
                     }
+                    .user_sub{
+                        position: fixed;
+                        top: 16px;
+                        right: 35vw;
+                        z-index: 1001;
+                        width: 20vw;
+                    }
+                    .user_sub a{
+                        text-decoration: none;
+                        color: var(--border-color-rgba);
+                    }
                     .user-link{
                         position: fixed;
                         top: 16px;
                         right: 120px;
                         z-index: 1000;
-                        width: 10vw;
-                        background-color: var(--color-text-rgba);
-                        color: var(--color-background-rgba);
+                        width: 25vw;
                         border-radius: 10px;
+                        display: flex;
+                        flex-direction: row;
                         justify-content: center;
                         align-items: center;
                     }
+                    .user-link i{
+                        font-size: 1.2rem;
+                        
+                    }
                     .user-link a{
+                        font-size: 1.2rem;
                         text-decoration: none;
-                        color: var(--color-background-rgba);
-                        text-align: center;
+                        color: rgba(50, 50, 50, 1);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .user-link a p {
+                        margin: 0;
+                        padding: 0;
+                        margin-left: 5px;
                     }
                 </style>
 
@@ -940,7 +1010,7 @@
                         width: 30vw;
                         z-index: 11111111 !important;
                         background-color: var(--color-background-rgba);
-                        color: #f5f6fa;
+                        color: rgb(80, 79, 79);
                         border-radius: 8px;
                         background-color: var(--color-background-rgba);
                         max-height: 300px;
@@ -1115,9 +1185,12 @@
                                 <button class="close-btn" onclick="toggleMenu()">
                                     <span class="material-icons">close</span> <!-- Material icon for close -->
                                 </button>
+                                
                                 <a href="{% url 'total_list_view' user=request.user.username %}">
                                     <span class="menu-item">
-                                        <span class="material-icons">person</span> <!-- Material icon for "person" -->
+                                        <span class="material-icons">
+                                            public
+                                            </span>
                                         <span class="menuItemText"> {{ request.user.username }}</span>
                                     </span>
                                 </a>
@@ -1138,6 +1211,12 @@
                                         <span class="material-icons">exit_to_app</span> <!-- Material icon for "exit_to_app" -->
                                         <span class="menuItemText">Logout</span>
                                     </span>
+                                </a>
+
+                                <a class="user_sub_mobile" style="margin-top: 30vh;">
+                                    <a href="{% url 'subscriptions' %}">
+                                        <span>Your subscription ends on {{ request.user.ending_date }}</span>
+                                    </a>
                                 </a>
                             </div>
                         </div>
@@ -1601,10 +1680,10 @@
         // Optionally, you can listen for changes in the container-header height and update the row height accordingly
         window.addEventListener('resize', setRowHeight);
     </script>
-    <div class="container-fluid " >
+    <div class="contrraror" >
         <!-- style="height: 100%; min-height: 100vh; position: inherit;" -->
         <div class="row">
-            <div class="navigations" style="height: 100%; width: 8vw;">
+            <div class="navigations" style="height: 100%; width: 10vw;">
                 <!-- flex: 0 0 auto;left: 0;top: 10;   -->
                 <!-- Sidebar/Navbar -->
                 <div class="navbar-container">
@@ -1635,7 +1714,7 @@
                     </nav>
                 </div>
             </div>
-            <div class="contents" style="width: 91vw;">
+            <div class="contents">
                 <!-- Main content -->
                 <div class="content flex-grow-1" >
                     <div class="form-container">

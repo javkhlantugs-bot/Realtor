@@ -61,8 +61,6 @@ def show_property(request, user, id, address):
         'userid':userid
     })
 
-
-
 class TotalListView(View):
     template_name = 'total_list.html'
 

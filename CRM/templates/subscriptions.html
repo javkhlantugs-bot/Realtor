@@ -39,15 +39,36 @@
             margin: 0;
         }
     }
+    .subscriptionEnded{
+        z-index: -1;
+    }
+    .subscriptionEnded .modal-content{
+        display: none;
+    }
+    .subscriptionEnded .modal-content a{
+        display: none;        
+    }
+    .sub_head p{
+        font-size: 1.2rem;
+    }
+    @media (max-width: 767px) {
+        .sub_head{
+            flex-direction: column !important;
+        }
+        .sub_head p{
+            margin-left: 0 !important;
+            font-size: 1rem;
+        }
+    }
 </style>
 
 <div class="container-header">
-    <div style="display: flex; flex-direction: row; align-items: center;">
+    <div style="display: flex; flex-direction: row; align-items: center;" class="sub_head">
         <h2>Subscribe</h2>
         {% if payment_bool %}
-            <h5 style="margin-left: 30px;">Your subscription ends on <strong>{{ end_date }}</strong></h5>
+            <p style="margin-left: 30px;">Your subscription ends on <strong>{{ end_date }}</strong></p>
         {% else %}
-            <h5 style="margin-left: 30px;">Your free trial ends on <strong>{{ end_date }}</strong></h5>
+            <p style="margin-left: 30px;">Your free trial ends on <strong>{{ end_date }}</strong></p>
         {% endif %}
     </div>
 </div>

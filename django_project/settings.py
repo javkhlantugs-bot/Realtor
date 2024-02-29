@@ -96,6 +96,8 @@ REDIRECT_DOMAIN = ['localhost:8000','127.0.0.1',
     'www.estates.solutions']
 
 SITE_ID = 1
+
+
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/crm/'
 

@@ -1265,9 +1265,14 @@ def payment_successful(request):
     # Update subscription dates
     user_payment.subscription_start_date = subscription_start_date
     user_payment.subscription_end_date = subscription_end_date
-
+    # Update CustomUser instance associated with this UserPayment
+    custom_user = user_payment.app_user
+    custom_user.ending_date = subscription_end_date
+    custom_user.sub_status = True  # Assuming this means the user is subscribed
+    custom_user.save()
     # Save changes
     user_payment.save()
+
     context = {
         'end_date' : user_payment.subscription_end_date
     }
@@ -1292,6 +1297,11 @@ def payment_successful_yearly(request):
     user_payment.subscription_start_date = subscription_start_date
     user_payment.subscription_end_date = subscription_end_date
     user_payment.save()
+    # Update CustomUser instance associated with this UserPayment
+    custom_user = user_payment.app_user
+    custom_user.ending_date = subscription_end_date
+    custom_user.sub_status = True  # Assuming this means the user is subscribed
+    custom_user.save()
     context = {
         'end_date' : user_payment.subscription_end_date
     }

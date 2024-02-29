@@ -25,7 +25,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('crm/',include('CRM.urls')),
-    path('realtorCRM/', include('suggest_properties.urls')),
+    path('card/', include('suggest_properties.urls')),
     path('', include('accounts.urls', namespace='accounts')),
     path('', include('allauth.urls')),
     path('', include('django.contrib.auth.urls')),

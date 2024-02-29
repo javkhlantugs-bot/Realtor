@@ -2,7 +2,19 @@
 
 {% block title %}Estates Solutions | Settings{% endblock %}
 
+
 {% block content %}
+    <style>
+        .subscriptionEnded{
+            z-index: -1;
+        }
+        .subscriptionEnded .modal-content{
+            display: none;
+        }
+        .subscriptionEnded .modal-content a{
+            display: none;        
+        }
+    </style>
     <div class="container-header">Payment Succeeded</div>
     <div class="container-content">
         <h3>Your payment has been successfully processed.</h3>
