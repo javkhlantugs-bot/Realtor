@@ -29,7 +29,7 @@
     </script>
     
     <title>{% block title %}Estates Solutions CRM{% endblock %}</title>
-    <link rel="shortcut icon" href="/static/image/Picture5.png" type="x-icon">
+    <link rel="shortcut icon" href="/media/Picture5.png" type="x-icon">
     <!-- <link rel="icon" href="{% static 'image/logo2.png' %}"/> -->
 
     <style>
@@ -101,7 +101,6 @@
             line-height: 0;
         }
 
-        /* Loading spinner styles */
         #loading-indicator {
             display: none;
             position: fixed;
@@ -177,23 +176,6 @@
         .navbar-nav span{
             padding-left: 5px;
         }
-
-        .navbar-nav .nav-item.dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .navbar-nav .nav-item.dropdown .dropdown-menu {
-            display: none;
-        }
-
-        .navbar-nav .nav-item.dropdown .dropdown-item {
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .navbar-nav .nav-item.dropdown:hover .dropdown-item {
-            opacity: 1;
-        }
         
         .navbar-container {
             flex: 0 0 250px; /* Set a fixed width for the navbar container */
@@ -210,8 +192,6 @@
         .modal-header span{
             background-color: var(--color-background-rgba);
         }
-        
-
         .modal-content select, 
         input,
         textarea,
@@ -252,7 +232,7 @@
             scroll-behavior: auto;
             overflow-y: auto;
             overflow-x: hidden;
-            flex-grow: 1; /* Allow the container to grow and take up available space */
+            flex-grow: 1; 
             padding-right: 10px;
         }
 
@@ -357,7 +337,7 @@
                 padding-left: 0;
                 padding-right: 0 !important;
                 margin-right: 0 !important;
-                width: 98vw;
+                width: 100vw;
             }
             
             .user_sub{
@@ -1726,9 +1706,6 @@
             </div>
         </div>
     </div>
-
-
-
     
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

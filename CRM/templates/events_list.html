@@ -20,15 +20,12 @@
         background-color: transparent !important;
         color: var(--color-text-rgba) !important;
         border: none;
-        /* Add any other styles for the enabled state */
     }
 
-    /* Styles for the disabled button */
     .fc-today-button[disabled] {
         background-color: transparent !important;
         color: var(--border-color-rgba) !important;
         border: none;
-        /* Add any other styles for the disabled state */
     }
     .fc .fc-button-primary{
         background-color: transparent !important; 
@@ -73,6 +70,10 @@
         width: calc(50% - 25px); /* Adjust as needed, considering column-gap */
         height: 74vh; /* Adjust as needed */
         overflow-y: auto;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        overflow-y: auto;
     }
 
     @media (max-width: 767px) {
@@ -100,15 +101,16 @@
         }
         #events-list {
             top: 33vh;
-            height: 70vh;
+            height: 60vh;
             overflow-y: auto;
             padding: 0 !important;
             margin-bottom: 10vh;
-            padding-bottom: 10vh;
         }
         .event{
             padding-right: 0 !important;
             width: inherit;
+            width: 96vw;
+            margin-left: 2vw;
         }
 
         #main-map-container {
@@ -366,13 +368,6 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
 
 <style>
-    #events-list {
-        padding: 10px;
-        /* border: 1px solid #ddd; */
-        border-radius: 5px;
-        margin-top: 10px;
-        overflow-y: auto;
-    }
     .date-span-container span{
         color: var(--color-text-rgba);
     }
@@ -582,6 +577,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
+            padding-right: 10px;
         }
         .event-actions  button {
             background-color: transparent;
@@ -938,7 +934,7 @@
                         
                         eventDiv.appendChild(eventContentDiv);
                         eventDiv.appendChild(eventActionsDiv);
-
+                        eventDiv.style.marginBottom = "20vh";
                         eventsDiv.appendChild(eventDiv);
                     });
                 }
@@ -1209,7 +1205,7 @@
                         
                         eventDiv.appendChild(eventContentDiv);
                         eventDiv.appendChild(eventActionsDiv);
-
+                        eventDiv.style.marginBottom = "20vh";
                         eventsDiv.appendChild(eventDiv);
                     });
                 }
